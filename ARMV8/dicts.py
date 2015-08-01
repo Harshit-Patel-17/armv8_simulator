@@ -6,6 +6,7 @@ import executor_logical
 import executor_move
 import executor_shift
 import executor_misc
+import executor_mulDiv
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -21,6 +22,7 @@ def INSTRUCTION_TYPE(binary, i):
             8 : LOGICAL_IMMEDIATE,
             9 : PC_RELATIVE,
             10 : NOP,
+            11 : MUL_DIV_REG
         }[i](binary)
     except KeyError:
         i = i
@@ -130,4 +132,10 @@ def NOP(binary):
     key = binary[0:20] + "-"*7 + binary[27:32]
     return {
        "11010101000000110010" + "-"*7 + "11111" : executor_misc.execNOP,
+    }[key](binary)
+
+def MUL_DIV_REG(binary):
+    key = binary[0:11] + "-"*5 + binary[16:22]
+    return {
+      "10011011101-----011111" : executor_mulDiv.execMul,
     }[key](binary)
