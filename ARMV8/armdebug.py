@@ -8,12 +8,13 @@ import re
 import parsehelper
 import utilFunc
 import decoder
-import mem, const
+import mem
 import traceback
 import const
 
 DEBUG_MODE=False
 PC = 0
+cycles = 0
 bkpoint=[]
 hexes=[]
 watchPause=False #
@@ -69,6 +70,19 @@ def checkIfValidBreakPoint(givenHexString):
         if(givenHexInt-startAddInt)/4 < length:
             return True
     return False
+
+#Keep record of cycles in processor
+def setCycles(givenInt):
+    global cycles
+    cycles = givenInt
+    
+def getCycles():
+    global cycles
+    return cycles
+
+def incCycles():
+    global cycles
+    cycles += 1
 
 #Note could be 5 etc, any int
 def setPC(givenInt):
@@ -243,6 +257,7 @@ def executeNextInst():
         print 'instructions exhausted!!'
     #print 'PC: '+str(getPC())
 
+'''
 def executeRUN():
     print "Executing command type: "+"'run'"
     x=getCurrentInstNumber()
@@ -253,6 +268,43 @@ def executeRUN():
         #print 'X: '+str(x)
         executeNextInst()
         x=getCurrentInstNumber()
+'''
+pipelineStages = ['', '', '', '', '']        
+def executeRUN():
+    instructionNumber = getCurrentInstNumber()
+    totalInstructions = len(getHexes())
+    while(1):
+        if(instructionNumber >= totalInstructions):
+            while(not isPipelineEmpty()):
+                for i in [4, 3, 2, 1]:
+                    pipelineStages[i] = pipelineStages[i-1]
+                pipelineStages[0] = ''
+                print pipelineStages
+                executeStages()
+                incPC()
+                incCycles()
+                instructionNumber = getCurrentInstNumber()
+            return
+        else:
+            for i in [4, 3, 2, 1]:
+                pipelineStages[i] = pipelineStages[i-1]
+            pipelineStages[0] = hexes[instructionNumber]
+            print pipelineStages
+            executeStages()
+            incPC()
+            incCycles()
+            instructionNumber = getCurrentInstNumber()
+            
+def executeStages():
+    if(pipelineStages[2] != ''):
+        utilFunc.resetInstrFlag()
+        decoder.decodeInstr(pipelineStages[2])
+        
+def isPipelineEmpty():
+    for i in range(5):
+        if(pipelineStages[i] != ''):
+            return False
+    return True
         
 def executeBreak(address): 
     #print 'You typed address: '+address
@@ -301,7 +353,7 @@ def executeDel(address):
     else:
         print 'Not valid hex address for current state'
         
-    
+'''    
 def executeC():
     print "Executing command type: "+"'c'"
     x=getCurrentInstNumber()
@@ -316,7 +368,41 @@ def executeC():
         print 'no breakpoints encountered. instructions exhausted!!'
         return
     print "Arrived at the break point. Type 's' or 'run'..."
-    
+'''
+        
+def executeC():
+    instructionNumber = getCurrentInstNumber()
+    totalInstructions = len(getHexes())
+    while(1):
+        if(instructionNumber >= totalInstructions):
+            #Complete remaining instructions in pipeline
+            while(not isPipelineEmpty()):
+                for i in [4, 3, 2, 1]:
+                    pipelineStages[i] = pipelineStages[i-1]
+                pipelineStages[0] = ''
+                print pipelineStages
+                executeStages()
+                incPC()
+                incCycles()
+                instructionNumber = getCurrentInstNumber()
+                if(instructionNumber-4 > 0 and isBkPoint(instructionNumber-4)):
+                    print "Arrived at the break point. Type 's' or 'run'..."
+                    return
+            print 'no breakpoints encountered. instructions exhausted!!'
+            return
+        else:
+            for i in [4, 3, 2, 1]:
+                pipelineStages[i] = pipelineStages[i-1]
+            pipelineStages[0] = hexes[instructionNumber]
+            print pipelineStages
+            executeStages()
+            incPC()
+            incCycles()
+            instructionNumber = getCurrentInstNumber()
+            if(instructionNumber-4 > 0 and isBkPoint(instructionNumber-4)):
+                print "Arrived at the break point. Type 's' or 'run'..."
+                return
+             
 def executePrint(command):
     print "Executing command type: "+"'print'"
     command=command.split()
