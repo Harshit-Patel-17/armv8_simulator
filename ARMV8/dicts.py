@@ -138,4 +138,8 @@ def MUL_DIV_REG(binary):
     key = binary[0:11] + "-"*5 + binary[16:22]
     return {
       "10011011101-----011111" : executor_mulDiv.execMul,
+      "00011010110-----000010" : executor_mulDiv.execUnsignedDiv_32,
+      "10011010110-----000010" : executor_mulDiv.execUnsignedDiv_64,
+      "00011010110-----000011" : executor_mulDiv.execSignedDiv_32,
+      "10011010110-----000011" : executor_mulDiv.execSignedDiv_64,
     }[key](binary)
