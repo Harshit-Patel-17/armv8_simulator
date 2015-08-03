@@ -9,7 +9,6 @@ import mem
 import const
 
 def op_i(binary, N):
-    '''
     inst = 'AND '
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
@@ -28,22 +27,25 @@ def op_i(binary, N):
     
     imm, temp = utilFunc.decodeBitMasks(immN, imms, immr, N)
     inst += ', #' + str(int(imm,2))
-    result = utilFunc.logical_and(rnValue,imm).zfill(const.REG_SIZE)
-    utilFunc.finalize(rdKey, result, inst, '1')
-    '''
-    mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
-    const.FLAG_INST_EXECUTED = True
+    #result = utilFunc.logical_and(rnValue,imm).zfill(const.REG_SIZE)
+    #utilFunc.finalize(rdKey, result, inst, '1')
+    if(mem.regObsolete[rnKey] == False):
+        const.FLAG_OP_FETCHED = True
+        mem.operand1Buffer = rnValue
+        mem.operand2Buffer = imm
+        mem.regObsolete[rdKey] = True
+        mem.regObsolete_last_modified_index = rdKey
+    const.FLAG_OPFETCH_EXECUTED = True
 
-def execAnd_i32(binary):
+def opfetchAnd_i32(binary):
     op_i(binary, 32)
     
     
-def execAnd_i64(binary):
+def opfetchAnd_i64(binary):
     op_i(binary, 64)
     
     
-def execAnd_sr32(binary):   
-    ''' 
+def opfetchAnd_sr32(binary):    
     inst = 'AND '
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
@@ -73,14 +75,17 @@ def execAnd_sr32(binary):
         temp = utilFunc.ror(rmValue[32:64], immvalue)
         inst += 'ROR'
     inst += ' #' + str(immvalue)
-    to_store = utilFunc.logical_and(temp, rnValue[32:64]).zfill(const.REG_SIZE)
-    utilFunc.finalize(rdKey, to_store, inst, '0')
-    '''
-    mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
-    const.FLAG_INST_EXECUTED = True
+    #to_store = utilFunc.logical_and(temp, rnValue[32:64]).zfill(const.REG_SIZE)
+    #utilFunc.finalize(rdKey, to_store, inst, '0')
+    if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
+        const.FLAG_OP_FETCHED = True
+        mem.operand1Buffer = temp
+        mem.operand2Buffer = rnValue[32:64]
+        mem.regObsolete[rdKey] = True
+        mem.regObsolete_last_modified_index = rdKey
+    const.FLAG_OPFETCH_EXECUTED = True
     
-def execAnd_sr64(binary):
-    '''
+def opfetchAnd_sr64(binary):
     inst = 'AND '
     
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
@@ -111,8 +116,13 @@ def execAnd_sr64(binary):
         temp = utilFunc.ror(rmValue[0:64], immvalue)
         inst += 'ROR'
     inst += ' #' + str(immvalue)
-    to_store = utilFunc.logical_and(temp, rnValue[0:64]).zfill(const.REG_SIZE)
-    utilFunc.finalize(rdKey, to_store, inst, '0')
-    '''
-    mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
-    const.FLAG_INST_EXECUTED = True
+    #to_store = utilFunc.logical_and(temp, rnValue[0:64]).zfill(const.REG_SIZE)
+    #utilFunc.finalize(rdKey, to_store, inst, '0')
+    if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
+        const.FLAG_OP_FETCHED = True
+        mem.operand1Buffer = temp
+        mem.operand2Buffer = rnValue[0:64]
+        mem.regObsolete[rdKey] = True
+        mem.regObsolete_last_modified_index = rdKey
+    const.FLAG_OPFETCH_EXECUTED = True
+    

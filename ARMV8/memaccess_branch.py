@@ -5,13 +5,12 @@ Created on Aug 8, 2014
 '''
 
 import utilFunc
-import const
 import mem
+import const
 #from utilFunc import uInt, signExtend, getRegValueByStringkey
 import armdebug
 
-def execB(binary):
-    const.FLAG_INST_EXECUTED = True
+def memaccessB(binary):
     '''
     inst ='B OFFSET('
     imm26key=binary[6:32]
@@ -22,28 +21,31 @@ def execB(binary):
     utilFunc.branchWithOffset(offset) #the magic!
     utilFunc.finalize_simple(inst)
     '''
+    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.isSPWriteBackBuffer = mem.isSPBuffer
+    const.FLAG_MEMACCESS_EXECUTED = True
     
-def execBCond(binary):
-    const.FLAG_INST_EXECUTED = True
+def memaccessBCond(binary):
+    '''
     bits_four=binary[-4:]
     xx=utilFunc.conditionHolds(bits_four)    
     if not xx[0]:
         return
     
-    #inst ='B.'+xx[1]+' OFFSET('
-    #imm19key=binary[8:27]
+    inst ='B.'+xx[1]+' OFFSET('
+    imm19key=binary[8:27]
     
-    (instpart,offset)=utilFunc.getOffset(mem.operand1Buffer)
-    #inst+=instpart+')'
+    (instpart,offset)=utilFunc.getOffset(imm19key)
+    inst+=instpart+')'
     
-    utilFunc.branchWithOffset(offset-8) #the magic!
-    armdebug.pipelineStages[0] = ''
-    armdebug.pipelineStages[1] = ''
-    mem.regObsolete[mem.regObsolete_last_modified_index] = False
-    #utilFunc.finalize_simple(inst)
+    utilFunc.branchWithOffset(offset) #the magic!
+    utilFunc.finalize_simple(inst)
+    '''
+    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.isSPWriteBackBuffer = mem.isSPBuffer
+    const.FLAG_MEMACCESS_EXECUTED = True
     
-def execBL(binary):
-    const.FLAG_INST_EXECUTED = True
+def memaccessBL(binary):
     '''
     inst='BL OFFSET('
     imm26key=binary[-26:]
@@ -56,9 +58,11 @@ def execBL(binary):
     utilFunc.branchWithOffset(offset)
     utilFunc.finalize_simple(inst)
     '''
+    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.isSPWriteBackBuffer = mem.isSPBuffer
+    const.FLAG_MEMACCESS_EXECUTED = True
     
-def execBR(binary):
-    const.FLAG_INST_EXECUTED = True
+def memaccessBR(binary):
     '''
     inst = 'BR X'
     rnKey=binary[22:27]
@@ -72,9 +76,11 @@ def execBR(binary):
     utilFunc.branchToAddress(int(hexstr,16))
     utilFunc.finalize_simple(inst)
     '''
+    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.isSPWriteBackBuffer = mem.isSPBuffer
+    const.FLAG_MEMACCESS_EXECUTED = True
     
-def execBLR(binary):
-    const.FLAG_INST_EXECUTED = True
+def memaccessBLR(binary):
     '''
     inst='BLR X'
     rnKey=binary[22:27]
@@ -90,9 +96,11 @@ def execBLR(binary):
     utilFunc.branchToAddress(int(hexstr,16))
     utilFunc.finalize_simple(inst)
     '''
+    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.isSPWriteBackBuffer = mem.isSPBuffer
+    const.FLAG_MEMACCESS_EXECUTED = True
     
-def execRET(binary):
-    const.FLAG_INST_EXECUTED = True
+def memaccessRET(binary):
     '''
     inst = 'RET X'
     rnKey=binary[22:27]
@@ -107,23 +115,25 @@ def execRET(binary):
     utilFunc.branchToAddress(int(hexstr,16))
     utilFunc.finalize_simple(inst)
     '''
+    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.isSPWriteBackBuffer = mem.isSPBuffer
+    const.FLAG_MEMACCESS_EXECUTED = True
     
-def execCBZ_32(binary):
+def memaccessCBZ_32(binary):
     CBZClass(binary, 32, True)
     
-def execCBNZ_32(binary):
+def memaccessCBNZ_32(binary):
     CBZClass(binary, 32, False)
     
-def execCBZ_64(binary):
+def memaccessCBZ_64(binary):
     CBZClass(binary, 64, True)
     
-def execCBNZ_64(binary):
+def memaccessCBNZ_64(binary):
     CBZClass(binary, 64, False)
 
 def CBZClass(binary,width,bool):
-    const.FLAG_INST_EXECUTED = True
-    rtKey=binary[-5:]
     '''
+    rtKey=binary[-5:]
     inst='CBZ '
     char=''
     if width==64:
@@ -134,23 +144,20 @@ def CBZClass(binary,width,bool):
     regnum=utilFunc.uInt(rtKey)
     inst+=str(regnum)+', OFFSET('
     imm19Key=binary[8:27]
-    '''
 
-    (instpart,offset)=utilFunc.getOffset(mem.operand1Buffer)
-    #inst+=instpart+')'
+    (instpart,offset)=utilFunc.getOffset(imm19Key)
+    inst+=instpart+')'
     
     regValue=utilFunc.getRegValueByStringkey(rtKey, '0')
     regValue=regValue[0:width]#since CBZ_32
     if bool:
         if regValue=='0'*width:
-            utilFunc.branchWithOffset(offset-8)
-            armdebug.pipelineStages[0] = ''
-            armdebug.pipelineStages[1] = ''
-            mem.regObsolete[mem.regObsolete_last_modified_index] = False
+            utilFunc.branchWithOffset(offset)
     else:
         if regValue!='0'*width:
-            utilFunc.branchWithOffset(offset-8)
-            armdebug.pipelineStages[0] = ''
-            armdebug.pipelineStages[1] = ''
-            mem.regObsolete[mem.regObsolete_last_modified_index] = False
-    #utilFunc.finalize_simple(inst)
+            utilFunc.branchWithOffset(offset)
+    utilFunc.finalize_simple(inst)
+    '''
+    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.isSPWriteBackBuffer = mem.isSPBuffer
+    const.FLAG_MEMACCESS_EXECUTED = True

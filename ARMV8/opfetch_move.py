@@ -5,22 +5,22 @@ Created on Aug 8, 2014
 '''
 import const
 import utilFunc
+import mem
 
 
-def execMov_iwi32(binary):
+def opfetchMov_iwi32(binary):
     mov_imm(binary, "MOV w", '1', 32)
     
-def execMov_iwi64(binary):
+def opfetchMov_iwi64(binary):
     mov_imm(binary, "MOV x", '1', 64)
     
-def execMov_wi32(binary):
+def opfetchMov_wi32(binary):
     mov_imm(binary, "MOV w", '0', 32)
     
-def execMov_wi64(binary):
+def opfetchMov_wi64(binary):
     mov_imm(binary, "MOV x", '0', 64)
     
-def mov_imm(binary, instr, inverted, N):
-    '''    
+def mov_imm(binary, instr, inverted, N):    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     hw = binary[9:11]
     pos = utilFunc.uInt(hw+'0000')
@@ -31,13 +31,19 @@ def mov_imm(binary, instr, inverted, N):
         result = utilFunc.negate(result)
     instr = instr + str(rdKey)+", #"+utilFunc.binaryToHexStr(result)
     utilFunc.finalize(rdKey, result.zfill(const.REG_SIZE), instr, '0')
-    '''
-    const.FLAG_INST_EXECUTED = "1"
+    const.FLAG_OPFETCH_EXECUTED = True
+    const.FLAG_OP_FETCHED = True
 
 def mov_reg(binary, N):
-    '''
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rmKey = utilFunc.getRegKeyByStringKey(binary[11:16])
+
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(mem.regObsolete[rmKey] == True):
+        return
+    else:
+        const.FLAG_OP_FETCHED = True
+
     rmVal = utilFunc.getRegValueByStringkey(binary[11:16], '0')
     if(N == 32):
         rmVal = rmVal[32:64]
@@ -46,20 +52,18 @@ def mov_reg(binary, N):
         r = 'x'
     instr = "MOV "+r+str(rdKey)+", "+r+str(rmKey)
     utilFunc.finalize(rdKey, rmVal.zfill(const.REG_SIZE), instr, '0')
-    '''
-    const.FLAG_INST_EXECUTED = "1"
 
-def execMov_r32(binary):
+def opfetchMov_r32(binary):
     mov_reg(binary, 32)
     
-def execMov_r64(binary):
+def opfetchMov_r64(binary):
     mov_reg(binary, 64)
                            
                            
 def mov_bmi(binary, N):
-    '''
     inst = 'MOV '
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    
     if(N == 32):
         r = 'w'
     else:
@@ -75,11 +79,11 @@ def mov_bmi(binary, N):
     inst += ', #' + utilFunc.binaryToHexStr(imm)
     result = utilFunc.logical_or('0'*N,imm).zfill(const.REG_SIZE)
     utilFunc.finalize(rdKey, result, inst, '1')
-    '''
-    const.FLAG_INST_EXECUTED = "1"
+    const.FLAG_OPFETCH_EXECUTED = True
+    const.FLAG_OP_FETCHED = True
     
-def execMov_bmi32(binary):
+def opfetchMov_bmi32(binary):
     mov_bmi(binary, 32)
     
-def execMov_bmi64(binary):
+def opfetchMov_bmi64(binary):
     mov_bmi(binary, 64)

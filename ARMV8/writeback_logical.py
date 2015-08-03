@@ -9,6 +9,7 @@ import mem
 import const
 
 def op_i(binary, N):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     '''
     inst = 'AND '
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
@@ -31,19 +32,21 @@ def op_i(binary, N):
     result = utilFunc.logical_and(rnValue,imm).zfill(const.REG_SIZE)
     utilFunc.finalize(rdKey, result, inst, '1')
     '''
-    mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
-    const.FLAG_INST_EXECUTED = True
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '1')
+    const.FLAG_WRITEBACK_EXECUTED = True
+    mem.regObsolete[rdKey] = False
 
-def execAnd_i32(binary):
+def writebackAnd_i32(binary):
     op_i(binary, 32)
     
     
-def execAnd_i64(binary):
+def writebackAnd_i64(binary):
     op_i(binary, 64)
     
     
-def execAnd_sr32(binary):   
-    ''' 
+def writebackAnd_sr32(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    '''    
     inst = 'AND '
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
@@ -76,10 +79,12 @@ def execAnd_sr32(binary):
     to_store = utilFunc.logical_and(temp, rnValue[32:64]).zfill(const.REG_SIZE)
     utilFunc.finalize(rdKey, to_store, inst, '0')
     '''
-    mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
-    const.FLAG_INST_EXECUTED = True
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '0')
+    const.FLAG_WRITEBACK_EXECUTED = True
+    mem.regObsolete[rdKey] = False
     
-def execAnd_sr64(binary):
+def writebackAnd_sr64(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     '''
     inst = 'AND '
     
@@ -114,5 +119,7 @@ def execAnd_sr64(binary):
     to_store = utilFunc.logical_and(temp, rnValue[0:64]).zfill(const.REG_SIZE)
     utilFunc.finalize(rdKey, to_store, inst, '0')
     '''
-    mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
-    const.FLAG_INST_EXECUTED = True
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '0')
+    const.FLAG_WRITEBACK_EXECUTED = True
+    mem.regObsolete[rdKey] = False
+    

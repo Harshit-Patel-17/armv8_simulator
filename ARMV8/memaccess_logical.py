@@ -31,19 +31,20 @@ def op_i(binary, N):
     result = utilFunc.logical_and(rnValue,imm).zfill(const.REG_SIZE)
     utilFunc.finalize(rdKey, result, inst, '1')
     '''
-    mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
-    const.FLAG_INST_EXECUTED = True
+    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.isSPWriteBackBuffer = mem.isSPBuffer
+    const.FLAG_MEMACCESS_EXECUTED = True
 
-def execAnd_i32(binary):
+def memaccessAnd_i32(binary):
     op_i(binary, 32)
     
     
-def execAnd_i64(binary):
+def memaccessAnd_i64(binary):
     op_i(binary, 64)
     
     
-def execAnd_sr32(binary):   
-    ''' 
+def memaccessAnd_sr32(binary):
+    '''    
     inst = 'AND '
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
@@ -76,10 +77,11 @@ def execAnd_sr32(binary):
     to_store = utilFunc.logical_and(temp, rnValue[32:64]).zfill(const.REG_SIZE)
     utilFunc.finalize(rdKey, to_store, inst, '0')
     '''
-    mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
-    const.FLAG_INST_EXECUTED = True
+    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.isSPWriteBackBuffer = mem.isSPBuffer
+    const.FLAG_MEMACCESS_EXECUTED = True
     
-def execAnd_sr64(binary):
+def memaccessAnd_sr64(binary):
     '''
     inst = 'AND '
     
@@ -114,5 +116,6 @@ def execAnd_sr64(binary):
     to_store = utilFunc.logical_and(temp, rnValue[0:64]).zfill(const.REG_SIZE)
     utilFunc.finalize(rdKey, to_store, inst, '0')
     '''
-    mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
-    const.FLAG_INST_EXECUTED = True
+    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.isSPWriteBackBuffer = mem.isSPBuffer
+    const.FLAG_MEMACCESS_EXECUTED = True

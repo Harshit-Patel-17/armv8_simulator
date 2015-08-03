@@ -8,6 +8,7 @@ import const
 
 def op_i(binary, N, instr, sub_op, setFlags):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    '''
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rnVal = utilFunc.getRegValueByStringkey(binary[22:27],'1')
     if(N == 32):
@@ -24,9 +25,10 @@ def op_i(binary, N, instr, sub_op, setFlags):
     elif shiftType == "01":
         imm12 = (imm12 + '0' * 12).zfill(N)
         instr = instr + " #12"
-        
-    to_store, isSp = utilFunc.addSub(rdKey, rnVal, imm12, sub_op, N, setFlags)    
-    utilFunc.finalize(rdKey, to_store.zfill(const.REG_SIZE), instr, isSp)
+    '''
+    mem.ALUResultBuffer, mem.isSPBuffer = utilFunc.addSub(rdKey, mem.operand1Buffer, mem.operand2Buffer, sub_op, N, setFlags)
+    const.FLAG_INST_EXECUTED = True    
+    #utilFunc.finalize(rdKey, to_store.zfill(const.REG_SIZE), instr, isSp)
 
 def execAdd_i32(binary):
     op_i(binary, 32, "ADD", '0', '0')
@@ -69,6 +71,7 @@ def fetchOp2_sr(rmVal, shiftType, amt, instr):
     
 def op_sr(binary, N, instr, sub_op, setFlags):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    '''
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rmkey = utilFunc.getRegKeyByStringKey(binary[11:16])
     imm6 = binary[16:22]
@@ -86,8 +89,10 @@ def op_sr(binary, N, instr, sub_op, setFlags):
     instr += " " + r + str(rdKey) + ", " + r + str(rnKey) + ", " + r + str(rmkey) + ", "
     op2, instr = fetchOp2_sr(rmVal, shiftType, imm6Val, instr)
     instr += " #" + str(imm6Val)
-    to_store,isSp = utilFunc.addSub(rdKey, rnVal, op2, sub_op, N, setFlags) #isSp ignored
-    utilFunc.finalize(rdKey, to_store.zfill(const.REG_SIZE), instr, '0')
+    '''
+    mem.ALUResultBuffer,mem.isSPBuffer = utilFunc.addSub(rdKey, mem.operand1Buffer, mem.operand2Buffer, sub_op, N, setFlags) #isSp ignored
+    const.FLAG_INST_EXECUTED = True
+    #utilFunc.finalize(rdKey, to_store.zfill(const.REG_SIZE), instr, '0')
 
 def execAdd_sr32(binary):
     op_sr(binary, 32, "ADD", '0', '0')
@@ -116,6 +121,7 @@ def execSubs_sr64(binary):
     
 def op_er(binary, N, instr, sub_op, setFlags):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    '''
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rmkey = utilFunc.getRegKeyByStringKey(binary[11:16])
     option = binary[16:19]
@@ -137,8 +143,10 @@ def op_er(binary, N, instr, sub_op, setFlags):
     instr += " " + r + str(rdKey) + ", " + r + str(rnKey) + ", " + rmToPrint + str(rmkey) + ", "
     op2, instr = utilFunc.extendReg(rmVal, shift, option, instr, N)
     instr += " #" + str(shift)
-    to_store, isSp = utilFunc.addSub(rdKey, rnVal, op2, sub_op, N, setFlags)
-    utilFunc.finalize(rdKey, to_store.zfill(const.REG_SIZE), instr, isSp)
+    '''
+    mem.ALUResultBuffer, mem.isSPBuffer = utilFunc.addSub(rdKey, mem.operand1Buffer, mem.operand2Buffer, sub_op, N, setFlags)
+    const.FLAG_INST_EXECUTED = True
+    #utilFunc.finalize(rdKey, to_store.zfill(const.REG_SIZE), instr, isSp)
        
 
 
