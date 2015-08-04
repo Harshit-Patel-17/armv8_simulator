@@ -7,6 +7,7 @@ import executor_move
 import executor_shift
 import executor_misc
 import executor_mulDiv
+import executor_conditional
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -22,7 +23,8 @@ def INSTRUCTION_TYPE(binary, i):
             8 : LOGICAL_IMMEDIATE,
             9 : PC_RELATIVE,
             10 : NOP,
-            11 : MUL_DIV_REG
+            11 : MUL_DIV_REG,
+            12 : CONDITIONAL_INSTRUCTIONS
         }[i](binary)
     except KeyError:
         i = i
@@ -143,3 +145,18 @@ def MUL_DIV_REG(binary):
       "00011010110-----000011" : executor_mulDiv.execSignedDiv_32,
       "10011010110-----000011" : executor_mulDiv.execSignedDiv_64,
     }[key](binary)
+
+
+def CONDITIONAL_INSTRUCTIONS(binary):
+  if(binary[11:16] == "1111" and binary[22:27] == "1111"):
+    key = binary[0:16] + "-"*4 + binary[20:27]
+  else:
+    key = binary[0:11] + "-"*9 + binary[20:22]
+  return {
+    "0001101010011111----0111111" : executor_conditional.execConditionalSet_32,
+    "1001101010011111----0111111" : executor_conditional.execConditionalSet_64,
+    "00011010100---------01"      : executor_conditional.execConditionalSelectIncrement_32,
+    "10011010100---------01"      : executor_conditional.execConditionalSelectIncrement_64,
+    "01011010100---------01"      : executor_conditional.execConditionalSelectNegation_32,
+    "11011010100---------01"      : executor_conditional.execConditionalSelectNegation_64,
+  }[key](binary)
