@@ -9,9 +9,9 @@ import armdebug
 import mem
 
 def helper_l(binary, instr):
-    '''
     rtKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     imm19 = binary[8:27]
+    '''
     opc = binary[0:2]
     signed = False
     
@@ -22,16 +22,21 @@ def helper_l(binary, instr):
     elif(opc == '10'):
         size = 4
         signed = True
+    '''
         
     offset = utilFunc.signExtend(imm19 + '00', 64)
     offset = utilFunc.sInt(offset, 64)
-    '''
     
-    mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
-    const.FLAG_INST_EXECUTED = True
-    #dataSize = size * 8
-    
+    const.FLAG_OP_FETCHED = True
+    mem.operand1Buffer = armdebug.getPC() - 4
+    mem.operand2Buffer = offset
+    mem.regObsolete[rtKey] = True
+    mem.regObsolete_last_modified_index = rtKey
+    const.FLAG_OPFETCH_EXECUTED = True
     '''
+    address = armdebug.getPC() + offset
+    dataSize = size * 8
+    
     data = utilFunc.fetchFromMemory(address, dataSize)
     
     if(data == const.TRAP):
@@ -45,15 +50,16 @@ def helper_l(binary, instr):
     instr += str(rtKey) + ", #" + str(offset)
     utilFunc.finalize(rtKey, data.zfill(64), instr, '0')
     '''
+    
 
 #---Load Register (Literal)---
-def execLDR_l32(binary):    
+def opfetchLDR_l32(binary):    
     helper_l(binary, 'LDR w')
 
-def execLDR_l64(binary):
+def opfetchLDR_l64(binary):
     helper_l(binary, 'LDR x')
     
-def execLDRSW_l(binary):
+def opfetchLDRSW_l(binary):
     helper_l(binary, 'LDRSW x')
     
  
@@ -68,7 +74,6 @@ def helper_rp_offset(binary, instr):
     helper_rp(False, False, binary, instr)
     
 def helper_rp(wback, postIndex, binary, instr):
-    '''
     rtKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rt2Key = utilFunc.getRegKeyByStringKey(binary[17:22])
@@ -82,24 +87,37 @@ def helper_rp(wback, postIndex, binary, instr):
     else:
         memOp = const.MEM_OP_STORE
 
-    signed = (opc[1] != '0')
+    #signed = (opc[1] != '0')    
     scale = 2 + utilFunc.uInt(opc[0])
      
-    dataSize = 8 << scale
+    #dataSize = 8 << scale
     offset = utilFunc.lsl(utilFunc.signExtend(imm7, 64), scale)
     offset = utilFunc.sInt(offset, 64)
      
-    dbytes = dataSize / 8;
+    #dbytes = dataSize / 8;
      
     address = utilFunc.getRegValueByStringkey(binary[22:27], '1')
     address = utilFunc.uInt(address)
-    '''
-     
-    if not(postIndex):
-        mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
-    const.FLAG_INST_EXECUTED = True
+    
+    if(mem.regObsolete[rnKey] == False):
+        const.FLAG_OP_FETCHED = True
+        mem.operand1Buffer = address
+        mem.operand2Buffer = offset
+        mem.regObsolete[rtKey] = True
+        if(memOp == const.MEM_OP_LOAD):
+            mem.regObsolete[rtKey] = True
+            mem.regObsolete_last_modified_indices.append(rtKey)
+            mem.regObsolete[rt2Key] = True
+            mem.regObsolete_last_modified_indices.append(rt2Key)
+        if(wback):
+            mem.regObsolete[rnKey] = True
+            mem.regObsolete_last_modified_indices.append(rnKey)
+    const.FLAG_OPFETCH_EXECUTED = True
     
     ''' 
+    if not(postIndex):
+        address = address + offset
+     
     type = binary[7:9]
     if(opc == '00'):
         r = 'w'
@@ -149,114 +167,115 @@ def helper_rp(wback, postIndex, binary, instr):
     utilFunc.finalize_simple(instr)
     '''
     
+    
 #---Load/Store Register-Pair (Post-Indexed)---    
-def execSTP_rp_posti_32(binary):
+def opfetchSTP_rp_posti_32(binary):
     helper_rp_posti(binary, 'STP')
     
-def execLDP_rp_posti_32(binary):
+def opfetchLDP_rp_posti_32(binary):
     helper_rp_posti(binary, 'LDP')
     
-def execSTP_rp_posti_64(binary):
+def opfetchSTP_rp_posti_64(binary):
     helper_rp_posti(binary, 'STP')
     
-def execLDP_rp_posti_64(binary):
+def opfetchLDP_rp_posti_64(binary):
     helper_rp_posti(binary, 'LDP')
      
 #---Load/Store Register-Pair (Post-Indexed)---    
-def execSTP_rp_prei_32(binary):
+def opfetchSTP_rp_prei_32(binary):
     helper_rp_prei(binary, 'STP')
     
-def execLDP_rp_prei_32(binary):
+def opfetchLDP_rp_prei_32(binary):
     helper_rp_prei(binary, 'LDP')
     
-def execSTP_rp_prei_64(binary):
+def opfetchSTP_rp_prei_64(binary):
     helper_rp_prei(binary, 'STP')
     
-def execLDP_rp_prei_64(binary):
+def opfetchLDP_rp_prei_64(binary):
     helper_rp_prei(binary, 'LDP')
 
 
 #---Load/Store Register-Pair (Post-Indexed)---    
-def execSTP_rp_offset_32(binary):
+def opfetchSTP_rp_offset_32(binary):
     helper_rp_offset(binary, 'LDP')
     
-def execLDP_rp_offset_32(binary):
+def opfetchLDP_rp_offset_32(binary):
     helper_rp_offset(binary, 'LDP')
     
-def execSTP_rp_offset_64(binary):
+def opfetchSTP_rp_offset_64(binary):
     helper_rp_offset(binary, 'STP')
     
-def execLDP_rp_offset_64(binary):
+def opfetchLDP_rp_offset_64(binary):
     helper_rp_offset(binary, 'LDP')
 
 
     
 #---Load/Store Register (Post-Indexed Immediate)---    
-def execSTR_reg_posti_32(binary):
+def opfetchSTR_reg_posti_32(binary):
     helper_reg_posti(binary, 'STR w')
     
-def execLDR_reg_posti_32(binary):
+def opfetchLDR_reg_posti_32(binary):
     helper_reg_posti(binary, 'LDR w')
     
-def execLDRSW_reg_posti(binary):
+def opfetchLDRSW_reg_posti(binary):
     helper_reg_posti(binary, 'LDRSW x')
     
-def execSTR_reg_posti_64(binary):
+def opfetchSTR_reg_posti_64(binary):
     helper_reg_posti(binary, 'STR x')
 
-def execLDR_reg_posti_64(binary):
+def opfetchLDR_reg_posti_64(binary):
     helper_reg_posti(binary, 'LDR x')
 
 
 #---Load/Store Register (Pre-Indexed Immediate)---    
-def execSTR_reg_prei_32(binary):
+def opfetchSTR_reg_prei_32(binary):
     helper_reg_prei(binary, 'STR w')
     
-def execLDR_reg_prei_32(binary):
+def opfetchLDR_reg_prei_32(binary):
     helper_reg_prei(binary, 'LDR w')
     
-def execLDRSW_reg_prei(binary):
+def opfetchLDRSW_reg_prei(binary):
     helper_reg_prei(binary, 'LDRS x')
     
-def execSTR_reg_prei_64(binary):
+def opfetchSTR_reg_prei_64(binary):
     helper_reg_prei(binary, 'STR x')
 
-def execLDR_reg_prei_64(binary):
+def opfetchLDR_reg_prei_64(binary):
     helper_reg_prei(binary, 'LDR x')
 
 
 #---Load/Store Register (Unsigned Offset)---    
-def execSTR_reg_unsignedOffset_32(binary):
+def opfetchSTR_reg_unsignedOffset_32(binary):
     helper_reg_unsignedOffset(binary, 'STR w')
     
-def execLDR_reg_unsignedOffset_32(binary):
+def opfetchLDR_reg_unsignedOffset_32(binary):
     helper_reg_unsignedOffset(binary, 'LDR w')
     
-def execLDRSW_reg_unsignedOffset(binary):
+def opfetchLDRSW_reg_unsignedOffset(binary):
     helper_reg_unsignedOffset(binary, 'LDRSW x')
     
-def execSTR_reg_unsignedOffset_64(binary):
+def opfetchSTR_reg_unsignedOffset_64(binary):
     helper_reg_unsignedOffset(binary, 'STR x')
 
-def execLDR_reg_unsignedOffset_64(binary):
+def opfetchLDR_reg_unsignedOffset_64(binary):
     helper_reg_unsignedOffset(binary, 'LDR x')
 
 
 
 #---Load/Store Register (Register offset)---    
-def execSTR_reg_offset_32(binary):
+def opfetchSTR_reg_offset_32(binary):
     helper_reg(binary, 'STR w')
     
-def execLDR_reg_offset_32(binary):
+def opfetchLDR_reg_offset_32(binary):
     helper_reg(binary, 'LDR w')
     
-def execLDRSW_reg_offset(binary):
+def opfetchLDRSW_reg_offset(binary):
     helper_reg(binary, 'LDRSW x')
     
-def execSTR_reg_offset_64(binary):
+def opfetchSTR_reg_offset_64(binary):
     helper_reg(binary, 'STR x')
 
-def execLDR_reg_offset_64(binary):
+def opfetchLDR_reg_offset_64(binary):
     helper_reg(binary, 'LDR x')
     
 
@@ -349,41 +368,56 @@ def helper_reg(binary, instr):
 
     
 def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale, instr):
-    '''
     if(opc[0] == '0'):
         if(opc[1] == '1'):
             memOp = const.MEM_OP_LOAD
         else:
             memOp = const.MEM_OP_STORE
+        '''
         if(size == '11'):
             regSize = 64
         else:
             regSize = 32
         signed = False
+        '''
     else:
         if(size == '11'):
             memOp = const.MEM_OP_PREFETCH
         else:
             memOp = const.MEM_OP_LOAD
+            '''
             if opc[1] == '1':
                 regSize = 32
             else:
                 regSize = 64
             signed = True
+            '''
             
-    dataSize = 8 << scale
+    #dataSize = 8 << scale
     
-    #wb_unknown = False
-    #rt_unknown = False  # commenting - assuming them to be false always 
+    '''wb_unknown = False
+    rt_unknown = False'''  # commenting - assuming them to be false always 
     
     address = utilFunc.getRegValueByStringkey(binary[22:27], '1')
     address = utilFunc.uInt(address)
-    '''
     
+    if(mem.regObsolete[rnKey] == False):
+        const.FLAG_OP_FETCHED = True
+        mem.operand1Buffer = address
+        mem.operand2Buffer = offset
+        mem.regObsolete[rtKey] = True
+        if(memOp == const.MEM_OP_LOAD):
+            mem.regObsolete[rtKey] = True
+            mem.regObsolete_last_modified_indices.append(rtKey)
+        if(wback):
+            mem.regObsolete[rnKey] = True
+            mem.regObsolete_last_modified_indices.append(rnKey)
+    const.FLAG_OPFETCH_EXECUTED = True
+    
+    '''
     if not(postIndex):
-        mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
-    const.FLAG_INST_EXECUTED = True
-    '''    
+        address = address + offset
+        
     if(memOp == const.MEM_OP_STORE):
         data = utilFunc.getRegValueByStringkey(binary[27:32], '0')
         utilFunc.storeToMemory(data, address, dataSize)
@@ -400,7 +434,7 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
         else:
             data = utilFunc.zeroExtend(data, regSize)
             
-    utilFunc.setRegValue(rtKey, data.zfill(64), '0')
+            utilFunc.setRegValue(rtKey, data.zfill(64), '0') #CHANGED BLINDLY
         
     if(wback):
         if postIndex:

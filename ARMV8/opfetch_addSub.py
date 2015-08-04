@@ -27,7 +27,7 @@ def opfetch_i(binary, N, instr, sub_op, setFlags):
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = imm12
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
 
 def opfetchAdd_i32(binary):
@@ -94,7 +94,7 @@ def opfetch_sr(binary, N, instr, sub_op, setFlags):
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = op2
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
     
 def opfetchAdd_sr32(binary):
@@ -151,7 +151,7 @@ def opfetch_er(binary, N, instr, sub_op, setFlags):
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = op2
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
        
 

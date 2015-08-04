@@ -25,7 +25,7 @@ def opfetchAsr_r32(binary):
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = rmVal
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
     #instr = 'ASR w' + str(rdKey) + ", w" + str(rnKey) + ", w" + str(rmKey)
     #rd = '0' * 32 + utilFunc.asr(rnVal[32:64], int(rmVal[59:64], 2))
@@ -38,7 +38,7 @@ def opfetchLsl_r32(binary):
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = rmVal
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
     #instr = 'LSL w' + str(rdKey) + ", w" + str(rnKey) + ", w" + str(rmKey)
     #rd = '0' * 32 + utilFunc.lsl(rnVal[32:64], int(rmVal[59:64], 2))
@@ -51,7 +51,7 @@ def opfetchLsr_r32(binary):
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = rmVal
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
     #instr = 'LSR w' + str(rdKey) + ", w" + str(rnKey) + ", w" + str(rmKey)
     #rd = '0' * 32 + utilFunc.lsr(rnVal[32:64], int(rmVal[59:64], 2))
@@ -64,7 +64,7 @@ def opfetchAsr_r64(binary):
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = rmVal
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
     #instr = 'ASR x' + str(rdKey) + ", x" + str(rnKey) + ", x" + str(rmKey)
     #rd = utilFunc.asr(rnVal, int(rmVal[58:64], 2))
@@ -77,7 +77,7 @@ def opfetchLsl_r64(binary):
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = rmVal
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
     #instr = 'LSL x' + str(rdKey) + ", x" + str(rnKey) + ", x" + str(rmKey)
     #rd = utilFunc.lsl(rnVal, int(rmVal[58:64], 2))
@@ -90,7 +90,7 @@ def opfetchLsr_r64(binary):
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = rmVal
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
     #instr = 'LSR x' + str(rdKey) + ", x" + str(rnKey) + ", x" + str(rmKey)
     #rd = utilFunc.lsr(rnVal, int(rmVal[58:64], 2))
@@ -104,7 +104,7 @@ def opfetchAsr_i32(binary):
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = immr
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
     #if(imms == '011111'):
     #    shiftVal = int(immr,2)
@@ -119,7 +119,7 @@ def opfetchAsr_i64(binary):
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = immr
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
     #if(imms == '111111'):
     #    shiftVal = int(immr,2)
@@ -134,7 +134,7 @@ def opfetchLslLsr_i32(binary):
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = immr
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
     '''
     immrVal = int(immr,2)
@@ -159,7 +159,7 @@ def opfetchLslLsr_i64(binary):
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = immr
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
     '''
     immrVal = int(immr,2)

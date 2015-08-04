@@ -31,7 +31,7 @@ def op_i(binary, N):
     result = utilFunc.logical_and(rnValue,imm).zfill(const.REG_SIZE)
     utilFunc.finalize(rdKey, result, inst, '1')
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
 
@@ -77,7 +77,7 @@ def memaccessAnd_sr32(binary):
     to_store = utilFunc.logical_and(temp, rnValue[32:64]).zfill(const.REG_SIZE)
     utilFunc.finalize(rdKey, to_store, inst, '0')
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
@@ -116,6 +116,6 @@ def memaccessAnd_sr64(binary):
     to_store = utilFunc.logical_and(temp, rnValue[0:64]).zfill(const.REG_SIZE)
     utilFunc.finalize(rdKey, to_store, inst, '0')
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True

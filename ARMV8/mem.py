@@ -11,7 +11,7 @@ regFile = list('0'*64 for i in range(regNum))
 
 #Indicates whether register value is obsolete for use by next instruction
 regObsolete = list(False for i in range(regNum))
-regObsolete_last_modified_index = 0
+regObsolete_last_modified_indices = []
 
 #Operand buffers
 operand1Buffer = ''
@@ -22,7 +22,7 @@ ALUResultBuffer = ''
 isSPBuffer = ''
 
 #Buffer to store result for Write-Back
-writeBackBuffer = ''
+writeBackBuffer = ['', '', '']
 isSPWriteBackBuffer = ''
 
 #flags-order: n,z,c,v
@@ -33,6 +33,11 @@ memory_model={}
 helper_memory_model={}
 
 watchReg = list(False for i in range(regNum))
+
+def freeObsoleteRegisters():
+    for index in regObsolete_last_modified_indices:
+        regObsolete[index] = False
+    regObsolete_last_modified_indices = []
 
 
 def setWatchForReg(index):

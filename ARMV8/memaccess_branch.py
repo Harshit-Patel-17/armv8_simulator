@@ -21,7 +21,7 @@ def memaccessB(binary):
     utilFunc.branchWithOffset(offset) #the magic!
     utilFunc.finalize_simple(inst)
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
@@ -41,7 +41,7 @@ def memaccessBCond(binary):
     utilFunc.branchWithOffset(offset) #the magic!
     utilFunc.finalize_simple(inst)
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
@@ -58,7 +58,7 @@ def memaccessBL(binary):
     utilFunc.branchWithOffset(offset)
     utilFunc.finalize_simple(inst)
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
@@ -76,7 +76,7 @@ def memaccessBR(binary):
     utilFunc.branchToAddress(int(hexstr,16))
     utilFunc.finalize_simple(inst)
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
@@ -96,7 +96,7 @@ def memaccessBLR(binary):
     utilFunc.branchToAddress(int(hexstr,16))
     utilFunc.finalize_simple(inst)
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
@@ -115,7 +115,7 @@ def memaccessRET(binary):
     utilFunc.branchToAddress(int(hexstr,16))
     utilFunc.finalize_simple(inst)
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
@@ -158,6 +158,6 @@ def CBZClass(binary,width,bool):
             utilFunc.branchWithOffset(offset)
     utilFunc.finalize_simple(inst)
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True

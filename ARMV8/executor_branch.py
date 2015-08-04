@@ -39,7 +39,7 @@ def execBCond(binary):
     utilFunc.branchWithOffset(offset-8) #the magic!
     armdebug.pipelineStages[0] = ''
     armdebug.pipelineStages[1] = ''
-    mem.regObsolete[mem.regObsolete_last_modified_index] = False
+    mem.freeObsoleteRegisters()
     #utilFunc.finalize_simple(inst)
     
 def execBL(binary):
@@ -146,11 +146,11 @@ def CBZClass(binary,width,bool):
             utilFunc.branchWithOffset(offset-8)
             armdebug.pipelineStages[0] = ''
             armdebug.pipelineStages[1] = ''
-            mem.regObsolete[mem.regObsolete_last_modified_index] = False
+            mem.freeObsoleteRegisters()
     else:
         if regValue!='0'*width:
             utilFunc.branchWithOffset(offset-8)
             armdebug.pipelineStages[0] = ''
             armdebug.pipelineStages[1] = ''
-            mem.regObsolete[mem.regObsolete_last_modified_index] = False
+            mem.freeObsoleteRegisters()
     #utilFunc.finalize_simple(inst)

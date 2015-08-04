@@ -9,9 +9,8 @@ import armdebug
 import mem
 
 def helper_l(binary, instr):
-    '''
     rtKey = utilFunc.getRegKeyByStringKey(binary[27:32])
-    imm19 = binary[8:27]
+    #imm19 = binary[8:27]
     opc = binary[0:2]
     signed = False
     
@@ -23,37 +22,38 @@ def helper_l(binary, instr):
         size = 4
         signed = True
         
-    offset = utilFunc.signExtend(imm19 + '00', 64)
-    offset = utilFunc.sInt(offset, 64)
-    '''
+    #offset = utilFunc.signExtend(imm19 + '00', 64)
+    #offset = utilFunc.sInt(offset, 64)
     
-    mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
-    const.FLAG_INST_EXECUTED = True
-    #dataSize = size * 8
+    #address = armdebug.getPC() + offset
+    dataSize = size * 8
     
-    '''
-    data = utilFunc.fetchFromMemory(address, dataSize)
+    data = utilFunc.fetchFromMemory(mem.ALUResultBuffer, dataSize)
+    
+    const.FLAG_MEMACCESS_EXECUTED = True
     
     if(data == const.TRAP):
-            utilFunc.finalize_simple(instr)
+            #utilFunc.finalize_simple(instr)
             print "HEY!!! There seems to be a problem - memory location can not be accessed"
             print "Moving ahead without executing the instruction"
+            armdebug.pipelineStages[3] = ''
             return
     
     if(signed):
         data = utilFunc.signExtend(data, 64)
-    instr += str(rtKey) + ", #" + str(offset)
-    utilFunc.finalize(rtKey, data.zfill(64), instr, '0')
-    '''
+    #instr += str(rtKey) + ", #" + str(offset)
+    mem.writeBackBuffer[0] = data.zfill(64)
+    #utilFunc.finalize(rtKey, data.zfill(64), instr, '0')
+    
 
 #---Load Register (Literal)---
-def execLDR_l32(binary):    
+def memaccessLDR_l32(binary):    
     helper_l(binary, 'LDR w')
 
-def execLDR_l64(binary):
+def memaccessLDR_l64(binary):
     helper_l(binary, 'LDR x')
     
-def execLDRSW_l(binary):
+def memaccessLDRSW_l(binary):
     helper_l(binary, 'LDRSW x')
     
  
@@ -68,7 +68,6 @@ def helper_rp_offset(binary, instr):
     helper_rp(False, False, binary, instr)
     
 def helper_rp(wback, postIndex, binary, instr):
-    '''
     rtKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rt2Key = utilFunc.getRegKeyByStringKey(binary[17:22])
@@ -91,14 +90,11 @@ def helper_rp(wback, postIndex, binary, instr):
      
     dbytes = dataSize / 8;
      
-    address = utilFunc.getRegValueByStringkey(binary[22:27], '1')
-    address = utilFunc.uInt(address)
-    '''
+    #address = utilFunc.getRegValueByStringkey(binary[22:27], '1')
+    #address = utilFunc.uInt(address)
      
-    if not(postIndex):
-        mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
-    const.FLAG_INST_EXECUTED = True
-    
+    #if not(postIndex):
+    #    address = address + offset
     ''' 
     type = binary[7:9]
     if(opc == '00'):
@@ -115,148 +111,153 @@ def helper_rp(wback, postIndex, binary, instr):
     if(type == '10'):
         #Signed-offset
         instr += " " + r + str(rtKey) +", " + r + str(rt2Key) + ", [x" + str(rnKey) + ", #" + str(offset) + "]"
-     
+    ''' 
+    
+    const.FLAG_MEMACCESS_EXECUTED = True
      
     if(memOp == const.MEM_OP_STORE):
         data1 = utilFunc.getRegValueByStringkey(binary[27:32], '0')
         data2 = utilFunc.getRegValueByStringkey(binary[17:22], '0')  
-        utilFunc.storeToMemory(data1, address, dataSize)
-        utilFunc.storeToMemory(data2, address + dbytes, dataSize)
+        utilFunc.storeToMemory(data1, mem.ALUResultBuffer, dataSize)
+        utilFunc.storeToMemory(data2, mem.ALUResultBuffer + dbytes, dataSize)
              
     elif(memOp == const.MEM_OP_LOAD):
-        data1 = utilFunc.fetchFromMemory(address, dataSize)
-        data2 = utilFunc.fetchFromMemory(address + dbytes, dataSize)
+        data1 = utilFunc.fetchFromMemory(mem.ALUResultBuffer, dataSize)
+        data2 = utilFunc.fetchFromMemory(mem.ALUResultBuffer + dbytes, dataSize)
         
         if(data1 == const.TRAP or data2 == const.TRAP):
-            utilFunc.finalize_simple(instr)
+            #utilFunc.finalize_simple(instr)
             print "HEY!!! There seems to be a problem - memory location can not be accessed"
             print "Moving ahead without executing the instruction"
+            armdebug.pipelineStages[3] = ''
             return
         
         if(signed):
             data1 = utilFunc.signExtend(data1, 64)
             data2 = utilFunc.signExtend(data2, 64)
-            
-        utilFunc.setRegValue(rtKey, data1.zfill(64), '0')
-        utilFunc.setRegValue(rt2Key, data2.zfill(64), '0')
+
+        mem.writeBackBuffer[0] = data1.zfill(64)
+        mem.writeBackBuffer[1] = data2.zfill(64)     
+        #utilFunc.setRegValue(rtKey, data1.zfill(64), '0')
+        #utilFunc.setRegValue(rt2Key, data2.zfill(64), '0')
      
     if(wback):       
         if postIndex:
-            address = address + offset
-        address = utilFunc.intToBinary(address, 64)            
-        utilFunc.setRegValue(rnKey, address, '1')
+            mem.ALUResultBuffer = mem.ALUResultBuffer + offset
+        mem.writeBackBuffer[2] = utilFunc.intToBinary(mem.ALUResultBuffer, 64)            
+        #utilFunc.setRegValue(rnKey, address, '1')
     
-    utilFunc.finalize_simple(instr)
-    '''
+    #utilFunc.finalize_simple(instr)
+    
     
 #---Load/Store Register-Pair (Post-Indexed)---    
-def execSTP_rp_posti_32(binary):
+def memaccessSTP_rp_posti_32(binary):
     helper_rp_posti(binary, 'STP')
     
-def execLDP_rp_posti_32(binary):
+def memaccessLDP_rp_posti_32(binary):
     helper_rp_posti(binary, 'LDP')
     
-def execSTP_rp_posti_64(binary):
+def memaccessSTP_rp_posti_64(binary):
     helper_rp_posti(binary, 'STP')
     
-def execLDP_rp_posti_64(binary):
+def memaccessLDP_rp_posti_64(binary):
     helper_rp_posti(binary, 'LDP')
      
 #---Load/Store Register-Pair (Post-Indexed)---    
-def execSTP_rp_prei_32(binary):
+def memaccessSTP_rp_prei_32(binary):
     helper_rp_prei(binary, 'STP')
     
-def execLDP_rp_prei_32(binary):
+def memaccessLDP_rp_prei_32(binary):
     helper_rp_prei(binary, 'LDP')
     
-def execSTP_rp_prei_64(binary):
+def memaccessSTP_rp_prei_64(binary):
     helper_rp_prei(binary, 'STP')
     
-def execLDP_rp_prei_64(binary):
+def memaccessLDP_rp_prei_64(binary):
     helper_rp_prei(binary, 'LDP')
 
 
 #---Load/Store Register-Pair (Post-Indexed)---    
-def execSTP_rp_offset_32(binary):
+def memaccessSTP_rp_offset_32(binary):
     helper_rp_offset(binary, 'LDP')
     
-def execLDP_rp_offset_32(binary):
+def memaccessLDP_rp_offset_32(binary):
     helper_rp_offset(binary, 'LDP')
     
-def execSTP_rp_offset_64(binary):
+def memaccessSTP_rp_offset_64(binary):
     helper_rp_offset(binary, 'STP')
     
-def execLDP_rp_offset_64(binary):
+def memaccessLDP_rp_offset_64(binary):
     helper_rp_offset(binary, 'LDP')
 
 
     
 #---Load/Store Register (Post-Indexed Immediate)---    
-def execSTR_reg_posti_32(binary):
+def memaccessSTR_reg_posti_32(binary):
     helper_reg_posti(binary, 'STR w')
     
-def execLDR_reg_posti_32(binary):
+def memaccessLDR_reg_posti_32(binary):
     helper_reg_posti(binary, 'LDR w')
     
-def execLDRSW_reg_posti(binary):
+def memaccessLDRSW_reg_posti(binary):
     helper_reg_posti(binary, 'LDRSW x')
     
-def execSTR_reg_posti_64(binary):
+def memaccessSTR_reg_posti_64(binary):
     helper_reg_posti(binary, 'STR x')
 
-def execLDR_reg_posti_64(binary):
+def memaccessLDR_reg_posti_64(binary):
     helper_reg_posti(binary, 'LDR x')
 
 
 #---Load/Store Register (Pre-Indexed Immediate)---    
-def execSTR_reg_prei_32(binary):
+def memaccessSTR_reg_prei_32(binary):
     helper_reg_prei(binary, 'STR w')
     
-def execLDR_reg_prei_32(binary):
+def memaccessLDR_reg_prei_32(binary):
     helper_reg_prei(binary, 'LDR w')
     
-def execLDRSW_reg_prei(binary):
+def memaccessLDRSW_reg_prei(binary):
     helper_reg_prei(binary, 'LDRS x')
     
-def execSTR_reg_prei_64(binary):
+def memaccessSTR_reg_prei_64(binary):
     helper_reg_prei(binary, 'STR x')
 
-def execLDR_reg_prei_64(binary):
+def memaccessLDR_reg_prei_64(binary):
     helper_reg_prei(binary, 'LDR x')
 
 
 #---Load/Store Register (Unsigned Offset)---    
-def execSTR_reg_unsignedOffset_32(binary):
+def memaccessSTR_reg_unsignedOffset_32(binary):
     helper_reg_unsignedOffset(binary, 'STR w')
     
-def execLDR_reg_unsignedOffset_32(binary):
+def memaccessLDR_reg_unsignedOffset_32(binary):
     helper_reg_unsignedOffset(binary, 'LDR w')
     
-def execLDRSW_reg_unsignedOffset(binary):
+def memaccessLDRSW_reg_unsignedOffset(binary):
     helper_reg_unsignedOffset(binary, 'LDRSW x')
     
-def execSTR_reg_unsignedOffset_64(binary):
+def memaccessSTR_reg_unsignedOffset_64(binary):
     helper_reg_unsignedOffset(binary, 'STR x')
 
-def execLDR_reg_unsignedOffset_64(binary):
+def memaccessLDR_reg_unsignedOffset_64(binary):
     helper_reg_unsignedOffset(binary, 'LDR x')
 
 
 
 #---Load/Store Register (Register offset)---    
-def execSTR_reg_offset_32(binary):
+def memaccessSTR_reg_offset_32(binary):
     helper_reg(binary, 'STR w')
     
-def execLDR_reg_offset_32(binary):
+def memaccessLDR_reg_offset_32(binary):
     helper_reg(binary, 'LDR w')
     
-def execLDRSW_reg_offset(binary):
+def memaccessLDRSW_reg_offset(binary):
     helper_reg(binary, 'LDRSW x')
     
-def execSTR_reg_offset_64(binary):
+def memaccessSTR_reg_offset_64(binary):
     helper_reg(binary, 'STR x')
 
-def execLDR_reg_offset_64(binary):
+def memaccessLDR_reg_offset_64(binary):
     helper_reg(binary, 'LDR x')
     
 
@@ -349,7 +350,6 @@ def helper_reg(binary, instr):
 
     
 def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale, instr):
-    '''
     if(opc[0] == '0'):
         if(opc[1] == '1'):
             memOp = const.MEM_OP_LOAD
@@ -373,40 +373,39 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
             
     dataSize = 8 << scale
     
-    #wb_unknown = False
-    #rt_unknown = False  # commenting - assuming them to be false always 
+    '''wb_unknown = False
+    rt_unknown = False'''  # commenting - assuming them to be false always 
     
-    address = utilFunc.getRegValueByStringkey(binary[22:27], '1')
-    address = utilFunc.uInt(address)
-    '''
-    
-    if not(postIndex):
-        mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
-    const.FLAG_INST_EXECUTED = True
-    '''    
+    #address = utilFunc.getRegValueByStringkey(binary[22:27], '1')
+    #address = utilFunc.uInt(address)
+    #if not(postIndex):
+    #    address = address + offset
+    const.FLAG_MEMACCESS_EXECUTED = True
+        
     if(memOp == const.MEM_OP_STORE):
         data = utilFunc.getRegValueByStringkey(binary[27:32], '0')
-        utilFunc.storeToMemory(data, address, dataSize)
+        utilFunc.storeToMemory(data, mem.ALUResultBuffer, dataSize)
             
     elif(memOp == const.MEM_OP_LOAD):
-        data = utilFunc.fetchFromMemory(address, dataSize)
+        data = utilFunc.fetchFromMemory(mem.ALUResultBuffer, dataSize)
         if(data == const.TRAP):
-            utilFunc.finalize_simple(instr)
+            #utilFunc.finalize_simple(instr)
             print "HEY!!! There seems to be a problem - memory location can not be accessed"
-            print "Moving ahead without executing the instruction"            
+            print "Moving ahead without executing the instruction"
+            armdebug.pipelineStages[3] = ''            
             return   
         if(signed):
             data = utilFunc.signExtend(data, regSize)
         else:
             data = utilFunc.zeroExtend(data, regSize)
-            
-    utilFunc.setRegValue(rtKey, data.zfill(64), '0')
+    
+        mem.writeBackBuffer[0] = data.zfill(64)
+    #utilFunc.setRegValue(rtKey, data.zfill(64), '0')
         
     if(wback):
         if postIndex:
-            address = address + offset
-        address = utilFunc.intToBinary(address, 64)
-        utilFunc.setRegValue(rnKey, address, '1')
+            mem.ALUResultBuffer = mem.ALUResultBuffer + offset
+        mem.writeBackBuffer[2] = utilFunc.intToBinary(mem.ALUResultBuffer, 64)
+        #utilFunc.setRegValue(rnKey, address, '1')
     
-    utilFunc.finalize_simple(instr)
-    '''
+    #utilFunc.finalize_simple(instr)

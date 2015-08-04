@@ -32,7 +32,7 @@ def op_i(binary, N):
     result = utilFunc.logical_and(rnValue,imm).zfill(const.REG_SIZE)
     utilFunc.finalize(rdKey, result, inst, '1')
     '''
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '1')
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '1')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
 
@@ -79,7 +79,7 @@ def writebackAnd_sr32(binary):
     to_store = utilFunc.logical_and(temp, rnValue[32:64]).zfill(const.REG_SIZE)
     utilFunc.finalize(rdKey, to_store, inst, '0')
     '''
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '0')
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     
@@ -119,7 +119,7 @@ def writebackAnd_sr64(binary):
     to_store = utilFunc.logical_and(temp, rnValue[0:64]).zfill(const.REG_SIZE)
     utilFunc.finalize(rdKey, to_store, inst, '0')
     '''
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '0')
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     

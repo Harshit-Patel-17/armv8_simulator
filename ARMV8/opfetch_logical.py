@@ -34,7 +34,7 @@ def op_i(binary, N):
         mem.operand1Buffer = rnValue
         mem.operand2Buffer = imm
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
 
 def opfetchAnd_i32(binary):
@@ -82,7 +82,7 @@ def opfetchAnd_sr32(binary):
         mem.operand1Buffer = temp
         mem.operand2Buffer = rnValue[32:64]
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
     
 def opfetchAnd_sr64(binary):
@@ -123,6 +123,6 @@ def opfetchAnd_sr64(binary):
         mem.operand1Buffer = temp
         mem.operand2Buffer = rnValue[0:64]
         mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_index = rdKey
+        mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
     

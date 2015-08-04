@@ -31,7 +31,7 @@ def writeback_i(binary, N, instr, sub_op, setFlags):
     const.FLAG_writeback_EXECUTED = True
     '''
     
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer.zfill(const.REG_SIZE), mem.isSPWriteBackBuffer)
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), mem.isSPWriteBackBuffer)
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
 
@@ -101,7 +101,7 @@ def writeback_sr(binary, N, instr, sub_op, setFlags):
         mem.operand2Buffer = op2
     const.FLAG_writeback_EXECUTED = True
     '''
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer.zfill(const.REG_SIZE), '0')
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     
@@ -162,7 +162,7 @@ def writeback_er(binary, N, instr, sub_op, setFlags):
         mem.operand2Buffer = op2
     const.FLAG_writeback_EXECUTED = True
     '''
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer.zfill(const.REG_SIZE), mem.isSPWriteBackBuffer)
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), mem.isSPWriteBackBuffer)
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
        

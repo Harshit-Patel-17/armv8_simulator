@@ -30,7 +30,7 @@ def memaccess_i(binary, N, instr, sub_op, setFlags):
         mem.operand2Buffer = imm12
     const.FLAG_memaccess_EXECUTED = True
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
 
@@ -100,7 +100,7 @@ def memaccess_sr(binary, N, instr, sub_op, setFlags):
         mem.operand2Buffer = op2
     const.FLAG_memaccess_EXECUTED = True
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
@@ -161,7 +161,7 @@ def memaccess_er(binary, N, instr, sub_op, setFlags):
         mem.operand2Buffer = op2
     const.FLAG_memaccess_EXECUTED = True
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
        

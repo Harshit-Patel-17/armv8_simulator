@@ -22,7 +22,7 @@ def writebackAsr_r32(binary):
     #instr = 'ASR w' + str(rdKey) + ", w" + str(rnKey) + ", w" + str(rmKey)
     #rd = '0' * 32 + utilFunc.asr(rnVal[32:64], int(rmVal[59:64], 2))
     #utilFunc.finalize(rdKey, rd, instr, '0')
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '0')
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False 
                        
@@ -31,7 +31,7 @@ def writebackLsl_r32(binary):
     #instr = 'LSL w' + str(rdKey) + ", w" + str(rnKey) + ", w" + str(rmKey)
     #rd = '0' * 32 + utilFunc.lsl(rnVal[32:64], int(rmVal[59:64], 2))
     #utilFunc.finalize(rdKey, rd, instr, '0')
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '0')
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     
@@ -40,7 +40,7 @@ def writebackLsr_r32(binary):
     #instr = 'LSR w' + str(rdKey) + ", w" + str(rnKey) + ", w" + str(rmKey)
     #rd = '0' * 32 + utilFunc.lsr(rnVal[32:64], int(rmVal[59:64], 2))
     #utilFunc.finalize(rdKey, rd, instr, '0')
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '0')
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     
@@ -49,7 +49,7 @@ def writebackAsr_r64(binary):
     #instr = 'ASR x' + str(rdKey) + ", x" + str(rnKey) + ", x" + str(rmKey)
     #rd = utilFunc.asr(rnVal, int(rmVal[58:64], 2))
     #utilFunc.finalize(rdKey, rd, instr, '0')
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '0')
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False 
                        
@@ -58,7 +58,7 @@ def writebackLsl_r64(binary):
     #instr = 'LSL x' + str(rdKey) + ", x" + str(rnKey) + ", x" + str(rmKey)
     #rd = utilFunc.lsl(rnVal, int(rmVal[58:64], 2))
     #utilFunc.finalize(rdKey, rd, instr, '0')
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '0')
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     
@@ -67,7 +67,7 @@ def writebackLsr_r64(binary):
     #instr = 'LSR x' + str(rdKey) + ", x" + str(rnKey) + ", x" + str(rmKey)
     #rd = utilFunc.lsr(rnVal, int(rmVal[58:64], 2))
     #utilFunc.finalize(rdKey, rd, instr, '0')
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '0')
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
 
@@ -79,7 +79,7 @@ def writebackAsr_i32(binary):
         #instr = 'ASR w' + str(rdKey) + ", w" + str(rnKey) + ", #" + str(shiftVal)
         #rd = '0' * 32 + utilFunc.asr(rnVal[32:64], shiftVal)
         #utilFunc.finalize(rdKey, rd, instr, '0')
-        utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '0')
+        utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     
@@ -90,7 +90,7 @@ def writebackAsr_i64(binary):
         #instr = 'ASR x' + str(rdKey) + ", x" + str(rnKey) + ", #" + str(shiftVal)
         #rd = utilFunc.asr(rnVal, shiftVal)
         #utilFunc.finalize(rdKey, rd, instr, '0')
-        utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '0')
+        utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False 
                        
@@ -111,7 +111,7 @@ def writebackLslLsr_i32(binary):
         rd = '0' * 32 + utilFunc.lsl(rnVal[32:64], shiftVal)
     utilFunc.finalize(rdKey, rd, instr, '0')
     '''
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '0')
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     
@@ -132,7 +132,7 @@ def writebackLslLsr_i64(binary):
         rd = utilFunc.lsl(rnVal, shiftVal)
     utilFunc.finalize(rdKey, rd, instr, '0')
     '''
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer, '0')
+    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
 

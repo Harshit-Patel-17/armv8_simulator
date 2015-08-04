@@ -25,7 +25,7 @@ def memaccessAsr_r32(binary):
     rd = '0' * 32 + utilFunc.asr(rnVal[32:64], int(rmVal[59:64], 2))
     utilFunc.finalize(rdKey, rd, instr, '0')
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
                        
@@ -36,7 +36,7 @@ def memaccessLsl_r32(binary):
     rd = '0' * 32 + utilFunc.lsl(rnVal[32:64], int(rmVal[59:64], 2))
     utilFunc.finalize(rdKey, rd, instr, '0')
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
@@ -47,7 +47,7 @@ def memaccessLsr_r32(binary):
     rd = '0' * 32 + utilFunc.lsr(rnVal[32:64], int(rmVal[59:64], 2))
     utilFunc.finalize(rdKey, rd, instr, '0')
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
@@ -58,7 +58,7 @@ def memaccessAsr_r64(binary):
     rd = utilFunc.asr(rnVal, int(rmVal[58:64], 2))
     utilFunc.finalize(rdKey, rd, instr, '0')
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
                        
@@ -69,7 +69,7 @@ def memaccessLsl_r64(binary):
     rd = utilFunc.lsl(rnVal, int(rmVal[58:64], 2))
     utilFunc.finalize(rdKey, rd, instr, '0')
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
@@ -80,7 +80,7 @@ def memaccessLsr_r64(binary):
     rd = utilFunc.lsr(rnVal, int(rmVal[58:64], 2))
     utilFunc.finalize(rdKey, rd, instr, '0')
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
 
@@ -94,7 +94,7 @@ def memaccessAsr_i32(binary):
         rd = '0' * 32 + utilFunc.asr(rnVal[32:64], shiftVal)
         utilFunc.finalize(rdKey, rd, instr, '0')
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
@@ -107,7 +107,7 @@ def memaccessAsr_i64(binary):
         rd = utilFunc.asr(rnVal, shiftVal)
         utilFunc.finalize(rdKey, rd, instr, '0')
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
                        
@@ -128,7 +128,7 @@ def memaccessLslLsr_i32(binary):
         rd = '0' * 32 + utilFunc.lsl(rnVal[32:64], shiftVal)
     utilFunc.finalize(rdKey, rd, instr, '0')
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
@@ -149,7 +149,7 @@ def memaccessLslLsr_i64(binary):
         rd = utilFunc.lsl(rnVal, shiftVal)
     utilFunc.finalize(rdKey, rd, instr, '0')
     '''
-    mem.writeBackBuffer = mem.ALUResultBuffer
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
