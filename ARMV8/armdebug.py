@@ -8,13 +8,18 @@ import re
 import parsehelper
 import utilFunc
 import decoder
+import opfetch_decoder
+import writeback_decoder
+import memaccess_decoder
 import mem
 import traceback
 import const
 
+pipelineStages = ['', '', '', '', ''] 
 DEBUG_MODE=False
 PC = 0
 cycles = 0
+stalls = 0
 bkpoint=[]
 hexes=[]
 watchPause=False #
@@ -83,6 +88,27 @@ def getCycles():
 def incCycles():
     global cycles
     cycles += 1
+    
+def printCycles():
+    global cycles
+    print cycles
+    
+#Keep record of stalls in processor
+def setStalls(givenInt):
+    global stalls
+    stalls = givenInt
+    
+def getStalls():
+    global stalls
+    return stalls
+
+def incStalls():
+    global stalls
+    stalls += 1
+    
+def printStalls():
+    global stalls
+    print stalls
 
 #Note could be 5 etc, any int
 def setPC(givenInt):
@@ -256,49 +282,56 @@ def executeNextInst():
     else:
         print 'instructions exhausted!!'
     #print 'PC: '+str(getPC())
-
-'''
-def executeRUN():
-    print "Executing command type: "+"'run'"
-    x=getCurrentInstNumber()
-    if(x>=len(getHexes())):
-        print 'instructions exhausted!!'
-        return
-    while (x <  len(getHexes())):
-        #print 'X: '+str(x)
-        executeNextInst()
-        x=getCurrentInstNumber()
-'''
-pipelineStages = ['', '', '', '', '']        
+       
 def executeRUN():
     instructionNumber = getCurrentInstNumber()
-    totalInstructions = len(getHexes())
-    while(1):
-        if(instructionNumber >= totalInstructions):
-            while(not isPipelineEmpty()):
-                for i in [4, 3, 2, 1]:
-                    pipelineStages[i] = pipelineStages[i-1]
-                pipelineStages[0] = ''
-                print pipelineStages
-                executeStages()
-                incPC()
-                incCycles()
-                instructionNumber = getCurrentInstNumber()
-            return
-        else:
-            for i in [4, 3, 2, 1]:
-                pipelineStages[i] = pipelineStages[i-1]
-            pipelineStages[0] = hexes[instructionNumber]
-            print pipelineStages
-            executeStages()
-            incPC()
-            incCycles()
-            instructionNumber = getCurrentInstNumber()
+    pipelineStages[0] = hexes[instructionNumber]
+    incCycles()
+    while(not isPipelineEmpty()):
+        executeStages()
             
 def executeStages():
+    raw_input("Press any key")
+    print pipelineStages
+    printCycles()
+    printStalls()
+    print ""
+    #Execute stage 5
+    if(pipelineStages[4] != ''):
+        writeback_decoder.decodeInstr(pipelineStages[4])
+    pipelineStages[4] = ''
+    
+    #Execute stage 4    
+    if(pipelineStages[3] != ''):
+        memaccess_decoder.decodeInstr(pipelineStages[3])
+    pipelineStages[4] = pipelineStages[3]
+    pipelineStages[3] = ''
+    
+    #Execute stage 3
     if(pipelineStages[2] != ''):
         utilFunc.resetInstrFlag()
         decoder.decodeInstr(pipelineStages[2])
+    pipelineStages[3] = pipelineStages[2]
+    pipelineStages[2] = ''
+    
+    #Execute stage 2
+    if(pipelineStages[1] != ''):
+        opfetch_decoder.decodeInstr(pipelineStages[1])
+        if(const.FLAG_OP_FETCHED):
+            pipelineStages[2] = pipelineStages[1]
+            pipelineStages[1] = pipelineStages[0]
+            incPC()
+        else:
+            incStalls()
+    else:
+        pipelineStages[2] = pipelineStages[1]
+        pipelineStages[1] = pipelineStages[0]
+        incPC()
+    incCycles()
+    try:
+        pipelineStages[0] = hexes[getCurrentInstNumber()]
+    except IndexError:
+        pipelineStages[0] = ''
         
 def isPipelineEmpty():
     for i in range(5):
