@@ -27,8 +27,7 @@ def op_i(binary, N):
     
     imm, temp = utilFunc.decodeBitMasks(immN, imms, immr, N)
     inst += ', #' + str(int(imm,2))
-    #result = utilFunc.logical_and(rnValue,imm).zfill(const.REG_SIZE)
-    #utilFunc.finalize(rdKey, result, inst, '1')
+    
     if(mem.regObsolete[rnKey] == False):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnValue
@@ -75,8 +74,7 @@ def opfetchAnd_sr32(binary):
         temp = utilFunc.ror(rmValue[32:64], immvalue)
         inst += 'ROR'
     inst += ' #' + str(immvalue)
-    #to_store = utilFunc.logical_and(temp, rnValue[32:64]).zfill(const.REG_SIZE)
-    #utilFunc.finalize(rdKey, to_store, inst, '0')
+
     if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = temp
@@ -116,8 +114,7 @@ def opfetchAnd_sr64(binary):
         temp = utilFunc.ror(rmValue[0:64], immvalue)
         inst += 'ROR'
     inst += ' #' + str(immvalue)
-    #to_store = utilFunc.logical_and(temp, rnValue[0:64]).zfill(const.REG_SIZE)
-    #utilFunc.finalize(rdKey, to_store, inst, '0')
+
     if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = temp

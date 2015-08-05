@@ -10,7 +10,6 @@ import mem
 
 def helper_l(binary, instr):
     rtKey = utilFunc.getRegKeyByStringKey(binary[27:32])
-    #imm19 = binary[8:27]
     opc = binary[0:2]
     signed = False
     
@@ -22,10 +21,6 @@ def helper_l(binary, instr):
         size = 4
         signed = True
         
-    #offset = utilFunc.signExtend(imm19 + '00', 64)
-    #offset = utilFunc.sInt(offset, 64)
-    
-    #address = armdebug.getPC() + offset
     dataSize = size * 8
     
     data = utilFunc.fetchFromMemory(mem.ALUResultBuffer, dataSize)
@@ -33,7 +28,6 @@ def helper_l(binary, instr):
     const.FLAG_MEMACCESS_EXECUTED = True
     
     if(data == const.TRAP):
-            #utilFunc.finalize_simple(instr)
             print "HEY!!! There seems to be a problem - memory location can not be accessed"
             print "Moving ahead without executing the instruction"
             armdebug.pipelineStages[3] = ''
@@ -41,9 +35,7 @@ def helper_l(binary, instr):
     
     if(signed):
         data = utilFunc.signExtend(data, 64)
-    #instr += str(rtKey) + ", #" + str(offset)
     mem.writeBackBuffer[0] = data.zfill(64)
-    #utilFunc.finalize(rtKey, data.zfill(64), instr, '0')
     
 
 #---Load Register (Literal)---
@@ -89,29 +81,6 @@ def helper_rp(wback, postIndex, binary, instr):
     offset = utilFunc.sInt(offset, 64)
      
     dbytes = dataSize / 8;
-     
-    #address = utilFunc.getRegValueByStringkey(binary[22:27], '1')
-    #address = utilFunc.uInt(address)
-     
-    #if not(postIndex):
-    #    address = address + offset
-    ''' 
-    type = binary[7:9]
-    if(opc == '00'):
-        r = 'w'
-    if(opc == '10'):
-        r = 'x'
-            
-    if(type == '01'):
-        #Post-index
-        instr += " " + r + str(rtKey) +", " + r + str(rt2Key) + ", [x" + str(rnKey) + "], #" + str(offset) 
-    if(type == '11'):
-        #Pre-index
-        instr += " " + r + str(rtKey) +", " + r + str(rt2Key) + ", [x" + str(rnKey) + ", #" + str(offset) + "]!"   
-    if(type == '10'):
-        #Signed-offset
-        instr += " " + r + str(rtKey) +", " + r + str(rt2Key) + ", [x" + str(rnKey) + ", #" + str(offset) + "]"
-    ''' 
     
     const.FLAG_MEMACCESS_EXECUTED = True
      
@@ -126,7 +95,6 @@ def helper_rp(wback, postIndex, binary, instr):
         data2 = utilFunc.fetchFromMemory(mem.ALUResultBuffer + dbytes, dataSize)
         
         if(data1 == const.TRAP or data2 == const.TRAP):
-            #utilFunc.finalize_simple(instr)
             print "HEY!!! There seems to be a problem - memory location can not be accessed"
             print "Moving ahead without executing the instruction"
             armdebug.pipelineStages[3] = ''
@@ -138,16 +106,11 @@ def helper_rp(wback, postIndex, binary, instr):
 
         mem.writeBackBuffer[0] = data1.zfill(64)
         mem.writeBackBuffer[1] = data2.zfill(64)     
-        #utilFunc.setRegValue(rtKey, data1.zfill(64), '0')
-        #utilFunc.setRegValue(rt2Key, data2.zfill(64), '0')
      
     if(wback):       
         if postIndex:
             mem.ALUResultBuffer = mem.ALUResultBuffer + offset
         mem.writeBackBuffer[2] = utilFunc.intToBinary(mem.ALUResultBuffer, 64)            
-        #utilFunc.setRegValue(rnKey, address, '1')
-    
-    #utilFunc.finalize_simple(instr)
     
     
 #---Load/Store Register-Pair (Post-Indexed)---    
@@ -373,13 +336,6 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
             
     dataSize = 8 << scale
     
-    '''wb_unknown = False
-    rt_unknown = False'''  # commenting - assuming them to be false always 
-    
-    #address = utilFunc.getRegValueByStringkey(binary[22:27], '1')
-    #address = utilFunc.uInt(address)
-    #if not(postIndex):
-    #    address = address + offset
     const.FLAG_MEMACCESS_EXECUTED = True
         
     if(memOp == const.MEM_OP_STORE):
@@ -389,7 +345,6 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
     elif(memOp == const.MEM_OP_LOAD):
         data = utilFunc.fetchFromMemory(mem.ALUResultBuffer, dataSize)
         if(data == const.TRAP):
-            #utilFunc.finalize_simple(instr)
             print "HEY!!! There seems to be a problem - memory location can not be accessed"
             print "Moving ahead without executing the instruction"
             armdebug.pipelineStages[3] = ''            
@@ -400,12 +355,8 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
             data = utilFunc.zeroExtend(data, regSize)
     
         mem.writeBackBuffer[0] = data.zfill(64)
-    #utilFunc.setRegValue(rtKey, data.zfill(64), '0')
         
     if(wback):
         if postIndex:
             mem.ALUResultBuffer = mem.ALUResultBuffer + offset
         mem.writeBackBuffer[2] = utilFunc.intToBinary(mem.ALUResultBuffer, 64)
-        #utilFunc.setRegValue(rnKey, address, '1')
-    
-    #utilFunc.finalize_simple(instr)

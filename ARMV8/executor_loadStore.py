@@ -8,43 +8,9 @@ import utilFunc
 import armdebug
 import mem
 
-def helper_l(binary, instr):
-    '''
-    rtKey = utilFunc.getRegKeyByStringKey(binary[27:32])
-    imm19 = binary[8:27]
-    opc = binary[0:2]
-    signed = False
-    
-    if(opc == '00'):
-        size = 4
-    elif(opc == '01'):
-        size = 8
-    elif(opc == '10'):
-        size = 4
-        signed = True
-        
-    offset = utilFunc.signExtend(imm19 + '00', 64)
-    offset = utilFunc.sInt(offset, 64)
-    '''
-    
+def helper_l(binary, instr):    
     mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
     const.FLAG_INST_EXECUTED = True
-    #dataSize = size * 8
-    
-    '''
-    data = utilFunc.fetchFromMemory(address, dataSize)
-    
-    if(data == const.TRAP):
-            utilFunc.finalize_simple(instr)
-            print "HEY!!! There seems to be a problem - memory location can not be accessed"
-            print "Moving ahead without executing the instruction"
-            return
-    
-    if(signed):
-        data = utilFunc.signExtend(data, 64)
-    instr += str(rtKey) + ", #" + str(offset)
-    utilFunc.finalize(rtKey, data.zfill(64), instr, '0')
-    '''
 
 #---Load Register (Literal)---
 def execLDR_l32(binary):    
@@ -67,87 +33,10 @@ def helper_rp_prei(binary, instr):
 def helper_rp_offset(binary, instr):
     helper_rp(False, False, binary, instr)
     
-def helper_rp(wback, postIndex, binary, instr):
-    '''
-    rtKey = utilFunc.getRegKeyByStringKey(binary[27:32])
-    rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
-    rt2Key = utilFunc.getRegKeyByStringKey(binary[17:22])
-     
-    imm7 = binary[10:17]
-    l = binary[9]     
-    opc = binary[0:2]
-     
-    if(l == '1'):
-        memOp = const.MEM_OP_LOAD
-    else:
-        memOp = const.MEM_OP_STORE
-
-    signed = (opc[1] != '0')
-    scale = 2 + utilFunc.uInt(opc[0])
-     
-    dataSize = 8 << scale
-    offset = utilFunc.lsl(utilFunc.signExtend(imm7, 64), scale)
-    offset = utilFunc.sInt(offset, 64)
-     
-    dbytes = dataSize / 8;
-     
-    address = utilFunc.getRegValueByStringkey(binary[22:27], '1')
-    address = utilFunc.uInt(address)
-    '''
-     
+def helper_rp(wback, postIndex, binary, instr):     
     if not(postIndex):
         mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
     const.FLAG_INST_EXECUTED = True
-    
-    ''' 
-    type = binary[7:9]
-    if(opc == '00'):
-        r = 'w'
-    if(opc == '10'):
-        r = 'x'
-            
-    if(type == '01'):
-        #Post-index
-        instr += " " + r + str(rtKey) +", " + r + str(rt2Key) + ", [x" + str(rnKey) + "], #" + str(offset) 
-    if(type == '11'):
-        #Pre-index
-        instr += " " + r + str(rtKey) +", " + r + str(rt2Key) + ", [x" + str(rnKey) + ", #" + str(offset) + "]!"   
-    if(type == '10'):
-        #Signed-offset
-        instr += " " + r + str(rtKey) +", " + r + str(rt2Key) + ", [x" + str(rnKey) + ", #" + str(offset) + "]"
-     
-     
-    if(memOp == const.MEM_OP_STORE):
-        data1 = utilFunc.getRegValueByStringkey(binary[27:32], '0')
-        data2 = utilFunc.getRegValueByStringkey(binary[17:22], '0')  
-        utilFunc.storeToMemory(data1, address, dataSize)
-        utilFunc.storeToMemory(data2, address + dbytes, dataSize)
-             
-    elif(memOp == const.MEM_OP_LOAD):
-        data1 = utilFunc.fetchFromMemory(address, dataSize)
-        data2 = utilFunc.fetchFromMemory(address + dbytes, dataSize)
-        
-        if(data1 == const.TRAP or data2 == const.TRAP):
-            utilFunc.finalize_simple(instr)
-            print "HEY!!! There seems to be a problem - memory location can not be accessed"
-            print "Moving ahead without executing the instruction"
-            return
-        
-        if(signed):
-            data1 = utilFunc.signExtend(data1, 64)
-            data2 = utilFunc.signExtend(data2, 64)
-            
-        utilFunc.setRegValue(rtKey, data1.zfill(64), '0')
-        utilFunc.setRegValue(rt2Key, data2.zfill(64), '0')
-     
-    if(wback):       
-        if postIndex:
-            address = address + offset
-        address = utilFunc.intToBinary(address, 64)            
-        utilFunc.setRegValue(rnKey, address, '1')
-    
-    utilFunc.finalize_simple(instr)
-    '''
     
 #---Load/Store Register-Pair (Post-Indexed)---    
 def execSTP_rp_posti_32(binary):
@@ -348,65 +237,7 @@ def helper_reg(binary, instr):
     helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale, instr)    
 
     
-def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale, instr):
-    '''
-    if(opc[0] == '0'):
-        if(opc[1] == '1'):
-            memOp = const.MEM_OP_LOAD
-        else:
-            memOp = const.MEM_OP_STORE
-        if(size == '11'):
-            regSize = 64
-        else:
-            regSize = 32
-        signed = False
-    else:
-        if(size == '11'):
-            memOp = const.MEM_OP_PREFETCH
-        else:
-            memOp = const.MEM_OP_LOAD
-            if opc[1] == '1':
-                regSize = 32
-            else:
-                regSize = 64
-            signed = True
-            
-    dataSize = 8 << scale
-    
-    #wb_unknown = False
-    #rt_unknown = False  # commenting - assuming them to be false always 
-    
-    address = utilFunc.getRegValueByStringkey(binary[22:27], '1')
-    address = utilFunc.uInt(address)
-    '''
-    
+def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale, instr):    
     if not(postIndex):
         mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
     const.FLAG_INST_EXECUTED = True
-    '''    
-    if(memOp == const.MEM_OP_STORE):
-        data = utilFunc.getRegValueByStringkey(binary[27:32], '0')
-        utilFunc.storeToMemory(data, address, dataSize)
-            
-    elif(memOp == const.MEM_OP_LOAD):
-        data = utilFunc.fetchFromMemory(address, dataSize)
-        if(data == const.TRAP):
-            utilFunc.finalize_simple(instr)
-            print "HEY!!! There seems to be a problem - memory location can not be accessed"
-            print "Moving ahead without executing the instruction"            
-            return   
-        if(signed):
-            data = utilFunc.signExtend(data, regSize)
-        else:
-            data = utilFunc.zeroExtend(data, regSize)
-            
-    utilFunc.setRegValue(rtKey, data.zfill(64), '0')
-        
-    if(wback):
-        if postIndex:
-            address = address + offset
-        address = utilFunc.intToBinary(address, 64)
-        utilFunc.setRegValue(rnKey, address, '1')
-    
-    utilFunc.finalize_simple(instr)
-    '''

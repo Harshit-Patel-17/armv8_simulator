@@ -282,60 +282,13 @@ def executeNextInst():
     else:
         print 'instructions exhausted!!'
     #print 'PC: '+str(getPC())
-
-'''
-def executeRUN():
-    print "Executing command type: "+"'run'"
-    x=getCurrentInstNumber()
-    if(x>=len(getHexes())):
-        print 'instructions exhausted!!'
-        return
-    while (x <  len(getHexes())):
-        #print 'X: '+str(x)
-        executeNextInst()
-        x=getCurrentInstNumber()
-'''
        
 def executeRUN():
     instructionNumber = getCurrentInstNumber()
-    totalInstructions = len(getHexes())
     pipelineStages[0] = hexes[instructionNumber]
     incCycles()
     while(not isPipelineEmpty()):
         executeStages()
-    '''
-    while(1):
-        if(instructionNumber >= totalInstructions-1):
-            while(not isPipelineEmpty()):
-                print pipelineStages
-                executeStages()
-                incCycles()
-                try:
-                    pipelineStages[0] = hexes[instructionNumber]
-                except IndexError:
-                    pipelineStages[0] = ''
-            return
-        else:
-            print pipelineStages
-            executeStages()
-            incCycles()
-            instructionNumber = getCurrentInstNumber()
-            pipelineStages[0] = hexes[instructionNumber]
-    '''
-
-'''            
-def executeStages():
-    if(pipelineStages[3] != ''):
-        pipelineStages[4] = pipelineStages[3]
-    if(pipelineStages[2] != ''):
-        utilFunc.resetInstrFlag()
-        decoder.decodeInstr(pipelineStages[2])
-        pipelineStages[3] = pipelineStages[2]
-    if(pipelineStages[1] != ''):
-        if(opfetch_decoder.decodeInstr(pipelineStages[1])):
-            pipelineStages[2] = pipelineStages[1]
-            pipelineStages[1] = pipelineStages[0]
-'''
             
 def executeStages():
     raw_input("Press any key")

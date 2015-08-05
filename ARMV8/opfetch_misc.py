@@ -25,9 +25,6 @@ def opfetchADR(binary):
     mem.regObsolete[regnum] = True
     mem.regObsolete_last_modified_indices.append(regnum)
     const.FLAG_OPFETCH_EXECUTED = True
-    #nextAddr=utilFunc.PCwithOffset(offset)#as our PC implementation is wrong till now
-    #utilFunc.setRegValue(regnum, utilFunc.intToBinary(nextAddr, 64), '0')
-    #utilFunc.finalize_simple(inst)
 
 def opfetchADRP(binary):
     inst='ADRP X'
@@ -48,12 +45,7 @@ def opfetchADRP(binary):
     mem.regObsolete[regnum] = True
     mem.regObsolete_last_modified_indices.append(regnum)
     const.FLAG_OPFETCH_EXECUTED = True
-    
-    #nextAddr=utilFunc.PCwithPageOffset(12,offset)#as our PC implementation is wrong till now
-    #utilFunc.setRegValue(regnum, utilFunc.intToBinary(nextAddr, 64), '0')
-    #utilFunc.finalize_simple(inst)
 
 def opfetchNOP(binary):
     const.FLAG_OP_FETCHED = True
     const.FLAG_OPFETCH_EXECUTED = True
-    #utilFunc.finalize_simple("NOP")
