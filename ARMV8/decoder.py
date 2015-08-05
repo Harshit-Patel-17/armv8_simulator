@@ -26,7 +26,7 @@ def decodeInstr(hexCode):
                 break
     
     if(const.FLAG_INST_EXECUTED=="0"):
-        for i in range(13):  
+        for i in range(15):  
             dicts.INSTRUCTION_TYPE(binary, i)
             if(const.FLAG_INST_EXECUTED=="1"):
                 break

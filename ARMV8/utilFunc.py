@@ -439,3 +439,24 @@ def storeToMemory(data, address, dataSize):
             store32bitDataToMem(address, data)
     if(dataSize == 64):
             store64bitDataToMem(address, data)
+
+def calculateXor(input1,input2):
+    answer = ''
+    for i in range(len(input1)):
+        if(input1[i] == input2[i]):
+            answer = answer + '0'
+        else:
+            answer = answer +'1'
+    return answer
+
+def countLeadingZeroBits(input, datasize):
+    for i in range(datasize):
+        if(input[i] == '1'):
+            return i
+
+    return 32
+
+def countLeadingSignBits(input, datasize):
+    print input[1:datasize]
+    print input[0:(datasize-1)]
+    return countLeadingZeroBits(calculateXor(input[1:datasize],input[0:(datasize-1)]), datasize-1) + 1

@@ -49,28 +49,28 @@ def execConditionalSet_64(hexcode):
 
 #executes select conditional increment for 32 bit registers
 def execConditionalSelectIncrement_32(hexcode):
-	executeConditionalSelect(hexcode,32,"CSINC ")
+	executeConditionalSelectIncrement(hexcode,32)
 
 #executes select conditional increment for 64 bit registers
 def execConditionalSelectIncrement_64(hexcode):
-	executeConditionalSelect(hexcode,64,"CSINC ")
+	executeConditionalSelectIncrement(hexcode,64)
 
-#executes select conditional increment for 64 bit registers
+#executes select conditional negate for 64 bit registers
 def execConditionalSelectNegation_32(hexcode):
-	executeConditionalSelect(hexcode,32,"CSNEG ")
+	executeConditionalSelectNegate(hexcode,32)
 
-#executes select conditional increment for 64 bit registers
+#executes select conditional negate for 64 bit registers
 def execConditionalSelectNegation_64(hexcode):
-	executeConditionalSelect(hexcode,64,"CSNEG ")
+	executeConditionalSelectNegate(hexcode,64)
 
 #utility function for conditional set
 def executeConditionalSet(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	condition = hexcode[16:20]
 
-	isConditionSatisfied = isConditionSatisfiedFunction(condition)
+	isConditionSatisfied = isConditionSatisfiedFunction(condition, 1)
 
-	resultBinary = ("{0:b}".format(isConditionSatisfied, 1))
+	resultBinary = ("{0:b}".format(isConditionSatisfied))
 	resultBinary.zfill(datasize)
 
 	if(datasize == 32):
@@ -82,8 +82,8 @@ def executeConditionalSet(hexcode, datasize):
 
 	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
 
-#utility function for conditional select(either negate or incremental depending on command)
-def executeConditionalSelect(hexcode, datasize, command):
+#utility function for conditional select increment
+def executeConditionalSelectIncrement(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
@@ -93,22 +93,81 @@ def executeConditionalSelect(hexcode, datasize, command):
 
 	condition = hexcode[16:20]
 
-	if(isConditionSatisfiedFunction(condition, 0)):
+	isLsbInverted = 0
+
+	if(operandRegister1 == operandRegister2):
+		command = "CINV "
+		isLsbInverted = 1
+	else:
+		command = "CSINV "
+
+	if(isConditionSatisfiedFunction(condition, isLsbInverted)):
+		if(command == "CINV "):
+			reg1Value = utilFunc.negate(reg1Value)
 		reg1Value = int(reg1Value, 2)
 		resultBinary = ("{0:b}".format(reg1Value))
 	else:
-		if(command == "CSNEG "):
+		if(command == "CSINV "):
 			reg2Value = utilFunc.negate(reg2Value)
 		reg2Value = int(reg2Value, 2)
-		if(command == "CSINC "):
-			reg2Value = reg2Value+1
 		resultBinary = ("{0:b}".format(reg2Value))
+
 	if(datasize == 32):
 		registerType = "w"
 	else:
 		registerType = "x"
 
-	instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + registerType + str(operandRegister2) + ", " + const.CONDITIONS_MAP[condition]
+	if(command == "CINV "):
+		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + const.CONDITIONS_MAP_LSB_INVERTED[condition]
+	else: 
+		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + registerType + str(operandRegister2) + ", " + const.CONDITIONS_MAP[condition]
+
+	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
+
+
+#utility function for conditional select negate
+def executeConditionalSelectNegate(hexcode, datasize):
+	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
+	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
+
+	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
+	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
+
+	condition = hexcode[16:20]
+
+	isLsbInverted = 0
+
+	if(operandRegister1 == operandRegister2):
+		command = "CNEG "
+		isLsbInverted = 1
+	else:
+		command = "CSNEG "
+
+	if(isConditionSatisfiedFunction(condition, isLsbInverted)):
+		if(command == "CNEG "):
+			reg1Value = utilFunc.negate(reg1Value)
+		reg1Value = int(reg1Value, 2)
+		if(command == "CNEG "):
+			reg1Value = reg1Value + 1
+		resultBinary = ("{0:b}".format(reg1Value))
+	else:
+		if(command == "CSNEG "):
+			reg2Value = utilFunc.negate(reg2Value)
+		reg2Value = int(reg2Value, 2)
+		if(command == "CSNEG "):
+			reg2Value = reg2Value + 1
+		resultBinary = ("{0:b}".format(reg2Value))
+	
+	if(datasize == 32):
+		registerType = "w"
+	else:
+		registerType = "x"
+
+	if(command == "CNEG "):
+		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + const.CONDITIONS_MAP_LSB_INVERTED[condition]
+	else: 
+		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + registerType + str(operandRegister2) + ", " + const.CONDITIONS_MAP[condition]
 
 	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
 
