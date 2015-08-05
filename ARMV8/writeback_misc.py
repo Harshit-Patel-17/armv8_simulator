@@ -8,11 +8,11 @@ import armdebug
 import mem
 import const
     
-def execADR(binary):
-    '''
-    inst='ADR X'
+def writebackADR(binary):
+    #inst='ADR X'
     rdKey=binary[-5:]
     regnum=utilFunc.uInt(rdKey)
+    '''
     inst+=str(regnum)+', OFFSET('
     immLo=binary[1:3]
     immHi=binary[8:27]
@@ -23,14 +23,15 @@ def execADR(binary):
     utilFunc.setRegValue(regnum, utilFunc.intToBinary(nextAddr, 64), '0')
     utilFunc.finalize_simple(inst)
     '''
-    mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
-    const.FLAG_INST_EXECUTED = True
-    
-def execADRP(binary):
-    '''
-    inst='ADRP X'
+    utilFunc.setRegValue(regnum, utilFunc.intToBinary(mem.writeBackBuffer[0], 64), '0')
+    const.FLAG_WRITEBACK_EXECUTED = True
+    mem.regObsolete[regnum] = False
+
+def writebackADRP(binary):
+    #inst='ADRP X'
     rdKey=binary[-5:]
     regnum=utilFunc.uInt(rdKey)
+    '''
     inst+=str(regnum)+', OFFSET('
     immLo=binary[1:3]
     immHi=binary[8:27]
@@ -41,9 +42,10 @@ def execADRP(binary):
     utilFunc.setRegValue(regnum, utilFunc.intToBinary(nextAddr, 64), '0')
     utilFunc.finalize_simple(inst)
     '''
-    mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
-    const.FLAG_INST_EXECUTED = True
+    utilFunc.setRegValue(regnum, utilFunc.intToBinary(mem.writeBackBuffer[0], 64), '0')
+    const.FLAG_WRITEBACK_EXECUTED = True
+    mem.regObsolete[regnum] = False
 
-def execNOP(binary):
-    const.FLAG_INST_EXECUTED = True
+def writebackNOP(binary):
+    const.FLAG_WRITEBACK_EXECUTED = True
     #utilFunc.finalize_simple("NOP")

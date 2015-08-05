@@ -8,7 +8,7 @@ import armdebug
 import mem
 import const
     
-def execADR(binary):
+def memaccessADR(binary):
     '''
     inst='ADR X'
     rdKey=binary[-5:]
@@ -23,10 +23,11 @@ def execADR(binary):
     utilFunc.setRegValue(regnum, utilFunc.intToBinary(nextAddr, 64), '0')
     utilFunc.finalize_simple(inst)
     '''
-    mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
-    const.FLAG_INST_EXECUTED = True
-    
-def execADRP(binary):
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.isSPWriteBackBuffer = mem.isSPBuffer
+    const.FLAG_MEMACCESS_EXECUTED = True
+
+def memaccessADRP(binary):
     '''
     inst='ADRP X'
     rdKey=binary[-5:]
@@ -41,9 +42,12 @@ def execADRP(binary):
     utilFunc.setRegValue(regnum, utilFunc.intToBinary(nextAddr, 64), '0')
     utilFunc.finalize_simple(inst)
     '''
-    mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
-    const.FLAG_INST_EXECUTED = True
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.isSPWriteBackBuffer = mem.isSPBuffer
+    const.FLAG_MEMACCESS_EXECUTED = True
 
-def execNOP(binary):
-    const.FLAG_INST_EXECUTED = True
+def memaccessNOP(binary):
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.isSPWriteBackBuffer = mem.isSPBuffer
+    const.FLAG_MEMACCESS_EXECUTED = True
     #utilFunc.finalize_simple("NOP")

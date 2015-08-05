@@ -239,9 +239,9 @@ def zeroExtend(binary, N):
 
 def extend(x, N, unsigned):
     if(unsigned == 1):
-       return zeroExtend(x, N)
+        return zeroExtend(x, N)
     else:
-       return signExtend(x, N)
+        return signExtend(x, N)
 
 def branchWithOffset(offset):  # signed offset
     armdebug.setPC((armdebug.getPC() + offset - 4))  # the magic! #-4 for the current instruction

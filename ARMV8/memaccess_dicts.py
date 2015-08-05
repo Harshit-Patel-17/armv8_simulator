@@ -5,7 +5,7 @@ import memaccess_addSub
 import memaccess_logical
 import memaccess_move
 import memaccess_shift
-import executor_misc
+import memaccess_misc
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -19,8 +19,8 @@ def INSTRUCTION_TYPE(binary, i):
             6 : SHIFT_REGISTER,
             7 : SHIFT_IMMEDIATE,
             8 : LOGICAL_IMMEDIATE,
-            #9 : PC_RELATIVE,
-            #10 : NOP,
+            9 : PC_RELATIVE,
+            10 : NOP,
         }[i](binary)
     except KeyError:
         i = i
