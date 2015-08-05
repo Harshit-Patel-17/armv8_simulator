@@ -14,6 +14,7 @@ import memaccess_decoder
 import mem
 import traceback
 import const
+from mem import regFile
 
 pipelineStages = ['', '', '', '', ''] 
 DEBUG_MODE=False
@@ -332,6 +333,7 @@ def executeStages():
         pipelineStages[0] = hexes[getCurrentInstNumber()]
     except IndexError:
         pipelineStages[0] = ''
+    print mem.regFile
         
 def isPipelineEmpty():
     for i in range(5):

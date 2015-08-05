@@ -156,7 +156,6 @@ def CONDITIONAL_INSTRUCTIONS(binary):
     key = binary[0:16] + "-"*4 + binary[20:27]
   else:
     key = binary[0:11] + "-"*9 + binary[20:22]
-    print key
   return {
     "0001101010011111----0111111" : executor_conditional.execConditionalSet_32,
     "1001101010011111----0111111" : executor_conditional.execConditionalSet_64,
