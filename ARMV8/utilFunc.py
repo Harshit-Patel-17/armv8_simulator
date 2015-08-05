@@ -460,8 +460,6 @@ def countLeadingSignBits(input, datasize):
     print input[1:datasize]
     print input[0:(datasize-1)]
     return countLeadingZeroBits(calculateXor(input[1:datasize],input[0:(datasize-1)]), datasize-1) + 1
-<<<<<<< Updated upstream
-=======
 
 def setFlags(flags):
     if(flags[0]=='1'):
@@ -486,4 +484,3 @@ def setFlags(flags):
 
 def rotateRightByBits(binary, numberOfBits, datasize):
     return binary[(datasize-numberOfBits):datasize] + binary[0:(datasize-numberOfBits)]
->>>>>>> Stashed changes
