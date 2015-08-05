@@ -1,6 +1,6 @@
 _start:
 mov w1,#0
-adds w2, w1,#0
+cmn w2,#0
 cset w7, eq
 mov w2,#4
 mov w4,#5

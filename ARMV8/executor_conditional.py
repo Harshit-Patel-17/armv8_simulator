@@ -63,6 +63,14 @@ def execConditionalSelectNegation_32(hexcode):
 def execConditionalSelectNegation_64(hexcode):
 	executeConditionalSelectNegate(hexcode,64)
 
+#executes conditional compare negative for 32 bit registers
+def execConditionalCompareNegative_32(hexcode):
+	executeConditionalCompareNegative(hexcode,32)
+
+#executes conditional compare negative for 64 bit registers
+def execConditionalCompareNegative_64(hexcode):
+	executeConditionalCompareNegative(hexcode,64)
+
 #utility function for conditional set
 def executeConditionalSet(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
@@ -91,6 +99,13 @@ def executeConditionalSelectIncrement(hexcode, datasize):
 	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
 	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
 
+	if(datasize == 32):
+		registerType = "w"
+		reg1Value = reg1Value[32:64]
+		reg2Value = reg2Value[32:64]
+	else:
+		registerType = "x"
+
 	condition = hexcode[16:20]
 
 	isLsbInverted = 0
@@ -112,11 +127,6 @@ def executeConditionalSelectIncrement(hexcode, datasize):
 		reg2Value = int(reg2Value, 2)
 		resultBinary = ("{0:b}".format(reg2Value))
 
-	if(datasize == 32):
-		registerType = "w"
-	else:
-		registerType = "x"
-
 	if(command == "CINV "):
 		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + const.CONDITIONS_MAP_LSB_INVERTED[condition]
 	else: 
@@ -133,6 +143,13 @@ def executeConditionalSelectNegate(hexcode, datasize):
 
 	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
 	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
+
+	if(datasize == 32):
+		registerType = "w"
+		reg1Value = reg1Value[32:64]
+		reg2Value = reg2Value[32:64]
+	else:
+		registerType = "x"
 
 	condition = hexcode[16:20]
 
@@ -158,11 +175,6 @@ def executeConditionalSelectNegate(hexcode, datasize):
 		if(command == "CSNEG "):
 			reg2Value = reg2Value + 1
 		resultBinary = ("{0:b}".format(reg2Value))
-	
-	if(datasize == 32):
-		registerType = "w"
-	else:
-		registerType = "x"
 
 	if(command == "CNEG "):
 		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + const.CONDITIONS_MAP_LSB_INVERTED[condition]
@@ -171,3 +183,26 @@ def executeConditionalSelectNegate(hexcode, datasize):
 
 	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
 
+#utility function for conditional compare negative
+def executeConditionalCompareNegative(hexcode, datasize):
+	flags = hexcode[28:32]
+	operandRegister = utilFunc.getRegKeyByStringKey(hexcode[22:27])
+
+	regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
+	imm5 = hexcode[11:16]
+	imm5.zfill(datasize)
+
+	if(datasize == 32):
+		registerType = "w"
+		regValue = regValue[32:64]
+	else:
+		registerType = "x"
+
+	condition = hexcode[16:20]
+	if(isConditionSatisfied(condition, 0)):
+		utilFunc.addSub(32, regValue, imm5, '0', datasize, '1') #sending a dummy value as destination register as we only need to set the flags depending on the result
+	else:
+		utilFunc.setFlags(flags)
+
+	instruction = "CCMN " + registerType + str(operandRegister) + ", #" + utilFunc.binaryToHexStr(imm5) + ", #" + utilFunc.binaryToHexStr(flags) + ", " + const.CONDITIONS_MAP[condition]
+	utilFunc.finalize_simple(instruction)

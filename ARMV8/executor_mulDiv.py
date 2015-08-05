@@ -47,13 +47,15 @@ def executeDivision(hexcode, datasize, isSignedDivision):
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 
-	if(datasize == 32):
-		registerType = "w"
-	else:
-		registerType = "x"
-
 	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
 	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
+
+	if(datasize == 32):
+		registerType = "w"
+		reg1Value = reg1Value[32:64]
+		reg2Value = reg2Value[32:64]
+	else:
+		registerType = "x"
 
 	if(datasize == 32):
 		reg1Value = reg1Value[32:64]
