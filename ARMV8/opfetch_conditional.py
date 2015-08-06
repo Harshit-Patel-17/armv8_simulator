@@ -41,49 +41,45 @@ def isConditionSatisfiedFunction(condition, isLsbInverted):
 	return isConditionSatisfied
 
 #executes conditional set for 32 bit registers
-def execConditionalSet_32(hexcode):
+def opfetchConditionalSet_32(hexcode):
 	executeConditionalSet(hexcode, 32)
 
 #executes conditional set for 64 bit registers
-def execConditionalSet_64(hexcode):
+def opfetchConditionalSet_64(hexcode):
 	executeConditionalSet(hexcode,64)
 
 #executes select conditional increment for 32 bit registers
-def execConditionalSelectIncrement_32(hexcode):
+def opfetchConditionalSelectIncrement_32(hexcode):
 	executeConditionalSelectIncrement(hexcode,32)
 
 #executes select conditional increment for 64 bit registers
-def execConditionalSelectIncrement_64(hexcode):
+def opfetchConditionalSelectIncrement_64(hexcode):
 	executeConditionalSelectIncrement(hexcode,64)
 
 #executes select conditional negate for 64 bit registers
-def execConditionalSelectNegation_32(hexcode):
+def opfetchConditionalSelectNegation_32(hexcode):
 	executeConditionalSelectNegate(hexcode,32)
 
 #executes select conditional negate for 64 bit registers
-def execConditionalSelectNegation_64(hexcode):
+def opfetchConditionalSelectNegation_64(hexcode):
 	executeConditionalSelectNegate(hexcode,64)
-
-#executes conditional compare negative for 32 bit registers
-def execConditionalCompareNegative_32(hexcode):
-	executeConditionalCompareNegative(hexcode,32)
-
-#executes conditional compare negative for 64 bit registers
-def execConditionalCompareNegative_64(hexcode):
-	executeConditionalCompareNegative(hexcode,64)
 
 #utility function for conditional set
 def executeConditionalSet(hexcode, datasize):
-	#destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+	
+	const.FLAG_OP_FETCHED = True
+	mem.regObsolete[destRegister] = True
+	mem.regObsolete_last_modified_indices.append(destRegister)
+	const.FLAG_OPFETCH_EXECUTED = True
+	'''
 	condition = hexcode[16:20]
+
 	isConditionSatisfied = isConditionSatisfiedFunction(condition, 1)
 
 	resultBinary = ("{0:b}".format(isConditionSatisfied))
-	resultBinary = resultBinary.zfill(64)
-	
-	mem.ALUResultBuffer = resultBinary
-	const.FLAG_INST_EXECUTED = True 
-	'''
+	resultBinary.zfill(datasize)
+
 	if(datasize == 32):
 		registerType = "w"
 	else:
@@ -96,25 +92,22 @@ def executeConditionalSet(hexcode, datasize):
 
 #utility function for conditional select increment
 def executeConditionalSelectIncrement(hexcode, datasize):
-	#destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 
-	'''
 	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
 	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
 
 
-	if(datasize == 32):
-		registerType = "w"
-		reg1Value = reg1Value[32:64]
-		reg2Value = reg2Value[32:64]
-	else:
-		registerType = "x"
-
+	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
+		const.FLAG_OP_FETCHED = True
+		mem.operand1Buffer = reg1Value
+		mem.operand2Buffer = reg2Value
+		mem.regObsolete[destRegister] = True
+		mem.regObsolete_last_modified_indices.append(destRegister)
+	const.FLAG_OPFETCH_EXECUTED = True
 	'''
-	reg1Value = mem.operand1Buffer
-	reg2Value = mem.operand2Buffer
 	condition = hexcode[16:20]
 
 	isLsbInverted = 0
@@ -136,34 +129,38 @@ def executeConditionalSelectIncrement(hexcode, datasize):
 		reg2Value = int(reg2Value, 2)
 		resultBinary = ("{0:b}".format(reg2Value))
 
-	resultBinary = resultBinary.zfill(64)
-	mem.ALUResultBuffer = resultBinary
-	const.FLAG_INST_EXECUTED = True 
-	'''
 	if(datasize == 32):
 		registerType = "w"
 	else:
 		registerType = "x"
-		
+
 	if(command == "CINV "):
 		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + const.CONDITIONS_MAP_LSB_INVERTED[condition]
 	else: 
 		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + registerType + str(operandRegister2) + ", " + const.CONDITIONS_MAP[condition]
-		
+
 	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
 	'''
 
+
 #utility function for conditional select negate
 def executeConditionalSelectNegate(hexcode, datasize):
-	#destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 
-	#reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
-	#reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
+	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
+	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
 	
-	reg1Value = mem.operand1Buffer
-	reg2Value = mem.operand2Buffer
+	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
+		const.FLAG_OP_FETCHED = True
+		mem.operand1Buffer = reg1Value
+		mem.operand2Buffer = reg2Value
+		mem.regObsolete[destRegister] = True
+		mem.regObsolete_last_modified_indices.append(destRegister)
+	const.FLAG_OPFETCH_EXECUTED = True
+
+	'''
 	condition = hexcode[16:20]
 
 	isLsbInverted = 0
@@ -189,10 +186,6 @@ def executeConditionalSelectNegate(hexcode, datasize):
 			reg2Value = reg2Value + 1
 		resultBinary = ("{0:b}".format(reg2Value))
 	
-	resultBinary = resultBinary.zfill(64)
-	mem.ALUResultBuffer = resultBinary
-	const.FLAG_INST_EXECUTED = True 
-	'''
 	if(datasize == 32):
 		registerType = "w"
 	else:

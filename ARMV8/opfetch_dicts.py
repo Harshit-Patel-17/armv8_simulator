@@ -7,6 +7,7 @@ import opfetch_move
 import opfetch_shift
 import opfetch_misc
 import opfetch_mulDiv
+import opfetch_conditional
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -23,6 +24,7 @@ def INSTRUCTION_TYPE(binary, i):
             9 : PC_RELATIVE,
             10 : NOP,
             11 : MUL_DIV_REG,
+            12 : CONDITIONAL_INSTRUCTIONS,
         }[i](binary)
     except KeyError:
         i = i
@@ -143,3 +145,17 @@ def MUL_DIV_REG(binary):
       "00011010110-----000011" : opfetch_mulDiv.opfetchSignedDiv_32,
       "10011010110-----000011" : opfetch_mulDiv.opfetchSignedDiv_64,
     }[key](binary)
+
+def CONDITIONAL_INSTRUCTIONS(binary):
+  if(binary[11:16] == "11111" and binary[22:27] == "11111"):
+    key = binary[0:16] + "-"*4 + binary[20:27]
+  else:
+    key = binary[0:11] + "-"*9 + binary[20:22]
+  return {
+    "0001101010011111----0111111" : opfetch_conditional.opfetchConditionalSet_32,
+    "1001101010011111----0111111" : opfetch_conditional.opfetchConditionalSet_64,
+    "01011010100---------00"      : opfetch_conditional.opfetchConditionalSelectIncrement_32,
+    "11011010100---------00"      : opfetch_conditional.opfetchConditionalSelectIncrement_64,
+    "01011010100---------01"      : opfetch_conditional.opfetchConditionalSelectNegation_32,
+    "11011010100---------01"      : opfetch_conditional.opfetchConditionalSelectNegation_64,
+  }[key](binary)
