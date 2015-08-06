@@ -160,12 +160,12 @@ def CONDITIONAL_INSTRUCTIONS(binary):
   return {
     "0001101010011111----0111111" : executor_conditional.execConditionalSet_32,
     "1001101010011111----0111111" : executor_conditional.execConditionalSet_64,
-    "01011010100---------00"      : executor_conditional.execConditionalSelectIncrement_32,
-    "11011010100---------00"      : executor_conditional.execConditionalSelectIncrement_64,
+    "01011010100---------00"      : executor_conditional.execConditionalSelectInverse_32,
+    "11011010100---------00"      : executor_conditional.execConditionalSelectInverse_64,
     "01011010100---------01"      : executor_conditional.execConditionalSelectNegation_32,
     "11011010100---------01"      : executor_conditional.execConditionalSelectNegation_64,
-    "00111010010---------10"      : executor_conditional.execConditionalCompareNegative_32,
-    "10111010010---------10"      : executor_conditional.execConditionalCompareNegative_64,
+    "00011010100---------01"      : executor_conditional.execConditionalSelectIncrement_32,
+    "10011010100---------01"      : executor_conditional.execConditionalSelectIncrement_64,
   }[key](binary)
 
 def MORE_ALU(binary):

@@ -48,13 +48,13 @@ def writebackConditionalSet_32(hexcode):
 def writebackConditionalSet_64(hexcode):
 	executeConditionalSet(hexcode,64)
 
-#executes select conditional increment for 32 bit registers
-def writebackConditionalSelectIncrement_32(hexcode):
-	executeConditionalSelectIncrement(hexcode,32)
+#executes select conditional inverse for 32 bit registers
+def writebackConditionalSelectInverse_32(hexcode):
+	executeConditionalSelectInverse(hexcode,32)
 
-#executes select conditional increment for 64 bit registers
-def writebackConditionalSelectIncrement_64(hexcode):
-	executeConditionalSelectIncrement(hexcode,64)
+#executes select conditional inverse for 64 bit registers
+def writebackConditionalSelectInverse_64(hexcode):
+	executeConditionalSelectInverse(hexcode,64)
 
 #executes select conditional negate for 64 bit registers
 def writebackConditionalSelectNegation_32(hexcode):
@@ -63,6 +63,14 @@ def writebackConditionalSelectNegation_32(hexcode):
 #executes select conditional negate for 64 bit registers
 def writebackConditionalSelectNegation_64(hexcode):
 	executeConditionalSelectNegate(hexcode,64)
+
+#executes conditional select increment for 32 bit registers
+def writebackConditionalSelectIncrement_32(hexcode):
+	executeConditionalSelectIncrement(hexcode,32)
+
+#executes conditional select increment for 64 bit registers
+def writebackConditionalSelectIncrement_64(hexcode):
+	executeConditionalSelectIncrement(hexcode,64)
 
 #utility function for conditional set
 def executeConditionalSet(hexcode, datasize):
@@ -88,8 +96,8 @@ def executeConditionalSet(hexcode, datasize):
 	const.FLAG_WRITEBACK_EXECUTED = True
 	mem.regObsolete[destRegister] = False
 
-#utility function for conditional select increment
-def executeConditionalSelectIncrement(hexcode, datasize):
+#utility function for conditional select inverse
+def executeConditionalSelectInverse(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	'''
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
@@ -187,3 +195,10 @@ def executeConditionalSelectNegate(hexcode, datasize):
 	const.FLAG_WRITEBACK_EXECUTED = True
 	mem.regObsolete[destRegister] = False
 
+
+#utility function for conditional select increment
+def executeConditionalSelectIncrement(hexcode, datasize):
+	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], mem.isSPWriteBackBuffer)
+	const.FLAG_WRITEBACK_EXECUTED = True
+	mem.regObsolete[destRegister] = False

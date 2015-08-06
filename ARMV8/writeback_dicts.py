@@ -154,8 +154,10 @@ def CONDITIONAL_INSTRUCTIONS(binary):
   return {
     "0001101010011111----0111111" : writeback_conditional.writebackConditionalSet_32,
     "1001101010011111----0111111" : writeback_conditional.writebackConditionalSet_64,
-    "01011010100---------00"      : writeback_conditional.writebackConditionalSelectIncrement_32,
-    "11011010100---------00"      : writeback_conditional.writebackConditionalSelectIncrement_64,
+    "01011010100---------00"      : writeback_conditional.writebackConditionalSelectInverse_32,
+    "11011010100---------00"      : writeback_conditional.writebackConditionalSelectInverse_64,
     "01011010100---------01"      : writeback_conditional.writebackConditionalSelectNegation_32,
     "11011010100---------01"      : writeback_conditional.writebackConditionalSelectNegation_64,
+    "00011010100---------01"      : writeback_conditional.writebackConditionalSelectIncrement_32,
+    "10011010100---------01"      : writeback_conditional.writebackConditionalSelectIncrement_64,
   }[key](binary)
