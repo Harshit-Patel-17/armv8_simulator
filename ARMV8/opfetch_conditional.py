@@ -96,9 +96,12 @@ def executeConditionalSelectIncrement(hexcode, datasize):
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 
-	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
-	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
-
+	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
+	
+	if(datasize == 32):
+		reg1Value = reg1Value[32:64]
+		reg2Value = reg2Value[32:64]
 
 	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
 		const.FLAG_OP_FETCHED = True
@@ -149,8 +152,12 @@ def executeConditionalSelectNegate(hexcode, datasize):
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 
-	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
-	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
+	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
+	
+	if(datasize == 32):
+		reg1Value = reg1Value[32:64]
+		reg2Value = reg2Value[32:64]
 	
 	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
 		const.FLAG_OP_FETCHED = True

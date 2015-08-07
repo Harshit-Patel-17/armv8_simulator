@@ -25,7 +25,7 @@ def decodeInstr(hexCode):
                 break
     
     if(const.FLAG_OPFETCH_EXECUTED == False):
-        for i in range(13):  
+        for i in range(14):  
             opfetch_dicts.INSTRUCTION_TYPE(binary, i)
             if(const.FLAG_OPFETCH_EXECUTED==True):
                 break

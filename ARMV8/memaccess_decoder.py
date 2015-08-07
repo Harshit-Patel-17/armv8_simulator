@@ -22,7 +22,7 @@ def decodeInstr(hexCode):
                 break
     
     if(const.FLAG_MEMACCESS_EXECUTED == False):
-        for i in range(13):  
+        for i in range(14):  
             memaccess_dicts.INSTRUCTION_TYPE(binary, i)
             if(const.FLAG_MEMACCESS_EXECUTED=="1"):
                 break

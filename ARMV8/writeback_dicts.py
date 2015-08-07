@@ -8,6 +8,7 @@ import writeback_shift
 import writeback_misc
 import writeback_mulDiv
 import writeback_conditional
+import writeback_ALU
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -25,6 +26,7 @@ def INSTRUCTION_TYPE(binary, i):
             10 : NOP,
             11 : MUL_DIV_REG,
             12 : CONDITIONAL_INSTRUCTIONS,
+            13 : MORE_ALU,
         }[i](binary)
     except KeyError:
         i = i
@@ -158,4 +160,13 @@ def CONDITIONAL_INSTRUCTIONS(binary):
     "11011010100---------00"      : writeback_conditional.writebackConditionalSelectIncrement_64,
     "01011010100---------01"      : writeback_conditional.writebackConditionalSelectNegation_32,
     "11011010100---------01"      : writeback_conditional.writebackConditionalSelectNegation_64,
+  }[key](binary)
+
+def MORE_ALU(binary):
+  key = binary[0:22]
+  return {
+    "0101101011000000000101"  : writeback_ALU.writebackCLS_32,
+    "1101101011000000000101"  : writeback_ALU.writebackCLS_64,
+    "0101101011000000000100"  : writeback_ALU.writebackCLZ_32,
+    "1101101011000000000100"  : writeback_ALU.writebackCLZ_64,
   }[key](binary)

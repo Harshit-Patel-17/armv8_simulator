@@ -8,6 +8,7 @@ import memaccess_shift
 import memaccess_misc
 import memaccess_mulDiv
 import memaccess_conditional
+import memaccess_ALU
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -25,6 +26,7 @@ def INSTRUCTION_TYPE(binary, i):
             10 : NOP,
             11 : MUL_DIV_REG,
             12 : CONDITIONAL_INSTRUCTIONS,
+            13 : MORE_ALU,
         }[i](binary)
     except KeyError:
         i = i
@@ -158,4 +160,13 @@ def CONDITIONAL_INSTRUCTIONS(binary):
     "11011010100---------00"      : memaccess_conditional.memaccessConditionalSelectIncrement_64,
     "01011010100---------01"      : memaccess_conditional.memaccessConditionalSelectNegation_32,
     "11011010100---------01"      : memaccess_conditional.memaccessConditionalSelectNegation_64,
+  }[key](binary)
+
+def MORE_ALU(binary):
+  key = binary[0:22]
+  return {
+    "0101101011000000000101"  : memaccess_ALU.memaccessCLS_32,
+    "1101101011000000000101"  : memaccess_ALU.memaccessCLS_64,
+    "0101101011000000000100"  : memaccess_ALU.memaccessCLZ_32,
+    "1101101011000000000100"  : memaccess_ALU.memaccessCLZ_64,
   }[key](binary)

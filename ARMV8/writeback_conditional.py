@@ -84,7 +84,7 @@ def executeConditionalSet(hexcode, datasize):
 
 	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
 	'''
-	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], mem.isSPWriteBackBuffer)
+	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
 	const.FLAG_WRITEBACK_EXECUTED = True
 	mem.regObsolete[destRegister] = False
 
@@ -131,7 +131,7 @@ def executeConditionalSelectIncrement(hexcode, datasize):
 
 	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
 	'''
-	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], mem.isSPWriteBackBuffer)
+	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
 	const.FLAG_WRITEBACK_EXECUTED = True
 	mem.regObsolete[destRegister] = False
 
@@ -183,7 +183,7 @@ def executeConditionalSelectNegate(hexcode, datasize):
 
 	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
 	'''
-	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], mem.isSPWriteBackBuffer)
+	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
 	const.FLAG_WRITEBACK_EXECUTED = True
 	mem.regObsolete[destRegister] = False
 

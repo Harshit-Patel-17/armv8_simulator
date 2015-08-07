@@ -20,10 +20,12 @@ def memaccessMov_wi32(binary):
 def memaccessMov_wi64(binary):
     mov_imm(binary, "MOV x", '0', 64)
     
-def mov_imm(binary, instr, inverted, N):   
+def mov_imm(binary, instr, inverted, N):
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer   
     const.FLAG_MEMACCESS_EXECUTED = True
 
 def mov_reg(binary, N):
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
 
 def memaccessMov_r32(binary):
@@ -34,6 +36,7 @@ def memaccessMov_r64(binary):
                            
                            
 def mov_bmi(binary, N):
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
 def memaccessMov_bmi32(binary):
