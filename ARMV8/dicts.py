@@ -155,49 +155,49 @@ def MUL_DIV_REG(binary):
 
 
 def CONDITIONAL_INSTRUCTIONS(binary):
-  if(binary[11:16] == "11111" and binary[22:27] == "11111"):
-    key = binary[0:16] + "-"*4 + binary[20:27]
-  else:
-    key = binary[0:11] + "-"*9 + binary[20:22]
-  return {
-    "0001101010011111----0111111" : executor_conditional.execConditionalSet_32,
-    "1001101010011111----0111111" : executor_conditional.execConditionalSet_64,
-    "01011010100---------00"      : executor_conditional.execConditionalSelectInverse_32,
-    "11011010100---------00"      : executor_conditional.execConditionalSelectInverse_64,
-    "01011010100---------01"      : executor_conditional.execConditionalSelectNegation_32,
-    "11011010100---------01"      : executor_conditional.execConditionalSelectNegation_64,
-    "00011010100---------01"      : executor_conditional.execConditionalSelectIncrement_32,
-    "10011010100---------01"      : executor_conditional.execConditionalSelectIncrement_64,
-  }[key](binary)
+    if(binary[11:16] == "11111" and binary[22:27] == "11111"):
+        key = binary[0:16] + "-"*4 + binary[20:27]
+    else:
+        key = binary[0:11] + "-"*9 + binary[20:22]
+    return {
+      "0001101010011111----0111111" : executor_conditional.execConditionalSet_32,
+      "1001101010011111----0111111" : executor_conditional.execConditionalSet_64,
+      "01011010100---------00"      : executor_conditional.execConditionalSelectInverse_32,
+      "11011010100---------00"      : executor_conditional.execConditionalSelectInverse_64,
+      "01011010100---------01"      : executor_conditional.execConditionalSelectNegation_32,
+      "11011010100---------01"      : executor_conditional.execConditionalSelectNegation_64,
+      "00011010100---------01"      : executor_conditional.execConditionalSelectIncrement_32,
+      "10011010100---------01"      : executor_conditional.execConditionalSelectIncrement_64,
+    }[key](binary)
 
 def MORE_ALU(binary):
-  key = binary[0:22]
-  return {
-    "0101101011000000000101"  : executor_ALU.executeCLS_32,
-    "1101101011000000000101"  : executor_ALU.executeCLS_64,
-    "0101101011000000000100"  : executor_ALU.executeCLZ_32,
-    "1101101011000000000100"  : executor_ALU.executeCLZ_64,
-  }[key](binary)
+    key = binary[0:22]
+    return {
+      "0101101011000000000101"  : executor_ALU.executeCLS_32,
+      "1101101011000000000101"  : executor_ALU.executeCLS_64,
+      "0101101011000000000100"  : executor_ALU.executeCLZ_32,
+      "1101101011000000000100"  : executor_ALU.executeCLZ_64,
+    }[key](binary)
 
 def ROTATE_IMMEDIATE(binary):
-  key = binary[0:11]
-  return {
-    "00010011100"  : executor_rotate.execRotate_i32,
-    "10010011110"  : executor_rotate.execRotate_i64,
-  }[key](binary)
+    key = binary[0:11]
+    return {
+      "00010011100"  : executor_rotate.execRotate_i32,
+      "10010011110"  : executor_rotate.execRotate_i64,
+    }[key](binary)
 
 def ROTATE_REGISTER(binary):
-  key = binary[0:11] + "-"*5 + binary[16:22]
-  return {
-    "00011010110-----001011"  : executor_rotate.execRotate_r32,
-    "10011010110-----001011"  : executor_rotate.execRotate_r64,
-  }[key](binary)
+    key = binary[0:11] + "-"*5 + binary[16:22]
+    return {
+      "00011010110-----001011"  : executor_rotate.execRotate_r32,
+      "10011010110-----001011"  : executor_rotate.execRotate_r64,
+    }[key](binary)
 
 def BITWISE_SHIFT_REGISTER(binary):
-  key = binary[0:8] + "-"*2 + binary[10:11]
-  return {
-    "00001010--1" : executor_bitwise_shift.execBitwiseShift_32,
-    "10001010--1" : executor_bitwise_shift.execBitwiseShift_64,
-    "01101010--1" : executor_bitwise_shift.execBitwiseShiftSetFlags_32,
-    "11101010--1" : executor_bitwise_shift.execBitwiseShiftSetFlags_64,
-  }[key](binary)
+    key = binary[0:8] + "-"*2 + binary[10:11]
+    return {
+      "00001010--1" : executor_bitwise_shift.execBitwiseShift_32,
+      "10001010--1" : executor_bitwise_shift.execBitwiseShift_64,
+      "01101010--1" : executor_bitwise_shift.execBitwiseShiftSetFlags_32,
+      "11101010--1" : executor_bitwise_shift.execBitwiseShiftSetFlags_64,
+    }[key](binary)

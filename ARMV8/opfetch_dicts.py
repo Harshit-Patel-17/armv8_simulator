@@ -9,6 +9,7 @@ import opfetch_misc
 import opfetch_mulDiv
 import opfetch_conditional
 import opfetch_ALU
+import opfetch_rotate
 import opfetch_bitwise_shift
 
 def INSTRUCTION_TYPE(binary, i):
@@ -28,6 +29,8 @@ def INSTRUCTION_TYPE(binary, i):
             11 : MUL_DIV_REG,
             12 : CONDITIONAL_INSTRUCTIONS,
             13 : MORE_ALU,
+            14 : ROTATE_IMMEDIATE,
+            15 : ROTATE_REGISTER,
             16 : BITWISE_SHIFT_REGISTER
         }[i](binary)
     except KeyError:
@@ -173,6 +176,20 @@ def MORE_ALU(binary):
       "1101101011000000000101"  : opfetch_ALU.opfetchCLS_64,
       "0101101011000000000100"  : opfetch_ALU.opfetchCLZ_32,
       "1101101011000000000100"  : opfetch_ALU.opfetchCLZ_64,
+    }[key](binary)
+
+def ROTATE_IMMEDIATE(binary):
+    key = binary[0:11]
+    return {
+      "00010011100"  : opfetch_rotate.opfetchRotate_i32,
+      "10010011110"  : opfetch_rotate.opfetchRotate_i64,
+    }[key](binary)
+
+def ROTATE_REGISTER(binary):
+    key = binary[0:11] + "-"*5 + binary[16:22]
+    return {
+      "00011010110-----001011"  : opfetch_rotate.opfetchRotate_r32,
+      "10011010110-----001011"  : opfetch_rotate.opfetchRotate_r64,
     }[key](binary)
 
 def BITWISE_SHIFT_REGISTER(binary):
