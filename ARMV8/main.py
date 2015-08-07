@@ -63,8 +63,7 @@ if __name__ == '__main__':
         if isDebugMode():
             armdebug.startInteraction()
         else:       
-            armdebug.startRunEngine()
-            print armdebug.getCycles() 
+            armdebug.startRunEngine() 
             print ''             
             executeRegs()
             print ''

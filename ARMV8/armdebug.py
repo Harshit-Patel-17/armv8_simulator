@@ -14,7 +14,6 @@ import memaccess_decoder
 import mem
 import traceback
 import const
-from mem import regFile
 
 pipelineStages = ['', '', '', '', ''] 
 DEBUG_MODE=False
@@ -286,17 +285,17 @@ def executeNextInst():
        
 def executeRUN():
     instructionNumber = getCurrentInstNumber()
-    pipelineStages[0] = hexes[instructionNumber]
-    incCycles()
+    print ""
+    print "Activity in pipeline"
+    print "--------------------"
+    executeStages()
     while(not isPipelineEmpty()):
         executeStages()
+    print ""
+    print "Total cycles = " + str(getCycles())
+    print "Total stalls = " + str(getStalls())
             
 def executeStages():
-    raw_input("Press any key")
-    print pipelineStages
-    printCycles()
-    printStalls()
-    print ""
     #Execute stage 5
     if(pipelineStages[4] != ''):
         writeback_decoder.decodeInstr(pipelineStages[4])
@@ -328,12 +327,12 @@ def executeStages():
         pipelineStages[2] = pipelineStages[1]
         pipelineStages[1] = pipelineStages[0]
         incPC()
-    incCycles()
     try:
         pipelineStages[0] = hexes[getCurrentInstNumber()]
     except IndexError:
         pipelineStages[0] = ''
-    print mem.regFile
+    incCycles()
+    print pipelineStages
         
 def isPipelineEmpty():
     for i in range(5):
