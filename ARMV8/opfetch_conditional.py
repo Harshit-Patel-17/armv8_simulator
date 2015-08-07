@@ -48,13 +48,13 @@ def opfetchConditionalSet_32(hexcode):
 def opfetchConditionalSet_64(hexcode):
 	executeConditionalSet(hexcode,64)
 
-#executes select conditional increment for 32 bit registers
-def opfetchConditionalSelectIncrement_32(hexcode):
-	executeConditionalSelectIncrement(hexcode,32)
+#executes select conditional inverse for 32 bit registers
+def opfetchConditionalSelectInverse_32(hexcode):
+	executeConditionalSelectInverse(hexcode,32)
 
-#executes select conditional increment for 64 bit registers
-def opfetchConditionalSelectIncrement_64(hexcode):
-	executeConditionalSelectIncrement(hexcode,64)
+#executes select conditional inverse for 64 bit registers
+def opfetchConditionalSelectInverse_64(hexcode):
+	executeConditionalSelectInverse(hexcode,64)
 
 #executes select conditional negate for 64 bit registers
 def opfetchConditionalSelectNegation_32(hexcode):
@@ -63,6 +63,14 @@ def opfetchConditionalSelectNegation_32(hexcode):
 #executes select conditional negate for 64 bit registers
 def opfetchConditionalSelectNegation_64(hexcode):
 	executeConditionalSelectNegate(hexcode,64)
+
+#executes conditional select increment for 32 bit registers
+def opfetchConditionalSelectIncrement_32(hexcode):
+	executeConditionalSelectIncrement(hexcode,32)
+
+#executes conditional select increment for 64 bit registers
+def opfetchConditionalSelectIncrement_64(hexcode):
+	executeConditionalSelectIncrement(hexcode,64)
 
 #utility function for conditional set
 def executeConditionalSet(hexcode, datasize):
@@ -90,8 +98,8 @@ def executeConditionalSet(hexcode, datasize):
 	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
 	'''
 
-#utility function for conditional select increment
-def executeConditionalSelectIncrement(hexcode, datasize):
+#utility function for conditional select inverse
+def executeConditionalSelectInverse(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
@@ -205,3 +213,19 @@ def executeConditionalSelectNegate(hexcode, datasize):
 
 	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
 	'''
+#utility function for conditional select increment
+def executeConditionalSelectIncrement(hexcode, datasize):
+	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
+	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
+
+	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
+	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
+	
+	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
+		const.FLAG_OP_FETCHED = True
+		mem.operand1Buffer = reg1Value
+		mem.operand2Buffer = reg2Value
+		mem.regObsolete[destRegister] = True
+		mem.regObsolete_last_modified_indices.append(destRegister)
+	const.FLAG_OPFETCH_EXECUTED = True

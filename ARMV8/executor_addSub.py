@@ -9,7 +9,7 @@ import const
 def op_i(binary, N, instr, sub_op, setFlags):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer, mem.isSPBuffer = utilFunc.addSub(rdKey, mem.operand1Buffer, mem.operand2Buffer, sub_op, N, setFlags)
-    const.FLAG_INST_EXECUTED = True    
+    const.FLAG_INST_EXECUTED = True
 
 def execAdd_i32(binary):
     op_i(binary, 32, "ADD", '0', '0')
@@ -84,18 +84,17 @@ def op_er(binary, N, instr, sub_op, setFlags):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer, mem.isSPBuffer = utilFunc.addSub(rdKey, mem.operand1Buffer, mem.operand2Buffer, sub_op, N, setFlags)
     const.FLAG_INST_EXECUTED = True
-       
 
 
 # Add Subtract - Extended register
 def execAdd_er32(binary):
-   op_er(binary, 32, "ADD", '0', '0')
+    op_er(binary, 32, "ADD", '0', '0')
     
 def execAdds_er32(binary):
-   op_er(binary, 32, "ADDS", '0', '1')
+    op_er(binary, 32, "ADDS", '0', '1')
     
 def execSub_er32(binary):
-   op_er(binary, 32, "SUB", '1', '0')
+    op_er(binary, 32, "SUB", '1', '0')
     
 def execSubs_er32(binary):
     op_er(binary, 32, "SUBS", '1', '1')

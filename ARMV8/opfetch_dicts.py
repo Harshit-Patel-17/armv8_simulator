@@ -9,6 +9,7 @@ import opfetch_misc
 import opfetch_mulDiv
 import opfetch_conditional
 import opfetch_ALU
+import opfetch_bitwise_shift
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -27,6 +28,7 @@ def INSTRUCTION_TYPE(binary, i):
             11 : MUL_DIV_REG,
             12 : CONDITIONAL_INSTRUCTIONS,
             13 : MORE_ALU,
+            16 : BITWISE_SHIFT_REGISTER
         }[i](binary)
     except KeyError:
         i = i
@@ -149,24 +151,35 @@ def MUL_DIV_REG(binary):
     }[key](binary)
 
 def CONDITIONAL_INSTRUCTIONS(binary):
-  if(binary[11:16] == "11111" and binary[22:27] == "11111"):
-    key = binary[0:16] + "-"*4 + binary[20:27]
-  else:
-    key = binary[0:11] + "-"*9 + binary[20:22]
-  return {
-    "0001101010011111----0111111" : opfetch_conditional.opfetchConditionalSet_32,
-    "1001101010011111----0111111" : opfetch_conditional.opfetchConditionalSet_64,
-    "01011010100---------00"      : opfetch_conditional.opfetchConditionalSelectIncrement_32,
-    "11011010100---------00"      : opfetch_conditional.opfetchConditionalSelectIncrement_64,
-    "01011010100---------01"      : opfetch_conditional.opfetchConditionalSelectNegation_32,
-    "11011010100---------01"      : opfetch_conditional.opfetchConditionalSelectNegation_64,
-  }[key](binary)
+    if(binary[11:16] == "11111" and binary[22:27] == "11111"):
+        key = binary[0:16] + "-"*4 + binary[20:27]
+    else:
+        key = binary[0:11] + "-"*9 + binary[20:22]
+    return {
+      "0001101010011111----0111111" : opfetch_conditional.opfetchConditionalSet_32,
+      "1001101010011111----0111111" : opfetch_conditional.opfetchConditionalSet_64,
+      "01011010100---------00"      : opfetch_conditional.opfetchConditionalSelectInverse_32,
+      "11011010100---------00"      : opfetch_conditional.opfetchConditionalSelectInverse_64,
+      "01011010100---------01"      : opfetch_conditional.opfetchConditionalSelectNegation_32,
+      "11011010100---------01"      : opfetch_conditional.opfetchConditionalSelectNegation_64,
+      "00011010100---------01"      : opfetch_conditional.opfetchConditionalSelectIncrement_32,
+      "10011010100---------01"      : opfetch_conditional.opfetchConditionalSelectIncrement_64,
+    }[key](binary)
 
 def MORE_ALU(binary):
-  key = binary[0:22]
-  return {
-    "0101101011000000000101"  : opfetch_ALU.opfetchCLS_32,
-    "1101101011000000000101"  : opfetch_ALU.opfetchCLS_64,
-    "0101101011000000000100"  : opfetch_ALU.opfetchCLZ_32,
-    "1101101011000000000100"  : opfetch_ALU.opfetchCLZ_64,
-  }[key](binary)
+    key = binary[0:22]
+    return {
+      "0101101011000000000101"  : opfetch_ALU.opfetchCLS_32,
+      "1101101011000000000101"  : opfetch_ALU.opfetchCLS_64,
+      "0101101011000000000100"  : opfetch_ALU.opfetchCLZ_32,
+      "1101101011000000000100"  : opfetch_ALU.opfetchCLZ_64,
+    }[key](binary)
+
+def BITWISE_SHIFT_REGISTER(binary):
+    key = binary[0:8] + "-"*2 + binary[10:11]
+    return {
+      "00001010--1" : opfetch_bitwise_shift.opfetchBitwiseShift_32,
+      "10001010--1" : opfetch_bitwise_shift.opfetchBitwiseShift_64,
+      "01101010--1" : opfetch_bitwise_shift.opfetchBitwiseShiftSetFlags_32,
+      "11101010--1" : opfetch_bitwise_shift.opfetchBitwiseShiftSetFlags_64,
+    }[key](binary)

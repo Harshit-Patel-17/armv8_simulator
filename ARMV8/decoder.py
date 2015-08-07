@@ -24,9 +24,9 @@ def decodeInstr(hexCode):
             dicts_loadStore.INSTRUCTION_TYPE(binary, i)
             if(const.FLAG_INST_EXECUTED=="1"):
                 break
-    
+
     if(const.FLAG_INST_EXECUTED==False):
-        for i in range(15):  
+        for i in range(17):
             dicts.INSTRUCTION_TYPE(binary, i)
             if(const.FLAG_INST_EXECUTED==True):
                 break

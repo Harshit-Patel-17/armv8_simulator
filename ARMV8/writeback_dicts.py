@@ -9,6 +9,7 @@ import writeback_misc
 import writeback_mulDiv
 import writeback_conditional
 import writeback_ALU
+import writeback_bitwise_shift
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -27,6 +28,7 @@ def INSTRUCTION_TYPE(binary, i):
             11 : MUL_DIV_REG,
             12 : CONDITIONAL_INSTRUCTIONS,
             13 : MORE_ALU,
+            16 : BITWISE_SHIFT_REGISTER
         }[i](binary)
     except KeyError:
         i = i
@@ -149,24 +151,35 @@ def MUL_DIV_REG(binary):
     }[key](binary)
 
 def CONDITIONAL_INSTRUCTIONS(binary):
-  if(binary[11:16] == "11111" and binary[22:27] == "11111"):
-    key = binary[0:16] + "-"*4 + binary[20:27]
-  else:
-    key = binary[0:11] + "-"*9 + binary[20:22]
-  return {
-    "0001101010011111----0111111" : writeback_conditional.writebackConditionalSet_32,
-    "1001101010011111----0111111" : writeback_conditional.writebackConditionalSet_64,
-    "01011010100---------00"      : writeback_conditional.writebackConditionalSelectIncrement_32,
-    "11011010100---------00"      : writeback_conditional.writebackConditionalSelectIncrement_64,
-    "01011010100---------01"      : writeback_conditional.writebackConditionalSelectNegation_32,
-    "11011010100---------01"      : writeback_conditional.writebackConditionalSelectNegation_64,
-  }[key](binary)
+    if(binary[11:16] == "11111" and binary[22:27] == "11111"):
+        key = binary[0:16] + "-"*4 + binary[20:27]
+    else:
+        key = binary[0:11] + "-"*9 + binary[20:22]
+    return {
+      "0001101010011111----0111111" : writeback_conditional.writebackConditionalSet_32,
+      "1001101010011111----0111111" : writeback_conditional.writebackConditionalSet_64,
+      "01011010100---------00"      : writeback_conditional.writebackConditionalSelectInverse_32,
+      "11011010100---------00"      : writeback_conditional.writebackConditionalSelectInverse_64,
+      "01011010100---------01"      : writeback_conditional.writebackConditionalSelectNegation_32,
+      "11011010100---------01"      : writeback_conditional.writebackConditionalSelectNegation_64,
+      "00011010100---------01"      : writeback_conditional.writebackConditionalSelectIncrement_32,
+      "10011010100---------01"      : writeback_conditional.writebackConditionalSelectIncrement_64,
+    }[key](binary)
 
 def MORE_ALU(binary):
-  key = binary[0:22]
-  return {
-    "0101101011000000000101"  : writeback_ALU.writebackCLS_32,
-    "1101101011000000000101"  : writeback_ALU.writebackCLS_64,
-    "0101101011000000000100"  : writeback_ALU.writebackCLZ_32,
-    "1101101011000000000100"  : writeback_ALU.writebackCLZ_64,
-  }[key](binary)
+    key = binary[0:22]
+    return {
+      "0101101011000000000101"  : writeback_ALU.writebackCLS_32,
+      "1101101011000000000101"  : writeback_ALU.writebackCLS_64,
+      "0101101011000000000100"  : writeback_ALU.writebackCLZ_32,
+      "1101101011000000000100"  : writeback_ALU.writebackCLZ_64,
+    }[key](binary)
+
+def BITWISE_SHIFT_REGISTER(binary):
+    key = binary[0:8] + "-"*2 + binary[10:11]
+    return {
+      "00001010--1" : writeback_bitwise_shift.writebackBitwiseShift_32,
+      "10001010--1" : writeback_bitwise_shift.writebackBitwiseShift_64,
+      "01101010--1" : writeback_bitwise_shift.writebackBitwiseShiftSetFlags_32,
+      "11101010--1" : writeback_bitwise_shift.writebackBitwiseShiftSetFlags_64,
+    }[key](binary)

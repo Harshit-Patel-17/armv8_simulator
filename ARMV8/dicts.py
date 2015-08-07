@@ -8,8 +8,9 @@ import executor_shift
 import executor_misc
 import executor_mulDiv
 import executor_conditional
-import executor_CRC
 import executor_ALU
+import executor_rotate
+import executor_bitwise_shift
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -27,8 +28,10 @@ def INSTRUCTION_TYPE(binary, i):
             10 : NOP,
             11 : MUL_DIV_REG,
             12 : CONDITIONAL_INSTRUCTIONS,
-            13 : CRC_CHECKS,
-            14 : MORE_ALU,
+            13 : MORE_ALU,
+            14 : ROTATE_IMMEDIATE,
+            15 : ROTATE_REGISTER,
+            16 : BITWISE_SHIFT_REGISTER,
         }[i](binary)
     except KeyError:
         i = i
@@ -159,18 +162,12 @@ def CONDITIONAL_INSTRUCTIONS(binary):
   return {
     "0001101010011111----0111111" : executor_conditional.execConditionalSet_32,
     "1001101010011111----0111111" : executor_conditional.execConditionalSet_64,
-    "01011010100---------00"      : executor_conditional.execConditionalSelectIncrement_32,
-    "11011010100---------00"      : executor_conditional.execConditionalSelectIncrement_64,
+    "01011010100---------00"      : executor_conditional.execConditionalSelectInverse_32,
+    "11011010100---------00"      : executor_conditional.execConditionalSelectInverse_64,
     "01011010100---------01"      : executor_conditional.execConditionalSelectNegation_32,
     "11011010100---------01"      : executor_conditional.execConditionalSelectNegation_64,
-  }[key](binary)
-
-def CRC_CHECKS(binary):
-  key = binary[0:11] + "-"*5 + binary[16:22]
-  return {
-    "00011010110-----010000"  : executor_CRC.executeCRC32B,
-    "00011010110-----010001"  : executor_CRC.executeCRC32H,
-    "00011010110-----010010"  : executor_CRC.executeCRC32W,
+    "00011010100---------01"      : executor_conditional.execConditionalSelectIncrement_32,
+    "10011010100---------01"      : executor_conditional.execConditionalSelectIncrement_64,
   }[key](binary)
 
 def MORE_ALU(binary):
@@ -180,4 +177,27 @@ def MORE_ALU(binary):
     "1101101011000000000101"  : executor_ALU.executeCLS_64,
     "0101101011000000000100"  : executor_ALU.executeCLZ_32,
     "1101101011000000000100"  : executor_ALU.executeCLZ_64,
+  }[key](binary)
+
+def ROTATE_IMMEDIATE(binary):
+  key = binary[0:11]
+  return {
+    "00010011100"  : executor_rotate.execRotate_i32,
+    "10010011110"  : executor_rotate.execRotate_i64,
+  }[key](binary)
+
+def ROTATE_REGISTER(binary):
+  key = binary[0:11] + "-"*5 + binary[16:22]
+  return {
+    "00011010110-----001011"  : executor_rotate.execRotate_r32,
+    "10011010110-----001011"  : executor_rotate.execRotate_r64,
+  }[key](binary)
+
+def BITWISE_SHIFT_REGISTER(binary):
+  key = binary[0:8] + "-"*2 + binary[10:11]
+  return {
+    "00001010--1" : executor_bitwise_shift.execBitwiseShift_32,
+    "10001010--1" : executor_bitwise_shift.execBitwiseShift_64,
+    "01101010--1" : executor_bitwise_shift.execBitwiseShiftSetFlags_32,
+    "11101010--1" : executor_bitwise_shift.execBitwiseShiftSetFlags_64,
   }[key](binary)

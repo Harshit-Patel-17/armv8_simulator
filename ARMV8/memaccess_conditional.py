@@ -48,13 +48,13 @@ def memaccessConditionalSet_32(hexcode):
 def memaccessConditionalSet_64(hexcode):
 	executeConditionalSet(hexcode,64)
 
-#executes select conditional increment for 32 bit registers
-def memaccessConditionalSelectIncrement_32(hexcode):
-	executeConditionalSelectIncrement(hexcode,32)
+#executes select conditional inverse for 32 bit registers
+def memaccessConditionalSelectInverse_32(hexcode):
+	executeConditionalSelectInverse(hexcode,32)
 
-#executes select conditional increment for 64 bit registers
-def memaccessConditionalSelectIncrement_64(hexcode):
-	executeConditionalSelectIncrement(hexcode,64)
+#executes select conditional inverse for 64 bit registers
+def memaccessConditionalSelectInverse_64(hexcode):
+	executeConditionalSelectInverse(hexcode,64)
 
 #executes select conditional negate for 64 bit registers
 def memaccessConditionalSelectNegation_32(hexcode):
@@ -63,6 +63,14 @@ def memaccessConditionalSelectNegation_32(hexcode):
 #executes select conditional negate for 64 bit registers
 def memaccessConditionalSelectNegation_64(hexcode):
 	executeConditionalSelectNegate(hexcode,64)
+
+#executes conditional select increment for 32 bit registers
+def memaccessConditionalSelectIncrement_32(hexcode):
+	executeConditionalSelectIncrement(hexcode,32)
+
+#executes conditional select increment for 64 bit registers
+def memaccessConditionalSelectIncrement_64(hexcode):
+	executeConditionalSelectIncrement(hexcode,64)
 
 #utility function for conditional set
 def executeConditionalSet(hexcode, datasize):
@@ -88,8 +96,8 @@ def executeConditionalSet(hexcode, datasize):
 	mem.isSPWriteBackBuffer = mem.isSPBuffer
 	const.FLAG_MEMACCESS_EXECUTED = True
 
-#utility function for conditional select increment
-def executeConditionalSelectIncrement(hexcode, datasize):
+#utility function for conditional select inverse
+def executeConditionalSelectInverse(hexcode, datasize):
 	'''
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
@@ -183,6 +191,12 @@ def executeConditionalSelectNegate(hexcode, datasize):
 
 	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
 	'''
+	mem.writeBackBuffer[0] = mem.ALUResultBuffer
+	mem.isSPWriteBackBuffer = mem.isSPBuffer
+	const.FLAG_MEMACCESS_EXECUTED = True
+
+#utility function for conditional select increment
+def executeConditionalSelectIncrement(hexcode, datasize):
 	mem.writeBackBuffer[0] = mem.ALUResultBuffer
 	mem.isSPWriteBackBuffer = mem.isSPBuffer
 	const.FLAG_MEMACCESS_EXECUTED = True

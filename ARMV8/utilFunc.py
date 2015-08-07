@@ -124,25 +124,9 @@ def addSub(rdKey, op1, op2, sub_op, N, setFlags):
         result = result[1:N + 1]
     if(len(result) < N):
         result = result.zfill(N)
-    
-    # Setting flags
+
     if(setFlags == '1'):
-        if(result[0] == '0'):
-            reset_N_flag()
-        else:
-            set_N_flag()
-        if(int(result) == 0):
-            set_Z_flag()
-        else:
-            reset_Z_flag()
-        if(uInt(result) == unsigned_sum):
-            reset_C_flag()
-        else:
-            set_C_flag()
-        if(sInt(result, N) == signed_sum):
-            reset_V_flag()
-        else:
-            set_V_flag()
+        setFlagsFromResult(result, unsigned_sum, signed_sum, N)
     
     if(rdKey == 31 and setFlags == '0'):
         isSp = '1'
@@ -450,13 +434,64 @@ def calculateXor(input1,input2):
     return answer
 
 def countLeadingZeroBits(input, datasize):
+    index = datasize - 1
     for i in range(datasize):
         if(input[i] == '1'):
-            return i
+            return datasize - 1 - index
+        index = index -1
 
-    return 32
+    return -1
 
 def countLeadingSignBits(input, datasize):
     print input[1:datasize]
     print input[0:(datasize-1)]
-    return countLeadingZeroBits(calculateXor(input[1:datasize],input[0:(datasize-1)]), datasize-1) + 1
+    return countLeadingZeroBits(calculateXor(input[1:datasize],input[0:(datasize-1)]), datasize-1)
+
+def setFlags(flags):
+    if(flags[0]=='1'):
+        set_N_flag()
+    else:
+        reset_N_flag()
+    
+    if(flags[1]=='1'):
+        set_Z_flag()
+    else:
+        reset_Z_flag()
+
+    if(flags[2]=='1'):
+        set_C_flag()
+    else:
+        reset_C_flag()
+
+    if(flags[3]=='1'):
+        set_V_flag()
+    else:
+        reset_V_flag()
+
+def rotateRightByBits(binary, numberOfBits, datasize):
+    return binary[(datasize-numberOfBits):datasize] + binary[0:(datasize-numberOfBits)]
+
+# Setting flags
+def setFlagsFromResult(result, unsigned_sum, signed_sum, N):
+    if(result[0] == '0'):
+        reset_N_flag()
+    else:
+        set_N_flag()
+    if(int(result) == 0):
+        set_Z_flag()
+    else:
+        reset_Z_flag()
+    if(uInt(result) == unsigned_sum):
+        reset_C_flag()
+    else:
+        set_C_flag()
+    if(sInt(result, N) == signed_sum):
+        reset_V_flag()
+    else:
+        set_V_flag()
+
+def isZero(result):
+    if(int(result) == 0):
+        return '1'
+    else:
+        return '0'
