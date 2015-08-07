@@ -54,6 +54,6 @@ def executeCLZ(hexcode, datasize):
 	result = utilFunc.countLeadingZeroBits(regValue, datasize)
 	resultBinary = "{0:b}".format(result)
 
-	instruction = "CLS " + registerType + str(destRegister) + ", " + registerType + str(operandRegister)
+	instruction = "CLZ " + registerType + str(destRegister) + ", " + registerType + str(operandRegister)
 
 	utilFunc.finalize(destRegister, resultBinary, instruction, '1')

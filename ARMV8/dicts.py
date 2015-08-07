@@ -10,6 +10,7 @@ import executor_mulDiv
 import executor_conditional
 import executor_ALU
 import executor_rotate
+import executor_bitwise_shift
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -30,6 +31,7 @@ def INSTRUCTION_TYPE(binary, i):
             13 : MORE_ALU,
             14 : ROTATE_IMMEDIATE,
             15 : ROTATE_REGISTER,
+            16 : BITWISE_SHIFT_REGISTER,
         }[i](binary)
     except KeyError:
         i = i
@@ -190,3 +192,12 @@ def ROTATE_REGISTER(binary):
     "00011010110-----001011"  : executor_rotate.execRotate_r32,
     "10011010110-----001011"  : executor_rotate.execRotate_r64,
   }[key](binary)
+
+def BITWISE_SHIFT_REGISTER(binary):
+  key = binary[0:8] + "-"*2 + binary[10:11]
+  return {
+    "00001010--1" : executor_bitwise_shift.execBitwiseShift_32,
+    "10001010--1" : executor_bitwise_shift.execBitwiseShift_64,
+    "01101010--1" : executor_bitwise_shift.execBitwiseShiftSetFlags_32,
+    "11101010--1" : executor_bitwise_shift.execBitwiseShiftSetFlags_64,
+  }[key][binary]
