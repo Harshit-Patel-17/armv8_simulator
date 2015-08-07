@@ -168,6 +168,10 @@ def CONDITIONAL_INSTRUCTIONS(binary):
     "11011010100---------01"      : executor_conditional.execConditionalSelectNegation_64,
     "00011010100---------01"      : executor_conditional.execConditionalSelectIncrement_32,
     "10011010100---------01"      : executor_conditional.execConditionalSelectIncrement_64,
+    "00111010010---------10"      : executor_conditional.execConditionalCompareNegative_i32,
+    "10111010010---------10"      : executor_conditional.execConditionalCompareNegative_i64,
+    "00111010010---------00"      : executor_conditional.execConditionalCompareNegative_r32,
+    "10111010010---------00"      : executor_conditional.execConditionalCompareNegative_r64,
   }[key](binary)
 
 def MORE_ALU(binary):

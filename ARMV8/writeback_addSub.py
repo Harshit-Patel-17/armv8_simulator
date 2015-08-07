@@ -6,7 +6,8 @@ import const
 def writeback_i(binary, N, instr, sub_op, setFlags):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), mem.isSPWriteBackBuffer)
+    if(rdKey != 31): #if CMN instruction,discard the result
+        utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), mem.isSPWriteBackBuffer)
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
 
@@ -52,7 +53,8 @@ def fetchOp2_sr(rmVal, shiftType, amt, instr):
 def writeback_sr(binary, N, instr, sub_op, setFlags):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
 
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), '0')
+    if(rdKey != 31): #if CMN instruction,discard the result
+        utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     
@@ -84,7 +86,8 @@ def writebackSubs_sr64(binary):
 def writeback_er(binary, N, instr, sub_op, setFlags):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
 
-    utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), mem.isSPWriteBackBuffer)
+    if(rdKey != 31): #if CMN instruction,discard the result
+        utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), mem.isSPWriteBackBuffer)
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
        
