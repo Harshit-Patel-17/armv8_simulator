@@ -36,6 +36,8 @@ def helper_rp_offset(binary, instr):
 def helper_rp(wback, postIndex, binary, instr):     
     if not(postIndex):
         mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
+    else:
+        mem.ALUResultBuffer = mem.operand1Buffer
     const.FLAG_INST_EXECUTED = True
     
 #---Load/Store Register-Pair (Post-Indexed)---    
@@ -240,4 +242,6 @@ def helper_reg(binary, instr):
 def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale, instr):    
     if not(postIndex):
         mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
+    else:
+        mem.ALUResultBuffer = mem.operand1Buffer
     const.FLAG_INST_EXECUTED = True

@@ -30,7 +30,7 @@ def helper_l(binary, instr):
     if(data == const.TRAP):
             print "HEY!!! There seems to be a problem - memory location can not be accessed"
             print "Moving ahead without executing the instruction"
-            armdebug.pipelineStages[3] = ''
+            armdebug.pipelineStages[3] = '--------'
             return
     
     if(signed):
@@ -97,7 +97,7 @@ def helper_rp(wback, postIndex, binary, instr):
         if(data1 == const.TRAP or data2 == const.TRAP):
             print "HEY!!! There seems to be a problem - memory location can not be accessed"
             print "Moving ahead without executing the instruction"
-            armdebug.pipelineStages[3] = ''
+            armdebug.pipelineStages[3] = '--------'
             return
         
         if(signed):
@@ -347,7 +347,7 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
         if(data == const.TRAP):
             print "HEY!!! There seems to be a problem - memory location can not be accessed"
             print "Moving ahead without executing the instruction"
-            armdebug.pipelineStages[3] = ''            
+            armdebug.pipelineStages[3] = '--------'            
             return   
         if(signed):
             data = utilFunc.signExtend(data, regSize)

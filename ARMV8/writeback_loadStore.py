@@ -58,7 +58,7 @@ def helper_rp(wback, postIndex, binary, instr):
         utilFunc.setRegValue(rnKey, mem.writeBackBuffer[2], '1')
         mem.regObsolete[rnKey] = False
     
-    const.FLAG_WRITEBACK_EXECUTED = False
+    const.FLAG_WRITEBACK_EXECUTED = True
     
     
 #---Load/Store Register-Pair (Post-Indexed)---    
@@ -274,9 +274,10 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
        
     if(memOp == const.MEM_OP_LOAD):
         utilFunc.setRegValue(rtKey, mem.writeBackBuffer[0], '0')
+        mem.regObsolete[rtKey] = False
         
     if(wback):
         utilFunc.setRegValue(rnKey, mem.writeBackBuffer[2], '1')
+        mem.regObsolete[rnKey] = False
     
     const.FLAG_WRITEBACK_EXECUTED = True
-    #utilFunc.finalize_simple(instr)
