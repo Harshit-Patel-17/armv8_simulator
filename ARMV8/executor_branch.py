@@ -23,8 +23,8 @@ def execBCond(binary):
     (instpart,offset)=utilFunc.getOffset(mem.operand1Buffer)
     
     utilFunc.branchWithOffset(offset-8) #the magic!
-    armdebug.pipelineStages[0] = ''
-    armdebug.pipelineStages[1] = ''
+    armdebug.pipelineStages[0] = '--------'
+    armdebug.pipelineStages[1] = '--------'
     mem.freeObsoleteRegisters()
     
 def execBL(binary):
@@ -62,12 +62,12 @@ def CBZClass(binary,width,bool):
     if bool:
         if regValue=='0'*width:
             utilFunc.branchWithOffset(offset-8)
-            armdebug.pipelineStages[0] = ''
-            armdebug.pipelineStages[1] = ''
+            armdebug.pipelineStages[0] = '--------'
+            armdebug.pipelineStages[1] = '--------'
             mem.freeObsoleteRegisters()
     else:
         if regValue!='0'*width:
             utilFunc.branchWithOffset(offset-8)
-            armdebug.pipelineStages[0] = ''
-            armdebug.pipelineStages[1] = ''
+            armdebug.pipelineStages[0] = '--------'
+            armdebug.pipelineStages[1] = '--------'
             mem.freeObsoleteRegisters()

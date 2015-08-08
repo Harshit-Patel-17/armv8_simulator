@@ -15,7 +15,7 @@ import mem
 import traceback
 import const
 
-pipelineStages = ['', '', '', '', ''] 
+pipelineStages = ['--------', '--------', '--------', '--------', '--------'] 
 DEBUG_MODE=False
 PC = 0
 cycles = 0
@@ -258,16 +258,39 @@ def parseCommand(command):
     
     if command.startswith('watch'):
         executeWatch(command)
-        return 
+        return
+    
+    if command == 'cycles':
+        executeCycles()
+        return
+    
+    if command == 'stalls':
+        executeStalls() 
     else:
         print 'Not supported input (yet)!'
     
+def executeCycles():
+    print getCycles()    
+    
+def executeStalls():
+    print getStalls()
+
 def executeS():
     #will have to take care of inst running also
     #not caring about break point or not -->DOESN't MATTER
     print "Executing command type: "+"'s'"
-    executeNextInst()
-    pass
+    print ""
+    print "Activity in pipeline"
+    print "===================="
+    print "     IF          ID          EX          MA          WB     "
+    try:
+        pipelineStages[0] = hexes[getCurrentInstNumber()]
+    except IndexError:
+        pipelineStages[0] = '--------'
+    incPC()
+    completeAllInstructionsInPipeline()
+    #executeNextInst()
+    #pass
 
 def executeNextInst():
     if getCurrentInstNumber()<len(getHexes()):
@@ -284,59 +307,150 @@ def executeNextInst():
     #print 'PC: '+str(getPC())
        
 def executeRUN():
-    instructionNumber = getCurrentInstNumber()
     print ""
     print "Activity in pipeline"
-    print "--------------------"
-    executeStages()
+    print "===================="
+    print "     IF          ID          EX          MA          WB     "
+    #executeStages()
+    try:
+        pipelineStages[0] = hexes[getCurrentInstNumber()]
+    except IndexError:
+        pipelineStages[0] = '--------'
     while(not isPipelineEmpty()):
         executeStages()
+    print pipelineStages
     print ""
     print "Total cycles = " + str(getCycles())
     print "Total stalls = " + str(getStalls())
             
 def executeStages():
+    print pipelineStages
     #Execute stage 5
-    if(pipelineStages[4] != ''):
+    if(pipelineStages[4] != '--------'):
         writeback_decoder.decodeInstr(pipelineStages[4])
-    pipelineStages[4] = ''
+    pipelineStages[4] = '--------'
     
     #Execute stage 4    
-    if(pipelineStages[3] != ''):
+    if(pipelineStages[3] != '--------'):
         memaccess_decoder.decodeInstr(pipelineStages[3])
     pipelineStages[4] = pipelineStages[3]
-    pipelineStages[3] = ''
+    pipelineStages[3] = '--------'
     
     #Execute stage 3
-    if(pipelineStages[2] != ''):
+    if(pipelineStages[2] != '--------'):
         utilFunc.resetInstrFlag()
         decoder.decodeInstr(pipelineStages[2])
     pipelineStages[3] = pipelineStages[2]
-    pipelineStages[2] = ''
+    pipelineStages[2] = '--------'
     
     #Execute stage 2
-    if(pipelineStages[1] != ''):
+    if(pipelineStages[1] != '--------'):
         opfetch_decoder.decodeInstr(pipelineStages[1])
         if(const.FLAG_OP_FETCHED):
             pipelineStages[2] = pipelineStages[1]
             pipelineStages[1] = pipelineStages[0]
             incPC()
+            try:
+                pipelineStages[0] = hexes[getCurrentInstNumber()]
+            except IndexError:
+                pipelineStages[0] = '--------'
         else:
             incStalls()
     else:
         pipelineStages[2] = pipelineStages[1]
         pipelineStages[1] = pipelineStages[0]
         incPC()
-    try:
-        pipelineStages[0] = hexes[getCurrentInstNumber()]
-    except IndexError:
-        pipelineStages[0] = ''
+        try:
+            pipelineStages[0] = hexes[getCurrentInstNumber()]
+        except IndexError:
+            pipelineStages[0] = '--------'
     incCycles()
+ 
+def completeAllInstructionsInPipeline():
+    while(not isPipelineEmpty()):
+        print pipelineStages
+        #Execute stage 5
+        if(pipelineStages[4] != '--------'):
+            writeback_decoder.decodeInstr(pipelineStages[4])
+        pipelineStages[4] = '--------'
+        
+        #Execute stage 4    
+        if(pipelineStages[3] != '--------'):
+            memaccess_decoder.decodeInstr(pipelineStages[3])
+        pipelineStages[4] = pipelineStages[3]
+        pipelineStages[3] = '--------'
+        
+        #Execute stage 3
+        if(pipelineStages[2] != '--------'):
+            utilFunc.resetInstrFlag()
+            decoder.decodeInstr(pipelineStages[2])
+        pipelineStages[3] = pipelineStages[2]
+        pipelineStages[2] = '--------'
+        
+        #Execute stage 2
+        if(pipelineStages[1] != '--------'):
+            opfetch_decoder.decodeInstr(pipelineStages[1])
+            if(const.FLAG_OP_FETCHED):
+                pipelineStages[2] = pipelineStages[1]
+                pipelineStages[1] = pipelineStages[0]
+                pipelineStages[0] = '--------'
+            else:
+                incStalls()
+        else:
+            pipelineStages[2] = pipelineStages[1]
+            pipelineStages[1] = pipelineStages[0]
+            pipelineStages[0] = '--------'
+        incCycles()
+    print pipelineStages 
+   
+def completeAllFetchedInstructionsInPipeline():
+    while(not isAllFetchedInstructionsExecuted()):
+        print pipelineStages
+        #Execute stage 5
+        if(pipelineStages[4] != '--------'):
+            writeback_decoder.decodeInstr(pipelineStages[4])
+        pipelineStages[4] = '--------'
+        
+        #Execute stage 4    
+        if(pipelineStages[3] != '--------'):
+            memaccess_decoder.decodeInstr(pipelineStages[3])
+        pipelineStages[4] = pipelineStages[3]
+        pipelineStages[3] = '--------'
+        
+        #Execute stage 3
+        if(pipelineStages[2] != '--------'):
+            utilFunc.resetInstrFlag()
+            decoder.decodeInstr(pipelineStages[2])
+        pipelineStages[3] = pipelineStages[2]
+        pipelineStages[2] = '--------'
+        
+        #Execute stage 2
+        if(pipelineStages[1] != '--------'):
+            opfetch_decoder.decodeInstr(pipelineStages[1])
+            if(const.FLAG_OP_FETCHED):
+                pipelineStages[2] = pipelineStages[1]
+                pipelineStages[1] = '--------'
+                #pipelineStages[1] = pipelineStages[0]
+                #pipelineStages[0] = '--------'
+            else:
+                incStalls()
+        else:
+            pipelineStages[2] = pipelineStages[1]
+            pipelineStages[1] = '--------'
+            #pipelineStages[1] = pipelineStages[0]
+            #pipelineStages[0] = '--------'
+        incCycles()
     print pipelineStages
         
 def isPipelineEmpty():
     for i in range(5):
-        if(pipelineStages[i] != ''):
+        if(pipelineStages[i] != '--------'):
+            return False
+    return True
+
+def isAllFetchedInstructionsExecuted():
+    for i in range(4):
+        if(pipelineStages[i+1] != '--------'):
             return False
     return True
         
@@ -405,37 +519,21 @@ def executeC():
 '''
         
 def executeC():
-    instructionNumber = getCurrentInstNumber()
-    totalInstructions = len(getHexes())
-    while(1):
-        if(instructionNumber >= totalInstructions):
-            #Complete remaining instructions in pipeline
-            while(not isPipelineEmpty()):
-                for i in [4, 3, 2, 1]:
-                    pipelineStages[i] = pipelineStages[i-1]
-                pipelineStages[0] = ''
-                print pipelineStages
-                executeStages()
-                incPC()
-                incCycles()
-                instructionNumber = getCurrentInstNumber()
-                if(instructionNumber-4 > 0 and isBkPoint(instructionNumber-4)):
-                    print "Arrived at the break point. Type 's' or 'run'..."
-                    return
-            print 'no breakpoints encountered. instructions exhausted!!'
-            return
+    print ""
+    print "Activity in pipeline"
+    print "===================="
+    print "     IF          ID          EX          MA          WB     "
+    #executeStages()
+    try:
+        pipelineStages[0] = hexes[getCurrentInstNumber()]
+    except IndexError:
+        pipelineStages[0] = '--------'
+    while(not isPipelineEmpty()):
+        if(isBkPoint(getCurrentInstNumber())):
+            completeAllFetchedInstructionsInPipeline()
+            break
         else:
-            for i in [4, 3, 2, 1]:
-                pipelineStages[i] = pipelineStages[i-1]
-            pipelineStages[0] = hexes[instructionNumber]
-            print pipelineStages
             executeStages()
-            incPC()
-            incCycles()
-            instructionNumber = getCurrentInstNumber()
-            if(instructionNumber-4 > 0 and isBkPoint(instructionNumber-4)):
-                print "Arrived at the break point. Type 's' or 'run'..."
-                return
              
 def executePrint(command):
     print "Executing command type: "+"'print'"

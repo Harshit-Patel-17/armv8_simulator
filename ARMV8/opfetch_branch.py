@@ -17,7 +17,7 @@ def opfetchB(binary):
     inst+=instpart+')'
     
     utilFunc.branchWithOffset(offset-4) #the magic!
-    armdebug.pipelineStages[0] = ''
+    armdebug.pipelineStages[0] = '--------'
     const.FLAG_OP_FETCHED = True
     const.FLAG_OPFETCH_EXECUTED = True
     
@@ -37,7 +37,7 @@ def opfetchBL(binary):
     nextAddr=armdebug.getPC()
     utilFunc.setRegValue(30, utilFunc.intToBinary(nextAddr, 64), '0')
     utilFunc.branchWithOffset(offset-4)
-    armdebug.pipelineStages[0] = ''
+    armdebug.pipelineStages[0] = '--------'
     const.FLAG_OP_FETCHED = True
     const.FLAG_OPFETCH_EXECUTED = True
     
@@ -60,7 +60,7 @@ def opfetchBR(binary):
         print 'Instruction aborted. Invalid instruction address in register.'
         return
     utilFunc.branchToAddress(int(hexstr,16))
-    armdebug.pipelineStages[0] = ''
+    armdebug.pipelineStages[0] = '--------'
     
 def opfetchBLR(binary):
     inst='BLR X'
@@ -83,7 +83,7 @@ def opfetchBLR(binary):
     nextAddr=armdebug.getPC()
     utilFunc.setRegValue(30, utilFunc.intToBinary(nextAddr, 64), '0')
     utilFunc.branchToAddress(int(hexstr,16))
-    armdebug.pipelineStages[0] = ''
+    armdebug.pipelineStages[0] = '--------'
     
 def opfetchRET(binary):
     inst = 'RET X'
@@ -105,7 +105,7 @@ def opfetchRET(binary):
         print 'Instruction aborted. Invalid instruction address in register.'
         return
     utilFunc.branchToAddress(int(hexstr,16))
-    armdebug.pipelineStages[0] = ''
+    armdebug.pipelineStages[0] = '--------'
     
 def opfetchCBZ_32(binary):
     CBZClass(binary, 32, True)
