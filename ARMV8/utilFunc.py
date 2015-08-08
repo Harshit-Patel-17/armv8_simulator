@@ -112,10 +112,11 @@ def intToBinary(num, N):
     
         
 # utility function used by all add-sub instructions
-def addSub(rdKey, op1, op2, sub_op, N, setFlags):
+def addSub(rdKey, op1, op2, sub_op, N, setFlags, addWithCarry):
     c_in = '0'
     if(sub_op == '1'):
         op2 = negate(op2)
+    if(sub_op == '1' or addWithCarry):
         c_in = '1'
     unsigned_sum = uInt(op1) + uInt(op2) + uInt(c_in)
     signed_sum = sInt(op1, N) + sInt(op2, N) + uInt(c_in)
@@ -154,7 +155,7 @@ def negate(x):
     return to_ret
 
 def twosComplement(x, N):
-    result, isSp = addSub(0,'0' * N, x, '1', N, '0')
+    result, isSp = addSub(0,'0' * N, x, '1', N, '0', 0)
     return result
 
 def binaryToHexStr(x):

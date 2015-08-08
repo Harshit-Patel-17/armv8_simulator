@@ -8,7 +8,7 @@ import const
 
 def op_i(binary, N, instr, sub_op, setFlags):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
-    mem.ALUResultBuffer, mem.isSPBuffer = utilFunc.addSub(rdKey, mem.operand1Buffer, mem.operand2Buffer, sub_op, N, setFlags)
+    mem.ALUResultBuffer, mem.isSPBuffer = utilFunc.addSub(rdKey, mem.operand1Buffer, mem.operand2Buffer, sub_op, N, setFlags, 0)
     const.FLAG_INST_EXECUTED = True
 
 def execAdd_i32(binary):
@@ -52,7 +52,7 @@ def fetchOp2_sr(rmVal, shiftType, amt, instr):
     
 def op_sr(binary, N, instr, sub_op, setFlags):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
-    mem.ALUResultBuffer,mem.isSPBuffer = utilFunc.addSub(rdKey, mem.operand1Buffer, mem.operand2Buffer, sub_op, N, setFlags) #isSp ignored
+    mem.ALUResultBuffer,mem.isSPBuffer = utilFunc.addSub(rdKey, mem.operand1Buffer, mem.operand2Buffer, sub_op, N, setFlags, 0) #isSp ignored
     const.FLAG_INST_EXECUTED = True
 
 def execAdd_sr32(binary):
@@ -82,7 +82,7 @@ def execSubs_sr64(binary):
     
 def op_er(binary, N, instr, sub_op, setFlags):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
-    mem.ALUResultBuffer, mem.isSPBuffer = utilFunc.addSub(rdKey, mem.operand1Buffer, mem.operand2Buffer, sub_op, N, setFlags)
+    mem.ALUResultBuffer, mem.isSPBuffer = utilFunc.addSub(rdKey, mem.operand1Buffer, mem.operand2Buffer, sub_op, N, setFlags, 0)
     const.FLAG_INST_EXECUTED = True
 
 

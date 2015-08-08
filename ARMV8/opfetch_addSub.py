@@ -14,6 +14,10 @@ def opfetch_i(binary, N, instr, sub_op, setFlags):
         r = 'x'
     imm12 = binary[10:22]
     shiftType = binary[8:10]
+
+    if(rdKey == 31):
+        instr = "CMN"
+
     instr += " " + r + str(rdKey) + ", " + r + str(rnKey) + ", #" + utilFunc.binaryToHexStr(imm12) + ", LSL"
     if shiftType == "00":
         imm12 = imm12.zfill(N)
@@ -85,6 +89,10 @@ def opfetch_sr(binary, N, instr, sub_op, setFlags):
     elif(N == 64):
         r = 'x'  
     shiftType = binary[8:10]
+
+    if(rdKey == 31):
+        instr = "CMN"
+
     instr += " " + r + str(rdKey) + ", " + r + str(rnKey) + ", " + r + str(rmkey) + ", "
     op2, instr = fetchOp2_sr(rmVal, shiftType, imm6Val, instr)
     instr += " #" + str(imm6Val)
@@ -142,6 +150,10 @@ def opfetch_er(binary, N, instr, sub_op, setFlags):
             rmToPrint = 'x'
         else:
             rmToPrint = 'w'
+
+    if(rdKey == 31):
+        instr = "CMN"
+    
     instr += " " + r + str(rdKey) + ", " + r + str(rnKey) + ", " + rmToPrint + str(rmkey) + ", "
     op2, instr = utilFunc.extendReg(rmVal, shift, option, instr, N)
     instr += " #" + str(shift)

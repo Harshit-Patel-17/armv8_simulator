@@ -22,7 +22,7 @@ def decodeInstr(hexCode):
                 break
     
     if(const.FLAG_WRITEBACK_EXECUTED == False):
-        for i in range(17):  
+        for i in range(18):  
             writeback_dicts.INSTRUCTION_TYPE(binary, i)
             if(const.FLAG_WRITEBACK_EXECUTED==True):
                 break

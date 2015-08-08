@@ -81,6 +81,8 @@ def LOGICAL_IMMEDIATE(binary):
     return {
        "000100100" : opfetch_logical.opfetchAnd_i32,
        "100100100" : opfetch_logical.opfetchAnd_i64,
+       "011100100" : opfetch_logical.opfetchAnds_i32,
+       "111100100" : opfetch_logical.opfetchAnds_i64,
     }[key](binary)
     
 def LOGICAL_SHIFT_REG(binary):
@@ -88,6 +90,8 @@ def LOGICAL_SHIFT_REG(binary):
     return {
        "00001010--0" : opfetch_logical.opfetchAnd_sr32,
        "10001010--0" : opfetch_logical.opfetchAnd_sr64,
+       "01101010--0" : opfetch_logical.opfetchAnds_sr32,
+       "11101010--0" : opfetch_logical.opfetchAnds_sr64,
     }[key](binary)
 
 
