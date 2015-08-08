@@ -401,10 +401,10 @@ def fetch64bitDataFromMem(address):
     return leftData + rightData
 
 def fetchFromMemory(address, dataSize):
-     if(dataSize == 32):
-            data = fetch32bitDataFromMem(address)
-     elif(dataSize == 64):
-            data = fetch64bitDataFromMem(address)
+     if(dataSize == 64):
+        data = fetch64bitDataFromMem(address)
+     else:
+        data = fetch32bitDataFromMem(address)
      return data
 
 def store32bitDataToMem(address, data):

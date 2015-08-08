@@ -62,6 +62,10 @@ def LOAD_STORE_REGISTER_POSTINDEXED_IMMEDIATE(binary):
        "10111000100"+"-"*9+"01" : writeback_loadStore.writebackLDRSW_reg_posti,
        "11111000000"+"-"*9+"01" : writeback_loadStore.writebackSTR_reg_posti_64,
        "11111000010"+"-"*9+"01" : writeback_loadStore.writebackLDR_reg_posti_64,
+       "00111000010"+"-"*9+"01" : writeback_loadStore.writebackLDRB_reg_posti,
+       "01111000010"+"-"*9+"01" : writeback_loadStore.writebackLDRH_reg_posti,
+       "00111000110"+"-"*9+"01" : writeback_loadStore.writebackLDRSB_reg_posti_32,
+       "00111000100"+"-"*9+"01" : writeback_loadStore.writebackLDRSB_reg_posti_64,
     }[key](binary)
     
 def LOAD_STORE_REGISTER_PREINDEXED_IMMEDIATE(binary):
@@ -72,6 +76,10 @@ def LOAD_STORE_REGISTER_PREINDEXED_IMMEDIATE(binary):
        "10111000100"+"-"*9+"11" : writeback_loadStore.writebackLDRSW_reg_prei,
        "11111000000"+"-"*9+"11" : writeback_loadStore.writebackSTR_reg_prei_64,
        "11111000010"+"-"*9+"11" : writeback_loadStore.writebackLDR_reg_prei_64,
+       "00111000010"+"-"*9+"11" : writeback_loadStore.writebackLDRB_reg_prei,
+       "01111000010"+"-"*9+"11" : writeback_loadStore.writebackLDRH_reg_prei,
+       "00111000110"+"-"*9+"11" : writeback_loadStore.writebackLDRSB_reg_prei_32,
+       "00111000100"+"-"*9+"11" : writeback_loadStore.writebackLDRSB_reg_prei_64,
     }[key](binary)
     
 def LOAD_STORE_REGISTER_UNSIGNED_OFFSET(binary):
@@ -82,6 +90,10 @@ def LOAD_STORE_REGISTER_UNSIGNED_OFFSET(binary):
        "1011100110" : writeback_loadStore.writebackLDRSW_reg_unsignedOffset,
        "1111100100" : writeback_loadStore.writebackSTR_reg_unsignedOffset_64,
        "1111100101" : writeback_loadStore.writebackLDR_reg_unsignedOffset_64,
+       "0011100101" : writeback_loadStore.writebackLDRB_reg_unsignedOffset,
+       "0111100101" : writeback_loadStore.writebackLDRH_reg_unsignedOffset,
+       "0011100111" : writeback_loadStore.writebackLDRSB_reg_unsignedOffset_32,
+       "0011100110" : writeback_loadStore.writebackLDRSB_reg_unsignedOffset_64,
     }[key](binary)
     
     
@@ -93,5 +105,9 @@ def LOAD_STORE_REGISTER_OFFSET(binary):
        "10111000101"+"-"*9+"10" : writeback_loadStore.writebackLDRSW_reg_offset,
        "11111000001"+"-"*9+"10" : writeback_loadStore.writebackSTR_reg_offset_64,
        "11111000011"+"-"*9+"10" : writeback_loadStore.writebackLDR_reg_offset_64,
+       "00111000011"+"-"*9+"10" : writeback_loadStore.writebackLDRB_reg_offset,
+       "01111000011"+"-"*9+"10" : writeback_loadStore.writebackLDRH_reg_offset,
+       "00111000111"+"-"*9+"10" : writeback_loadStore.writebackLDRSB_reg_offset_32,
+       "00111000101"+"-"*9+"10" : writeback_loadStore.writebackLDRSB_reg_offset_64,
     }[key](binary)
        
