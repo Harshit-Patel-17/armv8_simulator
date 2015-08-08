@@ -171,6 +171,18 @@ def memaccessSTR_reg_posti_64(binary):
 def memaccessLDR_reg_posti_64(binary):
     helper_reg_posti(binary, 'LDR x')
 
+def memaccessLDRB_reg_posti(binary):
+    helper_reg_posti(binary, 'LDRB w')
+
+def memaccessLDRH_reg_posti(binary):
+    helper_reg_posti(binary, 'LDRH w')
+
+def memaccessLDRSB_reg_posti_32(binary):
+    helper_reg_posti(binary, 'LDRSB w')
+
+def memaccessLDRSB_reg_posti_64(binary):
+    helper_reg_posti(binary, 'LDRSB x')
+
 
 #---Load/Store Register (Pre-Indexed Immediate)---    
 def memaccessSTR_reg_prei_32(binary):
@@ -187,6 +199,18 @@ def memaccessSTR_reg_prei_64(binary):
 
 def memaccessLDR_reg_prei_64(binary):
     helper_reg_prei(binary, 'LDR x')
+
+def memaccessLDRB_reg_prei(binary):
+    helper_reg_prei(binary, 'LDRB w')
+
+def memaccessLDRH_reg_prei(binary):
+    helper_reg_prei(binary, 'LDRH w')
+
+def memaccessLDRSB_reg_prei_32(binary):
+    helper_reg_prei(binary, 'LDRSB w')
+
+def memaccessLDRSB_reg_prei_64(binary):
+    helper_reg_prei(binary, 'LDRSB x')
 
 
 #---Load/Store Register (Unsigned Offset)---    
@@ -205,6 +229,18 @@ def memaccessSTR_reg_unsignedOffset_64(binary):
 def memaccessLDR_reg_unsignedOffset_64(binary):
     helper_reg_unsignedOffset(binary, 'LDR x')
 
+def memaccessLDRB_reg_unsignedOffset(binary):
+    helper_reg_unsignedOffset(binary, 'LDRB w')
+
+def memaccessLDRH_reg_unsignedOffset(binary):
+    helper_reg_unsignedOffset(binary, 'LDRH w')
+
+def memaccessLDRSB_reg_unsignedOffset_32(binary):
+    helper_reg_unsignedOffset(binary, 'LDRSB w')
+
+def memaccessLDRSB_reg_unsignedOffset_64(binary):
+    helper_reg_unsignedOffset(binary, 'LDRSB x')
+
 
 
 #---Load/Store Register (Register offset)---    
@@ -222,6 +258,18 @@ def memaccessSTR_reg_offset_64(binary):
 
 def memaccessLDR_reg_offset_64(binary):
     helper_reg(binary, 'LDR x')
+
+def memaccessLDRB_reg_offset(binary):
+    helper_reg(binary, 'LDRB w')
+
+def memaccessLDRH_reg_offset(binary):
+    helper_reg(binary, 'LDRH w')
+
+def memaccessLDRSB_reg_offset_32(binary):
+    helper_reg(binary, 'LDRSB w')
+
+def memaccessLDRSB_reg_offset_64(binary):
+    helper_reg(binary, 'LDRSB x')
     
 
     
