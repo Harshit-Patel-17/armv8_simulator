@@ -77,7 +77,7 @@ def execConditionalCompareNegative_i32(hexcode):
 	execConditionalCompareNegativeImmediate(hexcode, 32)
 
 #executes conditional compare negative immediate for 64 bit registers
-def execConditionalCompareNegative_i32(hexcode):
+def execConditionalCompareNegative_i64(hexcode):
 	execConditionalCompareNegativeImmediate(hexcode, 64)
 
 #executes conditional compare negative register for 32 bits
@@ -266,48 +266,53 @@ def executeConditionalSelectIncrement(hexcode, datasize):
 #utility function for conditional compare negative immediate
 def execConditionalCompareNegativeImmediate(hexcode, datasize):
 	flags = hexcode[28:32]
-	operandRegister = utilFunc.getRegKeyByStringKey(hexcode[22:27])
+	#operandRegister = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	condition = hexcode[16:20]
-	immediateBinary = hexcode[12:17]
+	#immediateBinary = hexcode[12:17]
 
-	regValue = utilFunc.getRegValueByStringkey(hexcode[22:27], 0)
+	#regValue = utilFunc.getRegValueByStringkey(hexcode[22:27], 0)
 
-	immediateValue = int(immediateBinary, 2)
+	#immediateValue = int(immediateBinary, 2)
 
+	'''
 	if(datasize == 32):
 		registerType = "w"
 		regValue = regValue[32:64]
 	else:
 		datasize = "x"
+	'''
 
-	if(isConditionSatisfied(condition, 0)):
-		utilFunc.addSub(32, regValue, immediateBinary, '0', datasize, '1', 0) #sending a dummy destination register value(32)
+	if(isConditionSatisfiedFunction(condition, 0)):
+		utilFunc.addSub(32, mem.operand1Buffer, mem.operand2Buffer, '0', datasize, '1', 0) #sending a dummy destination register value(32)
 	else:
 		utilFunc.setFlags(flags)
+	const.FLAG_INST_EXECUTED = True
 
 #utility function for conditional compare negative register
 def execConditionalCompareNegativeRegister(hexcode, datasize):
 	flags = hexcode[28:32]
-	operandRegister1 = utilFunc.getRegValueByStringkey(hexcode[22:27])
-	operandRegister2 = utilFunc.getRegValueByStringkey(hexcode[11:16])
+	#operandRegister1 = utilFunc.getRegValueByStringkey(hexcode[22:27])
+	#operandRegister2 = utilFunc.getRegValueByStringkey(hexcode[11:16])
 
 	condition = hexcode[16:20]
 
-	regValue1 = utilFunc.getRegValueByStringkey(hexcode[22:27], 0)
-	regValue2 = utilFunc.getRegValueByStringkey(hexcode[11:16], 0)
+	#regValue1 = utilFunc.getRegValueByStringkey(hexcode[22:27], 0)
+	#regValue2 = utilFunc.getRegValueByStringkey(hexcode[11:16], 0)
 
+	'''
 	if(datasize == 32):
 		registerType = "w"
 		regValue1 = regValue1[32:64]
 		regValue2 = regValue2[32:64]
 	else:
 		datasize = "x"
-
-	if(isConditionSatisfied(condition, 0)):
-		utilFunc.addSub(32, regValue1, regValue2, '0', datasize, '1', 0) #sending a dummy destination register value(32)
+	'''
+	
+	if(isConditionSatisfiedFunction(condition, 0)):
+		utilFunc.addSub(32, mem.operand1Buffer, mem.operand2Buffer, '0', datasize, '1', 0) #sending a dummy destination register value(32)
 	else:
 		utilFunc.setFlags(flags)
-
+	const.FLAG_INST_EXECUTED = True
 
 
 

@@ -25,7 +25,7 @@ def writebackAnd_i64(binary):
 def writebackAnds_i32(binary):
     op_i(binary, 32)
 
-def writebackAnds_i32(binary):
+def writebackAnds_i64(binary):
     op_i(binary, 64)
     
     

@@ -171,6 +171,10 @@ def CONDITIONAL_INSTRUCTIONS(binary):
       "11011010100---------01"      : memaccess_conditional.memaccessConditionalSelectNegation_64,
       "00011010100---------01"      : memaccess_conditional.memaccessConditionalSelectIncrement_32,
       "10011010100---------01"      : memaccess_conditional.memaccessConditionalSelectIncrement_64,
+      "00111010010---------10"      : memaccess_conditional.memaccessConditionalCompareNegative_i32,
+      "10111010010---------10"      : memaccess_conditional.memaccessConditionalCompareNegative_i64,
+      "00111010010---------00"      : memaccess_conditional.memaccessConditionalCompareNegative_r32,
+      "10111010010---------00"      : memaccess_conditional.memaccessConditionalCompareNegative_r64,
     }[key](binary)
 
 def MORE_ALU(binary):

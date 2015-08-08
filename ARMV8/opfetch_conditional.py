@@ -72,6 +72,22 @@ def opfetchConditionalSelectIncrement_32(hexcode):
 def opfetchConditionalSelectIncrement_64(hexcode):
 	executeConditionalSelectIncrement(hexcode,64)
 
+#executes conditional compare negative immediate for 32 bit registers
+def opfetchConditionalCompareNegative_i32(hexcode):
+	execConditionalCompareNegativeImmediate(hexcode, 32)
+
+#executes conditional compare negative immediate for 64 bit registers
+def opfetchConditionalCompareNegative_i64(hexcode):
+	execConditionalCompareNegativeImmediate(hexcode, 64)
+
+#executes conditional compare negative register for 32 bits
+def opfetchConditionalCompareNegative_r32(hexcode):
+	execConditionalCompareNegativeRegister(hexcode, 32)
+
+#executes conditional compare negative register for 64 bits
+def opfetchConditionalCompareNegative_r64(hexcode):
+	execConditionalCompareNegativeRegister(hexcode, 64)
+
 #utility function for conditional set
 def executeConditionalSet(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
@@ -229,3 +245,60 @@ def executeConditionalSelectIncrement(hexcode, datasize):
 		mem.regObsolete[destRegister] = True
 		mem.regObsolete_last_modified_indices.append(destRegister)
 	const.FLAG_OPFETCH_EXECUTED = True
+
+#utility function for conditional compare negative immediate
+def execConditionalCompareNegativeImmediate(hexcode, datasize):
+	#flags = hexcode[28:32]
+	operandRegister = utilFunc.getRegKeyByStringKey(hexcode[22:27])
+	#condition = hexcode[16:20]
+	immediateBinary = hexcode[11:16]
+	
+	regValue = utilFunc.getRegValueByStringkey(hexcode[22:27], 0)
+
+	#immediateValue = int(immediateBinary, 2)
+
+	if(datasize == 32):
+		registerType = "w"
+		regValue = regValue[32:64]
+	else:
+		datasize = "x"
+
+	if(mem.regObsolete[operandRegister] == False):
+		const.FLAG_OP_FETCHED = True
+		mem.operand1Buffer = regValue
+		mem.operand2Buffer = immediateBinary.zfill(datasize)
+	const.FLAG_OPFETCH_EXECUTED = True
+
+	#if(isConditionSatisfiedFunction(condition, 0)):
+	#	utilFunc.addSub(32, regValue, immediateBinary, '0', datasize, '1', 0) #sending a dummy destination register value(32)
+	#else:
+	#	utilFunc.setFlags(flags)
+
+#utility function for conditional compare negative register
+def execConditionalCompareNegativeRegister(hexcode, datasize):
+	#flags = hexcode[28:32]
+	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
+	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
+
+	#condition = hexcode[16:20]
+
+	regValue1 = utilFunc.getRegValueByStringkey(hexcode[22:27], 0)
+	regValue2 = utilFunc.getRegValueByStringkey(hexcode[11:16], 0)
+
+	if(datasize == 32):
+		registerType = "w"
+		regValue1 = regValue1[32:64]
+		regValue2 = regValue2[32:64]
+	else:
+		datasize = "x"
+
+	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
+		const.FLAG_OP_FETCHED = True
+		mem.operand1Buffer = regValue1
+		mem.operand2Buffer = regValue2
+	const.FLAG_OPFETCH_EXECUTED = True
+
+	#if(isConditionSatisfiedFunction(condition, 0)):
+	#	utilFunc.addSub(32, regValue1, regValue2, '0', datasize, '1', 0) #sending a dummy destination register value(32)
+	#else:
+	#	utilFunc.setFlags(flags)

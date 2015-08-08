@@ -171,6 +171,10 @@ def CONDITIONAL_INSTRUCTIONS(binary):
       "11011010100---------01"      : opfetch_conditional.opfetchConditionalSelectNegation_64,
       "00011010100---------01"      : opfetch_conditional.opfetchConditionalSelectIncrement_32,
       "10011010100---------01"      : opfetch_conditional.opfetchConditionalSelectIncrement_64,
+      "00111010010---------10"      : opfetch_conditional.opfetchConditionalCompareNegative_i32,
+      "10111010010---------10"      : opfetch_conditional.opfetchConditionalCompareNegative_i64,
+      "00111010010---------00"      : opfetch_conditional.opfetchConditionalCompareNegative_r32,
+      "10111010010---------00"      : opfetch_conditional.opfetchConditionalCompareNegative_r64,
     }[key](binary)
 
 def MORE_ALU(binary):

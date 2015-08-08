@@ -171,6 +171,10 @@ def CONDITIONAL_INSTRUCTIONS(binary):
       "11011010100---------01"      : writeback_conditional.writebackConditionalSelectNegation_64,
       "00011010100---------01"      : writeback_conditional.writebackConditionalSelectIncrement_32,
       "10011010100---------01"      : writeback_conditional.writebackConditionalSelectIncrement_64,
+      "00111010010---------10"      : writeback_conditional.writebackConditionalCompareNegative_i32,
+      "10111010010---------10"      : writeback_conditional.writebackConditionalCompareNegative_i64,
+      "00111010010---------00"      : writeback_conditional.writebackConditionalCompareNegative_r32,
+      "10111010010---------00"      : writeback_conditional.writebackConditionalCompareNegative_r64,
     }[key](binary)
 
 def MORE_ALU(binary):
