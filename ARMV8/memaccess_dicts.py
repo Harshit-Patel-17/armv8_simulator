@@ -78,6 +78,8 @@ def LOGICAL_IMMEDIATE(binary):
     return {
        "000100100" : memaccess_logical.memaccessAnd_i32,
        "100100100" : memaccess_logical.memaccessAnd_i64,
+       "011100100" : memaccess_logical.memaccessAnds_i32,
+       "111100100" : memaccess_logical.memaccessAnds_i64,
     }[key](binary)
     
 def LOGICAL_SHIFT_REG(binary):
@@ -85,6 +87,8 @@ def LOGICAL_SHIFT_REG(binary):
     return {
        "00001010--0" : memaccess_logical.memaccessAnd_sr32,
        "10001010--0" : memaccess_logical.memaccessAnd_sr64,
+       "01101010--0" : memaccess_logical.memaccessAnds_sr32,
+       "11101010--0" : memaccess_logical.memaccessAnds_sr64,
     }[key](binary)
 
 

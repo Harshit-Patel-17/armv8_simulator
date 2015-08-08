@@ -11,6 +11,7 @@ import executor_conditional
 import executor_ALU
 import executor_rotate
 import executor_bitwise_shift
+import executor_adc
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -32,6 +33,7 @@ def INSTRUCTION_TYPE(binary, i):
             14 : ROTATE_IMMEDIATE,
             15 : ROTATE_REGISTER,
             16 : BITWISE_SHIFT_REGISTER,
+            17 : ADD_WITH_CARRY,
         }[i](binary)
     except KeyError:
         i = i
@@ -81,6 +83,8 @@ def LOGICAL_IMMEDIATE(binary):
     return {
        "000100100" : executor_logical.execAnd_i32,
        "100100100" : executor_logical.execAnd_i64,
+       "011100100" : executor_logical.execAnds_i32,
+       "111100100" : executor_logical.execAnds_i64,
     }[key](binary)
     
 def LOGICAL_SHIFT_REG(binary):
@@ -88,6 +92,8 @@ def LOGICAL_SHIFT_REG(binary):
     return {
        "00001010--0" : executor_logical.execAnd_sr32,
        "10001010--0" : executor_logical.execAnd_sr64,
+       "01101010--0" : executor_logical.execAnds_sr32,
+       "11101010--0" : executor_logical.execAnds_sr64,
     }[key](binary)
 
 
@@ -204,4 +210,11 @@ def BITWISE_SHIFT_REGISTER(binary):
     "10001010--1" : executor_bitwise_shift.execBitwiseShift_64,
     "01101010--1" : executor_bitwise_shift.execBitwiseShiftSetFlags_32,
     "11101010--1" : executor_bitwise_shift.execBitwiseShiftSetFlags_64,
+  }[key](binary)
+
+def ADD_WITH_CARRY(binary):
+  key = binary[0:11] + "-"*5 + binary[16:22]
+  return {
+    "00011010000-----000000"  : executor_adc.execADC_32,
+    "10011010000-----000000"  : executor_adc.execADC_64,
   }[key](binary)

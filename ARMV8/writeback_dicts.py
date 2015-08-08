@@ -78,6 +78,8 @@ def LOGICAL_IMMEDIATE(binary):
     return {
        "000100100" : writeback_logical.writebackAnd_i32,
        "100100100" : writeback_logical.writebackAnd_i64,
+       "011100100" : writeback_logical.writebackAnds_i32,
+       "111100100" : writeback_logical.writebackAnds_i64,
     }[key](binary)
     
 def LOGICAL_SHIFT_REG(binary):
@@ -85,6 +87,8 @@ def LOGICAL_SHIFT_REG(binary):
     return {
        "00001010--0" : writeback_logical.writebackAnd_sr32,
        "10001010--0" : writeback_logical.writebackAnd_sr64,
+       "01101010--0" : writeback_logical.writebackAnds_sr32,
+       "11101010--0" : writeback_logical.writebackAnds_sr64,
     }[key](binary)
 
 

@@ -8,8 +8,12 @@ import utilFunc
 import mem
 import const
 
-def op_i(binary, N):
-    inst = 'AND '
+def op_i(binary, N, setFlags):
+    if(setFlags):
+        inst = "ANDS "
+    else:
+        inst = 'AND '
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rnValue = utilFunc.getRegValueByStringkey(binary[22:27], '0')
@@ -37,11 +41,17 @@ def op_i(binary, N):
     const.FLAG_OPFETCH_EXECUTED = True
 
 def opfetchAnd_i32(binary):
-    op_i(binary, 32)
+    op_i(binary, 32, 0)
     
     
 def opfetchAnd_i64(binary):
-    op_i(binary, 64)
+    op_i(binary, 64, 0)
+
+def opfetchAnds_i32(binary):
+    op_i(binary, 32, 1)
+
+def opfetchAnds_i64(binary):
+    op_i(binary, 64, 1)
     
     
 def opfetchAnd_sr32(binary):    
@@ -123,3 +133,8 @@ def opfetchAnd_sr64(binary):
         mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
     
+def opfetchAnds_sr32(binary):
+    opfetchAnd_sr32(binary)
+
+def opfetchAnds_sr64(binary):
+    opfetchAnd_sr64(binary)

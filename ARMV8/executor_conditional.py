@@ -281,7 +281,7 @@ def execConditionalCompareNegativeImmediate(hexcode, datasize):
 		datasize = "x"
 
 	if(isConditionSatisfied(condition, 0)):
-		utilFunc.addSub(32, regValue, immediateBinary, '0', datasize, '1') #sending a dummy destination register value(32)
+		utilFunc.addSub(32, regValue, immediateBinary, '0', datasize, '1', 0) #sending a dummy destination register value(32)
 	else:
 		utilFunc.setFlags(flags)
 
@@ -304,7 +304,7 @@ def execConditionalCompareNegativeRegister(hexcode, datasize):
 		datasize = "x"
 
 	if(isConditionSatisfied(condition, 0)):
-		utilFunc.addSub(32, regValue1, regValue2, '0', datasize, '1') #sending a dummy destination register value(32)
+		utilFunc.addSub(32, regValue1, regValue2, '0', datasize, '1', 0) #sending a dummy destination register value(32)
 	else:
 		utilFunc.setFlags(flags)
 
