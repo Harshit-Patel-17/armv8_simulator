@@ -5,11 +5,11 @@ import mem
 import const
 
 #executes add with carry for 32 bits
-def execADC_32(hexcode):
+def writebackADC_32(hexcode):
 	execADC(hexcode, 32)
 
 #executes add with carry for 64 bits
-def execADC_64(hexcode):
+def writebackADC_64(hexcode):
 	execADC(hexcode, 64)
 
 #utility function for adding with carry
@@ -28,11 +28,12 @@ def execADC(hexcode, datasize):
 		regValue2 = regValue2[32:64]
 	else:
 		datasize = "x"
-	'''
+
 	carryFlag = utilFunc.get_C_flag()
-	resultBinary, isSP = utilFunc.addSub(destRegister, mem.operand1Buffer, mem.operand2Buffer, '0', datasize, '0', carryFlag)
-	mem.ALUResultBuffer = resultBinary.zfill(const.REG_SIZE)
-	mem.isSPBuffer = isSP
-	const.FLAG_INST_EXECUTED = True
+	resultBinary, isSP = utilFunc.addSub(destRegister, regValue1, regValue2, '0', datasize, '0', carryFlag)
+	'''
+	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], mem.isSPWriteBackBuffer)
+	const.FLAG_WRITEBACK_EXECUTED = True
+	mem.regObsolete[destRegister] = False
 	#utilFunc.finalize(destRegister, resultBinary, "ADC", isSP)
 

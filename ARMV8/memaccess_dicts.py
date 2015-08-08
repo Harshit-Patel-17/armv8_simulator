@@ -11,6 +11,7 @@ import memaccess_conditional
 import memaccess_ALU
 import memaccess_rotate
 import memaccess_bitwise_shift
+import memaccess_adc
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -31,7 +32,8 @@ def INSTRUCTION_TYPE(binary, i):
             13 : MORE_ALU,
             14 : ROTATE_IMMEDIATE,
             15 : ROTATE_REGISTER,
-            16: BITWISE_SHIFT_REGISTER
+            16 : BITWISE_SHIFT_REGISTER,
+            17 : ADD_WITH_CARRY,
         }[i](binary)
     except KeyError:
         i = i
@@ -207,4 +209,11 @@ def BITWISE_SHIFT_REGISTER(binary):
       "10001010--1" : memaccess_bitwise_shift.memaccessBitwiseShift_64,
       "01101010--1" : memaccess_bitwise_shift.memaccessBitwiseShiftSetFlags_32,
       "11101010--1" : memaccess_bitwise_shift.memaccessBitwiseShiftSetFlags_64,
+    }[key](binary)
+
+def ADD_WITH_CARRY(binary):
+    key = binary[0:11] + "-"*5 + binary[16:22]
+    return {
+      "00011010000-----000000"  : memaccess_adc.memaccessADC_32,
+      "10011010000-----000000"  : memaccess_adc.memaccessADC_64,
     }[key](binary)
