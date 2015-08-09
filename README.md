@@ -4,7 +4,7 @@
 
 1) Clone the project to your local repository.
 
-2) Run make.sh file using following command on linux terminal.
+2) Run `make.sh` file using following command on linux terminal.
 ```
 #!Linux Shell Command
 
@@ -31,7 +31,7 @@ $python main.py --help
 
 ## Data forwarding ##
 
-Run simulation with --forward command-line argument at the end to enable data-forwarding in 5-stage instruction pipeline. It is assumed that data can be forwarded from EX/MA and MA/WB interstage registers for use by subsequent instructions.
+Run simulation with `--forward` command-line argument at the end to enable data-forwarding in 5-stage instruction pipeline. It is assumed that data can be forwarded from EX/MA and MA/WB interstage registers for use by subsequent instructions.
 
 For example, the first command below will simulate ARM programs without data-forwarding while the other one will enable data-forwarding in  simulation.
 
