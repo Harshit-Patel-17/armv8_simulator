@@ -216,7 +216,7 @@ def writebackLDRH_reg_offset(binary):
 def writebackLDRSB_reg_offset_32(binary):
     helper_reg(binary, 'LDRSB w')
 
-def writebackLDRSB_reg_offset(binary):
+def writebackLDRSB_reg_offset_64(binary):
     helper_reg(binary, 'LDRSB X')
     
 
