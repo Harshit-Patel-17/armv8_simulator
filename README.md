@@ -32,3 +32,12 @@ $python main.py --help
 ## Data forwarding ##
 
 Run simulation with --forward command-line argument at the end to enable data-forwarding in 5-stage instruction pipeline. It is assumed that data can be forwarded from EX/MA and MA/WB interstage registers for use by subsequent instructions.
+
+For example, the first command below will simulate ARM programs withput data-forwarding while the other one will enable data-forwarding in  simulation.
+
+```
+#!Linux Shell Command
+
+$python main.py MyTestcases/t1.out
+$python main.py MyTestcases/t1.out --forward
+```
