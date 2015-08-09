@@ -4,6 +4,7 @@ import const
 import opfetch_dicts_branch
 import opfetch_dicts_loadStore
 import mem
+import sys
 
 def decodeInstr(hexCode): 
     binary = utilFunc.hexToBin(hexCode)
@@ -31,4 +32,5 @@ def decodeInstr(hexCode):
                 break
             
     if(const.FLAG_OPFETCH_EXECUTED==False):
-        print 'Sorry OPFETCH!!! :( Instruction with hexCode: ' + hexCode + ' is incorrect or not supported'
+        print 'Sorry!!! :( Instruction with hexCode: ' + hexCode + ' is incorrect or not supported in decode stage'
+        sys.exit(1)

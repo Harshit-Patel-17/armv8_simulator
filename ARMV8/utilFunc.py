@@ -401,11 +401,16 @@ def fetch64bitDataFromMem(address):
     return leftData + rightData
 
 def fetchFromMemory(address, dataSize):
-     if(dataSize == 64):
+    if(dataSize == 64):
         data = fetch64bitDataFromMem(address)
-     else:
+    else:
         data = fetch32bitDataFromMem(address)
-     return data
+        
+    if(dataSize == 8):
+        data = data[24:32]
+    elif(dataSize == 16):
+        data = data[16:32]
+    return data
 
 def store32bitDataToMem(address, data):
     data = binaryToHexStr(data)
