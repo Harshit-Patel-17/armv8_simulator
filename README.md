@@ -21,8 +21,14 @@ $python main.py --help
 
 New features
 
-1) Added support for 5-stage pipelining.
+1) Added support for 5-stage pipelining (IF->ID->EX->MA->WB).
 
 2) Added support for data-forwarding mode. (See section data-forwarding for more details)
 
 3) Added support for new instructions CSET, CSINC, CSNEG, ADC, ANDS, BIC, BICS, CCMN, CINV, CLS, CLZ, CMN, CNEG, LDRB, LDRH, LDRSB, LDP, STP, ASR, LSL, LSR, ROR, SDIV,UMULL, UDIV.
+
+4) Added new debugger commands `cycles` and `stalls`.
+
+Data forwarding
+
+Run simulation with --forward command-line argument at the end to enable data-forwarding in 5-stage instruction pipeline. It is assumed that data can be forwarded from EX/MA and MA/WB interstage registers for use by subsequent instructions.
