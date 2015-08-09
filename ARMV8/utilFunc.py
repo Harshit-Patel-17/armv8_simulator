@@ -446,11 +446,9 @@ def countLeadingZeroBits(input, datasize):
             return datasize - 1 - index
         index = index -1
 
-    return -1
+    return datasize
 
 def countLeadingSignBits(input, datasize):
-    print input[1:datasize]
-    print input[0:(datasize-1)]
     return countLeadingZeroBits(calculateXor(input[1:datasize],input[0:(datasize-1)]), datasize-1)
 
 def setFlags(flags):

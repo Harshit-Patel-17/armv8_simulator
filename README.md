@@ -1,25 +1,43 @@
-ARMV8_Simulator
-===============
+# ARMv8 Simulator #
 
-ARMv8 instruction set simulator:
+## Getting started ##
 
-Given an ELF format binary for the ARM architecture, ARMV8_Simulator simulates it. The simulator parses the ELF format binary, extracts
-the instructions (along with other information), decodes them and take actions accordingly. It keeps track of the state of the memory and all the registers.
+1) Clone the project to your local repository.
 
-ARMV8_Simulator is also integrated with a tiny debugger.
+2) Run `make.sh` file using following command on linux terminal.
+```
+#!Linux Shell Command
 
-Some more points:
+$sudo ./make.sh
+```
+3) Go to folder <project_path>/ARMV8 from linux terminal.
 
-1. Run make.sh from inside this directory. Very important. 
-2. For help options inside ARMV8 directory, run "python main.py --help" and take help from help.
-3. For running machine code in elf file, run as 'python main.py <filename>'
-4. For running debugger run as 'python main.py --debug <filename>'
-5. When inside debugger, type help for debugger options.
-6. The instructions we have simulated are : 
-ADD, ADDS, ADR, ADRP, ASR, AND, B.{cond}, B, BR, BL, BLR, CBNZ, CBZ, CMP, LDP, LDR, LDRSW, LSL, LSR, NOP, MOV, RET, STP, STR, SUB, SUBS.
+4) Run following command to get help in using the application to simulate various ARM programs.
+```
+#!Linux Shell Command
 
+$python main.py --help
+```
 
-We have used pyelftools for elf parsing, credits to "https://github.com/eliben/pyelftools"
+## New features ##
 
+1) Added support for 5-stage pipelining (IF->ID->EX->MA->WB).
 
----------------------------------Happy ARMV8 simulation. :)-------------------------------------------------------
+2) Added support for data-forwarding mode. (See section data-forwarding for more details)
+
+3) Added support for new instructions CSET, CSINC, CSNEG, ADC, ANDS, BIC, BICS, CCMN, CINV, CLS, CLZ, CMN, CNEG, LDRB, LDRH, LDRSB, LDP, STP, ASR, LSL, LSR, ROR, SDIV,UMULL, UDIV.
+
+4) Added new debugger commands `cycles` and `stalls`.
+
+## Data forwarding ##
+
+Run simulation with `--forward` command-line argument at the end to enable data-forwarding in 5-stage instruction pipeline. It is assumed that data can be forwarded from EX/MA and MA/WB interstage registers for use by subsequent instructions.
+
+For example, the first command below will simulate ARM programs without data-forwarding while the other one will enable data-forwarding in  simulation.
+
+```
+#!Linux Shell Command
+
+$python main.py MyTestcases/t1.out
+$python main.py MyTestcases/t1.out --forward
+```
