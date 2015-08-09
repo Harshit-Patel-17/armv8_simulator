@@ -3,6 +3,7 @@ import utilFunc
 import const
 import memaccess_dicts_branch
 import memaccess_dicts_loadStore
+import sys
 
 def decodeInstr(hexCode): 
     binary = utilFunc.hexToBin(hexCode)
@@ -28,4 +29,5 @@ def decodeInstr(hexCode):
                 break
             
     if(const.FLAG_MEMACCESS_EXECUTED==False):
-        print 'Sorry MEM!!! :( Instruction with hexCode: ' + hexCode + ' is incorrect or not supported'
+        print 'Sorry!!! :( Instruction with hexCode: ' + hexCode + ' is incorrect or not supported in memory access stage'
+        sys.exit(1)

@@ -7,6 +7,7 @@ import utilFunc
 import const
 import dicts_branch
 import dicts_loadStore
+import sys
 
 def decodeInstr(hexCode): 
     binary = utilFunc.hexToBin(hexCode)
@@ -32,4 +33,5 @@ def decodeInstr(hexCode):
                 break
             
     if(const.FLAG_INST_EXECUTED==False):
-        print 'Sorry!!! :( Instruction with hexCode: ' + hexCode + ' is incorrect or not supported'
+        print 'Sorry!!! :( Instruction with hexCode: ' + hexCode + ' is incorrect or not supported in execution stage'
+        sys.exit(1)
