@@ -35,8 +35,6 @@ def executeCLS(hexcode, datasize):
 		registerType = "x"
 	'''
 	result = utilFunc.countLeadingSignBits(mem.operand1Buffer, datasize)
-	print "HERE"
-	print mem.operand1Buffer
 	resultBinary = "{0:b}".format(result)
 	
 	resultBinary = resultBinary.zfill(64)
