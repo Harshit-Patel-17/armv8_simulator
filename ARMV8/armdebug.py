@@ -686,8 +686,9 @@ def printMainHelp():
     print ''
     print 'Options: '
     print '1. --help : Prints this output. '
-    print '2. --debug filename: Starts debugger for elf file with title filename'
+    print '2. --debug : Starts debugger for elf file with title filename'
     print '3. filename: Should be the relative/absolute path of the elf file directed towards ARMv8 architecture'
+    print '4. --forward : Enables data-forwarding in pipeline from EX/MA and MA/WB interstage registers'
     print '------------------------------------'
     print ''
     
@@ -707,6 +708,8 @@ def executeDebuggerHelp():
     print '10. print num<b/d/w> <d/x> 0x<hex-address> : prints the num(count) bytes, words, or doublewords starting from hexaddress in decimal/hexadecimal'
     print "11. watch num: stops executing as soon as register num's value is changed"
     print '12. exit: Exits the program(with the debugger)'
+    print "13. cycles: Prints cycles spent in execution"
+    print "14. stalls: Prints total stall cycles in execution"
     print ''
     
 def executeWatch(command):
