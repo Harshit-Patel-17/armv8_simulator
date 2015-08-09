@@ -12,7 +12,7 @@ def writebackADR(binary):
     rdKey=binary[-5:]
     regnum=utilFunc.uInt(rdKey)
 
-    utilFunc.setRegValue(regnum, utilFunc.intToBinary(mem.writeBackBuffer[0], 64), '0')
+    utilFunc.setRegValue(regnum, mem.writeBackBuffer[0], '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[regnum] = False
 
@@ -20,7 +20,7 @@ def writebackADRP(binary):
     rdKey=binary[-5:]
     regnum=utilFunc.uInt(rdKey)
 
-    utilFunc.setRegValue(regnum, utilFunc.intToBinary(mem.writeBackBuffer[0], 64), '0')
+    utilFunc.setRegValue(regnum, mem.writeBackBuffer[0], '0')
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[regnum] = False
 

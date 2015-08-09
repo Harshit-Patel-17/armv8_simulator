@@ -19,53 +19,83 @@ def getFields_r(binary):
 
 
 def memaccessAsr_r32(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
                        
 def memaccessLsl_r32(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
 def memaccessLsr_r32(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
 def memaccessAsr_r64(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
                        
 def memaccessLsl_r64(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
 def memaccessLsr_r64(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
 
 # Immediate operations
 def memaccessAsr_i32(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
 def memaccessAsr_i64(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
                        
 def memaccessLslLsr_i32(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
 def memaccessLslLsr_i64(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     

@@ -62,24 +62,32 @@ def helper_rp(wback, postIndex, binary, instr):
      
     offset = utilFunc.lsl(utilFunc.signExtend(imm7, 64), scale)
     offset = utilFunc.sInt(offset, 64)
-     
-    address = utilFunc.getRegValueByStringkey(binary[22:27], '1')
-    address = utilFunc.uInt(address)
     
+    const.FLAG_OPFETCH_EXECUTED = True
     if(mem.regObsolete[rnKey] == False):
         const.FLAG_OP_FETCHED = True
-        mem.operand1Buffer = address
-        mem.operand2Buffer = offset
-        mem.regObsolete[rtKey] = True
-        if(memOp == const.MEM_OP_LOAD):
-            mem.regObsolete[rtKey] = True
-            mem.regObsolete_last_modified_indices.append(rtKey)
-            mem.regObsolete[rt2Key] = True
-            mem.regObsolete_last_modified_indices.append(rt2Key)
-        if(wback):
-            mem.regObsolete[rnKey] = True
-            mem.regObsolete_last_modified_indices.append(rnKey)
-    const.FLAG_OPFETCH_EXECUTED = True
+        address = utilFunc.getRegValueByStringkey(binary[22:27],'1')
+    elif(const.FLAG_DATA_FORWARDING):
+        forwardedValues = mem.findForwardedValues(rnKey)
+        if(forwardedValues[0] != None):
+            const.FLAG_OP_FETCHED = True
+            address = forwardedValues[0]
+        else:
+            return
+    else:
+        return
+    
+    mem.regObsolete[rtKey] = True
+    mem.regObsolete_last_modified_indices.append(rtKey)
+    mem.regObsolete[rt2Key] = True
+    mem.regObsolete_last_modified_indices.append(rt2Key)
+    
+     
+    #address = utilFunc.getRegValueByStringkey(binary[22:27], '1')
+    address = utilFunc.uInt(address)
+    
+    mem.operand1Buffer = address
+    mem.operand2Buffer = offset
         
     
 #---Load/Store Register-Pair (Post-Indexed)---    
@@ -340,20 +348,27 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
             memOp = const.MEM_OP_PREFETCH
         else:
             memOp = const.MEM_OP_LOAD
-    
-    address = utilFunc.getRegValueByStringkey(binary[22:27], '1')
-    address = utilFunc.uInt(address)
-    
+            
+    const.FLAG_OPFETCH_EXECUTED = True
     if(mem.regObsolete[rnKey] == False):
         const.FLAG_OP_FETCHED = True
-        mem.operand1Buffer = address
-        mem.operand2Buffer = offset
-        mem.regObsolete[rtKey] = True
-        if(memOp == const.MEM_OP_LOAD):
-            mem.regObsolete[rtKey] = True
-            mem.regObsolete_last_modified_indices.append(rtKey)
-        if(wback):
-            mem.regObsolete[rnKey] = True
-            mem.regObsolete_last_modified_indices.append(rnKey)
-    const.FLAG_OPFETCH_EXECUTED = True
+        address = utilFunc.getRegValueByStringkey(binary[22:27],'1')
+    elif(const.FLAG_DATA_FORWARDING):
+        forwardedValues = mem.findForwardedValues(rnKey)
+        if(forwardedValues[0] != None):
+            const.FLAG_OP_FETCHED = True
+            address = forwardedValues[0]
+        else:
+            return
+    else:
+        return
+    
+    mem.regObsolete[rtKey] = True
+    mem.regObsolete_last_modified_indices.append(rtKey)
+    
+    #address = utilFunc.getRegValueByStringkey(binary[22:27], '1')
+    address = utilFunc.uInt(address)
+    
+    mem.operand1Buffer = address
+    mem.operand2Buffer = offset
     

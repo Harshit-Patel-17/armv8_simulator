@@ -16,7 +16,25 @@ def op_i(binary, N, setFlags):
     
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
-    rnValue = utilFunc.getRegValueByStringkey(binary[22:27], '0')
+    
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(mem.regObsolete[rnKey] == False):
+        const.FLAG_OP_FETCHED = True
+        rnValue = utilFunc.getRegValueByStringkey(binary[22:27],'0')
+    elif(const.FLAG_DATA_FORWARDING):
+        forwardedValues = mem.findForwardedValues(rnKey)
+        if(forwardedValues[0] != None):
+            const.FLAG_OP_FETCHED = True
+            rnValue = forwardedValues[0]
+        else:
+            return
+    else:
+        return
+    
+    mem.regObsolete[rdKey] = True
+    mem.regObsolete_last_modified_indices.append(rdKey)
+    
+    #rnValue = utilFunc.getRegValueByStringkey(binary[22:27], '0')
     if(N == 32):
         r = 'w'
         rnValue = rnValue[32:64]
@@ -32,13 +50,8 @@ def op_i(binary, N, setFlags):
     imm, temp = utilFunc.decodeBitMasks(immN, imms, immr, N)
     inst += ', #' + str(int(imm,2))
     
-    if(mem.regObsolete[rnKey] == False):
-        const.FLAG_OP_FETCHED = True
-        mem.operand1Buffer = rnValue
-        mem.operand2Buffer = imm
-        mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_indices.append(rdKey)
-    const.FLAG_OPFETCH_EXECUTED = True
+    mem.operand1Buffer = rnValue
+    mem.operand2Buffer = imm
 
 def opfetchAnd_i32(binary):
     op_i(binary, 32, 0)
@@ -60,12 +73,31 @@ def opfetchAnd_sr32(binary):
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rmKey = utilFunc.getRegKeyByStringKey(binary[11:16])    
     
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
+        const.FLAG_OP_FETCHED = True
+        rnValue = utilFunc.getRegValueByStringkey(binary[22:27],'0')
+        rmValue = utilFunc.getRegValueByStringkey(binary[11:16],'0')
+    elif(const.FLAG_DATA_FORWARDING):
+        forwardedValues = mem.findForwardedValues(rnKey, rmKey)
+        if(forwardedValues[0] != None and forwardedValues[1] != None):
+            const.FLAG_OP_FETCHED = True
+            rnValue = forwardedValues[0]
+            rmValue = forwardedValues[1]
+        else:
+            return
+    else:
+        return
+    
+    mem.regObsolete[rdKey] = True
+    mem.regObsolete_last_modified_indices.append(rdKey)
+    
     inst += 'w' + str(rdKey) + ', w' + str(rnKey) + ', w' + str(rmKey) + ', '    
     
-    rnValue = utilFunc.getRegValueByStringkey(binary[22:27], '0')
+    #rnValue = utilFunc.getRegValueByStringkey(binary[22:27], '0')
     immKey = binary[16:22]
     immvalue = int(immKey, 2)  # amount
-    rmValue = utilFunc.getRegValueByStringkey(binary[11:16], '0')
+    #rmValue = utilFunc.getRegValueByStringkey(binary[11:16], '0')
     
     shifttype = binary[8:10]
     
@@ -85,13 +117,8 @@ def opfetchAnd_sr32(binary):
         inst += 'ROR'
     inst += ' #' + str(immvalue)
 
-    if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
-        const.FLAG_OP_FETCHED = True
-        mem.operand1Buffer = temp
-        mem.operand2Buffer = rnValue[32:64]
-        mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_indices.append(rdKey)
-    const.FLAG_OPFETCH_EXECUTED = True
+    mem.operand1Buffer = temp
+    mem.operand2Buffer = rnValue[32:64]
     
 def opfetchAnd_sr64(binary):
     inst = 'AND '
@@ -100,12 +127,31 @@ def opfetchAnd_sr64(binary):
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rmKey = utilFunc.getRegKeyByStringKey(binary[11:16])
     
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
+        const.FLAG_OP_FETCHED = True
+        rnValue = utilFunc.getRegValueByStringkey(binary[22:27],'0')
+        rmValue = utilFunc.getRegValueByStringkey(binary[11:16],'0')
+    elif(const.FLAG_DATA_FORWARDING):
+        forwardedValues = mem.findForwardedValues(rnKey, rmKey)
+        if(forwardedValues[0] != None and forwardedValues[1] != None):
+            const.FLAG_OP_FETCHED = True
+            rnValue = forwardedValues[0]
+            rmValue = forwardedValues[1]
+        else:
+            return
+    else:
+        return
+    
+    mem.regObsolete[rdKey] = True
+    mem.regObsolete_last_modified_indices.append(rdKey)
+    
     inst += 'x' + str(rdKey) + ', x' + str(rnKey) + ', x' + str(rmKey) + ', '
     
-    rnValue = utilFunc.getRegValueByStringkey(binary[22:27], '0')
+    #rnValue = utilFunc.getRegValueByStringkey(binary[22:27], '0')
     immKey = binary[16:22]
     immvalue = int(immKey, 2)  # amount
-    rmValue = utilFunc.getRegValueByStringkey(binary[11:16], '0')
+    #rmValue = utilFunc.getRegValueByStringkey(binary[11:16], '0')
     
     shifttype = binary[8:10]
     
@@ -125,13 +171,8 @@ def opfetchAnd_sr64(binary):
         inst += 'ROR'
     inst += ' #' + str(immvalue)
 
-    if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
-        const.FLAG_OP_FETCHED = True
-        mem.operand1Buffer = temp
-        mem.operand2Buffer = rnValue[0:64]
-        mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_indices.append(rdKey)
-    const.FLAG_OPFETCH_EXECUTED = True
+    mem.operand1Buffer = temp
+    mem.operand2Buffer = rnValue[0:64]
     
 def opfetchAnds_sr32(binary):
     opfetchAnd_sr32(binary)

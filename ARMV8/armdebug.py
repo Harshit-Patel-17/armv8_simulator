@@ -682,7 +682,7 @@ def executeRegs():
 def printMainHelp():
     print ''
     print '------------------------------------'
-    print 'Syntax: python <PATH-TO PROJECT>/main.py [--help,--debug] [filename]'
+    print 'Syntax: python <PATH-TO PROJECT>/main.py [--help,--debug] [filename] [--forward]'
     print ''
     print 'Options: '
     print '1. --help : Prints this output. '

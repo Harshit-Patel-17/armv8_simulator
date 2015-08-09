@@ -21,11 +21,17 @@ def memaccessMov_wi64(binary):
     mov_imm(binary, "MOV x", '0', 64)
     
 def mov_imm(binary, instr, inverted, N):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer   
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     const.FLAG_MEMACCESS_EXECUTED = True
 
 def mov_reg(binary, N):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     const.FLAG_MEMACCESS_EXECUTED = True
 
 def memaccessMov_r32(binary):
@@ -36,7 +42,10 @@ def memaccessMov_r64(binary):
                            
                            
 def mov_bmi(binary, N):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     const.FLAG_MEMACCESS_EXECUTED = True
     
 def memaccessMov_bmi32(binary):

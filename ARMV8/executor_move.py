@@ -21,15 +21,20 @@ def execMov_wi64(binary):
     mov_imm(binary, "MOV x", '0', 64)
     
 def mov_imm(binary, instr, inverted, N):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     if(inverted == '1'):
         mem.ALUResultBuffer = utilFunc.negate(mem.operand1Buffer)
     else:
         mem.ALUResultBuffer = mem.operand1Buffer
     mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+    mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True
 
 def mov_reg(binary, N):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = mem.operand1Buffer
+    mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+    mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True
 
 def execMov_r32(binary):
@@ -40,7 +45,9 @@ def execMov_r64(binary):
                            
                            
 def mov_bmi(binary, N):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = utilFunc.logical_or('0'*N,mem.operand1Buffer).zfill(const.REG_SIZE)
+    mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True
     
 def execMov_bmi32(binary):

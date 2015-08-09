@@ -24,54 +24,62 @@ def opfetchCLZ_64(hexcode):
 def executeCLS(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister = utilFunc.getRegKeyByStringKey(hexcode[22:27])
+	
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(mem.regObsolete[operandRegister] == False):
+		const.FLAG_OP_FETCHED = True
+		regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+	elif(const.FLAG_DATA_FORWARDING):
+		forwardedValues = mem.findForwardedValues(operandRegister)
+		if(forwardedValues[0] != None):
+			const.FLAG_OP_FETCHED = True
+			regValue = forwardedValues[0]
+		else:
+			return
+	else:
+		return
 
-	regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+	mem.regObsolete[destRegister] = True
+	mem.regObsolete_last_modified_indices.append(destRegister)
+
+	#regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
 	
 	if(datasize == 32):
 		registerType = "w"
 		regValue = regValue[32:64]
 	else:
 		registerType = "x"
-	
-	if(mem.regObsolete[operandRegister] == False):
-		const.FLAG_OP_FETCHED = True
-		mem.operand1Buffer = regValue
-		mem.regObsolete[destRegister] = True
-		mem.regObsolete_last_modified_indices.append(destRegister)
-	const.FLAG_OPFETCH_EXECUTED = True
-	'''
-	result = utilFunc.countLeadingSignBits(regValue, datasize)
-	resultBinary = "{0:b}".format(result)
-
-	instruction = "CLS " + registerType + str(destRegister) + ", " + registerType + str(operandRegister)
-
-	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
-	'''
+		
+	mem.operand1Buffer = regValue
 
 #utility function for counting the number of leading zero bits
 def executeCLZ(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister = utilFunc.getRegKeyByStringKey(hexcode[22:27])
+	
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(mem.regObsolete[operandRegister] == False):
+		const.FLAG_OP_FETCHED = True
+		regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+	elif(const.FLAG_DATA_FORWARDING):
+		forwardedValues = mem.findForwardedValues(operandRegister)
+		if(forwardedValues[0] != None):
+			const.FLAG_OP_FETCHED = True
+			regValue = forwardedValues[0]
+		else:
+			return
+	else:
+		return
 
-	regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+	mem.regObsolete[destRegister] = True
+	mem.regObsolete_last_modified_indices.append(destRegister)
+
+	#regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
 	
 	if(datasize == 32):
 		registerType = "w"
 		regValue = regValue[32:64]
 	else:
 		registerType = "x"
-
-	if(mem.regObsolete[operandRegister] == False):
-		const.FLAG_OP_FETCHED = True
-		mem.operand1Buffer = regValue
-		mem.regObsolete[destRegister] = True
-		mem.regObsolete_last_modified_indices.append(destRegister)
-	const.FLAG_OPFETCH_EXECUTED = True
-	'''
-	result = utilFunc.countLeadingZeroBits(regValue, datasize)
-	resultBinary = "{0:b}".format(result)
-
-	instruction = "CLS " + registerType + str(destRegister) + ", " + registerType + str(operandRegister)
-
-	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
-	'''
+		
+	mem.operand1Buffer = regValue

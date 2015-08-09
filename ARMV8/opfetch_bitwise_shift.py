@@ -20,14 +20,28 @@ def executeBitwiseShiftRegister(hexcode, datasize, setFlags):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
+	
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
+		const.FLAG_OP_FETCHED = True
+		reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+		reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
+	elif(const.FLAG_DATA_FORWARDING):
+		forwardedValues = mem.findForwardedValues(operandRegister1, operandRegister2)
+		if(forwardedValues[0] != None and forwardedValues[1] != None):
+			const.FLAG_OP_FETCHED = True
+			reg1Value = forwardedValues[0]
+			reg2Value = forwardedValues[1]
+		else:
+			return
+	else:
+		return
+	
+	mem.regObsolete[destRegister] = True
+	mem.regObsolete_last_modified_indices.append(destRegister)
 
-	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
-	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
-
-	#shiftAmountBinary = hexcode[16:22]
-	#shiftAmount =int(shiftAmountBinary, 2)
-
-	#shiftType = hexcode[8:10]
+	#reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+	#reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
 
 	if(datasize == 32):
 		registerType = "w"
@@ -35,36 +49,6 @@ def executeBitwiseShiftRegister(hexcode, datasize, setFlags):
 		reg2Value = reg2Value[32:64]
 	else:
 		registerType = "x"
-		
-	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
-		const.FLAG_OP_FETCHED = True
-		mem.operand1Buffer = reg1Value
-		mem.operand2Buffer = reg2Value
-		mem.regObsolete[destRegister] = True
-		mem.regObsolete_last_modified_indices.append(destRegister)
-	const.FLAG_OPFETCH_EXECUTED = True
 	
-	'''
-	if(shiftType == "00"): #LSL
-		shiftedValue = utilFunc.lsl(reg2Value, shiftAmount)
-	elif(shiftType == "01"): #LSR
-		shiftedValue = utilFunc.lsr(reg2Value, shiftedValue)
-	elif(shiftType == "10"): #ASR
-		shiftedValue = utilFunc.asr(reg2Value, shiftedValue)
-	else: #ROR
-		shiftedValue = utilFunc.ror(reg2Value, shiftedValue)
-
-	resultBinary = utilFunc.logical_and(reg1Value, shiftedValue)
-
-	if(setFlags):
-		utilFunc.setFlagsFromResult(resultBinary)
-		command = "BICS "
-	else:
-		command = "BIC "
-
-	resultBinary = resultBinary.zfill(64)
-
-	instr = command + registerType + str(destRegister) + ", " + registerType + str(operandRegister1) + ", " + registerType + str(operandRegister2) + shiftType + str(shiftAmount)
-
-	utilFunc.finalize(destRegister, resultBinary, instr, '0')
-	'''
+	mem.operand1Buffer = reg1Value
+	mem.operand2Buffer = reg2Value

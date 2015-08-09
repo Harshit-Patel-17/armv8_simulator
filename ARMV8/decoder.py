@@ -8,9 +8,12 @@ import const
 import dicts_branch
 import dicts_loadStore
 import sys
+import mem
 
 def decodeInstr(hexCode): 
     binary = utilFunc.hexToBin(hexCode)
+    mem.regValueAvailableInALU = list(False for i in range(mem.regNum))
+    mem.regValueAvailableInALU_last_modified_indices = []
     const.FLAG_INST_EXECUTED = False
     #Checking for branch type
     if(binary[3:6] == '101'):

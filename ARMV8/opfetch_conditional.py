@@ -119,55 +119,35 @@ def executeConditionalSelectInverse(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
+	
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
+		const.FLAG_OP_FETCHED = True
+		reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+		reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
+	elif(const.FLAG_DATA_FORWARDING):
+		forwardedValues = mem.findForwardedValues(operandRegister1, operandRegister2)
+		if(forwardedValues[0] != None and forwardedValues[1] != None):
+			const.FLAG_OP_FETCHED = True
+			reg1Value = forwardedValues[0]
+			reg2Value = forwardedValues[1]
+		else:
+			return
+	else:
+		return
+	
+	mem.regObsolete[destRegister] = True
+	mem.regObsolete_last_modified_indices.append(destRegister)
 
-	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
-	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
+	#reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+	#reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
 	
 	if(datasize == 32):
 		reg1Value = reg1Value[32:64]
 		reg2Value = reg2Value[32:64]
 
-	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
-		const.FLAG_OP_FETCHED = True
-		mem.operand1Buffer = reg1Value
-		mem.operand2Buffer = reg2Value
-		mem.regObsolete[destRegister] = True
-		mem.regObsolete_last_modified_indices.append(destRegister)
-	const.FLAG_OPFETCH_EXECUTED = True
-	'''
-	condition = hexcode[16:20]
-
-	isLsbInverted = 0
-
-	if(operandRegister1 == operandRegister2):
-		command = "CINV "
-		isLsbInverted = 1
-	else:
-		command = "CSINV "
-
-	if(isConditionSatisfiedFunction(condition, isLsbInverted)):
-		if(command == "CINV "):
-			reg1Value = utilFunc.negate(reg1Value)
-		reg1Value = int(reg1Value, 2)
-		resultBinary = ("{0:b}".format(reg1Value))
-	else:
-		if(command == "CSINV "):
-			reg2Value = utilFunc.negate(reg2Value)
-		reg2Value = int(reg2Value, 2)
-		resultBinary = ("{0:b}".format(reg2Value))
-
-	if(datasize == 32):
-		registerType = "w"
-	else:
-		registerType = "x"
-
-	if(command == "CINV "):
-		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + const.CONDITIONS_MAP_LSB_INVERTED[condition]
-	else: 
-		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + registerType + str(operandRegister2) + ", " + const.CONDITIONS_MAP[condition]
-
-	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
-	'''
+	mem.operand1Buffer = reg1Value
+	mem.operand2Buffer = reg2Value
 
 
 #utility function for conditional select negate
@@ -175,76 +155,67 @@ def executeConditionalSelectNegate(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
+	
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
+		const.FLAG_OP_FETCHED = True
+		reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+		reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
+	elif(const.FLAG_DATA_FORWARDING):
+		forwardedValues = mem.findForwardedValues(operandRegister1, operandRegister2)
+		if(forwardedValues[0] != None and forwardedValues[1] != None):
+			const.FLAG_OP_FETCHED = True
+			reg1Value = forwardedValues[0]
+			reg2Value = forwardedValues[1]
+		else:
+			return
+	else:
+		return
+	
+	mem.regObsolete[destRegister] = True
+	mem.regObsolete_last_modified_indices.append(destRegister)
 
-	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
-	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
+	#reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+	#reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
 	
 	if(datasize == 32):
 		reg1Value = reg1Value[32:64]
 		reg2Value = reg2Value[32:64]
 	
-	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
-		const.FLAG_OP_FETCHED = True
-		mem.operand1Buffer = reg1Value
-		mem.operand2Buffer = reg2Value
-		mem.regObsolete[destRegister] = True
-		mem.regObsolete_last_modified_indices.append(destRegister)
-	const.FLAG_OPFETCH_EXECUTED = True
-
-	'''
-	condition = hexcode[16:20]
-
-	isLsbInverted = 0
-
-	if(operandRegister1 == operandRegister2):
-		command = "CNEG "
-		isLsbInverted = 1
-	else:
-		command = "CSNEG "
-
-	if(isConditionSatisfiedFunction(condition, isLsbInverted)):
-		if(command == "CNEG "):
-			reg1Value = utilFunc.negate(reg1Value)
-		reg1Value = int(reg1Value, 2)
-		if(command == "CNEG "):
-			reg1Value = reg1Value + 1
-		resultBinary = ("{0:b}".format(reg1Value))
-	else:
-		if(command == "CSNEG "):
-			reg2Value = utilFunc.negate(reg2Value)
-		reg2Value = int(reg2Value, 2)
-		if(command == "CSNEG "):
-			reg2Value = reg2Value + 1
-		resultBinary = ("{0:b}".format(reg2Value))
+	mem.operand1Buffer = reg1Value
+	mem.operand2Buffer = reg2Value
 	
-	if(datasize == 32):
-		registerType = "w"
-	else:
-		registerType = "x"
-
-	if(command == "CNEG "):
-		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + const.CONDITIONS_MAP_LSB_INVERTED[condition]
-	else: 
-		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + registerType + str(operandRegister2) + ", " + const.CONDITIONS_MAP[condition]
-
-	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
-	'''
 #utility function for conditional select increment
 def executeConditionalSelectIncrement(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
-
-	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
-	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
 	
+	const.FLAG_OPFETCH_EXECUTED = True
 	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
 		const.FLAG_OP_FETCHED = True
-		mem.operand1Buffer = reg1Value
-		mem.operand2Buffer = reg2Value
-		mem.regObsolete[destRegister] = True
-		mem.regObsolete_last_modified_indices.append(destRegister)
-	const.FLAG_OPFETCH_EXECUTED = True
+		reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+		reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
+	elif(const.FLAG_DATA_FORWARDING):
+		forwardedValues = mem.findForwardedValues(operandRegister1, operandRegister2)
+		if(forwardedValues[0] != None and forwardedValues[1] != None):
+			const.FLAG_OP_FETCHED = True
+			reg1Value = forwardedValues[0]
+			reg2Value = forwardedValues[1]
+		else:
+			return
+	else:
+		return
+	
+	mem.regObsolete[destRegister] = True
+	mem.regObsolete_last_modified_indices.append(destRegister)
+
+	#reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
+	#reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
+	
+	
+	mem.operand1Buffer = reg1Value
+	mem.operand2Buffer = reg2Value
 
 #utility function for conditional compare negative immediate
 def execConditionalCompareNegativeImmediate(hexcode, datasize):
@@ -253,7 +224,21 @@ def execConditionalCompareNegativeImmediate(hexcode, datasize):
 	#condition = hexcode[16:20]
 	immediateBinary = hexcode[11:16]
 	
-	regValue = utilFunc.getRegValueByStringkey(hexcode[22:27], 0)
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(mem.regObsolete[operandRegister] == False):
+		const.FLAG_OP_FETCHED = True
+		regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+	elif(const.FLAG_DATA_FORWARDING):
+		forwardedValues = mem.findForwardedValues(operandRegister)
+		if(forwardedValues[0] != None):
+			const.FLAG_OP_FETCHED = True
+			regValue = forwardedValues[0]
+		else:
+			return
+	else:
+		return
+	
+	#regValue = utilFunc.getRegValueByStringkey(hexcode[22:27], 0)
 
 	#immediateValue = int(immediateBinary, 2)
 
@@ -263,27 +248,35 @@ def execConditionalCompareNegativeImmediate(hexcode, datasize):
 	else:
 		datasize = "x"
 
-	if(mem.regObsolete[operandRegister] == False):
-		const.FLAG_OP_FETCHED = True
-		mem.operand1Buffer = regValue
-		mem.operand2Buffer = immediateBinary.zfill(datasize)
-	const.FLAG_OPFETCH_EXECUTED = True
-
-	#if(isConditionSatisfiedFunction(condition, 0)):
-	#	utilFunc.addSub(32, regValue, immediateBinary, '0', datasize, '1', 0) #sending a dummy destination register value(32)
-	#else:
-	#	utilFunc.setFlags(flags)
+	mem.operand1Buffer = regValue
+	mem.operand2Buffer = immediateBinary.zfill(datasize)
 
 #utility function for conditional compare negative register
 def execConditionalCompareNegativeRegister(hexcode, datasize):
 	#flags = hexcode[28:32]
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
+	
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
+		const.FLAG_OP_FETCHED = True
+		regValue1 = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+		regValue2 = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
+	elif(const.FLAG_DATA_FORWARDING):
+		forwardedValues = mem.findForwardedValues(operandRegister1, operandRegister2)
+		if(forwardedValues[0] != None and forwardedValues[1] != None):
+			const.FLAG_OP_FETCHED = True
+			regValue1 = forwardedValues[0]
+			regValue2 = forwardedValues[1]
+		else:
+			return
+	else:
+		return
 
 	#condition = hexcode[16:20]
 
-	regValue1 = utilFunc.getRegValueByStringkey(hexcode[22:27], 0)
-	regValue2 = utilFunc.getRegValueByStringkey(hexcode[11:16], 0)
+	#regValue1 = utilFunc.getRegValueByStringkey(hexcode[22:27], 0)
+	#regValue2 = utilFunc.getRegValueByStringkey(hexcode[11:16], 0)
 
 	if(datasize == 32):
 		registerType = "w"
@@ -292,13 +285,5 @@ def execConditionalCompareNegativeRegister(hexcode, datasize):
 	else:
 		datasize = "x"
 
-	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
-		const.FLAG_OP_FETCHED = True
-		mem.operand1Buffer = regValue1
-		mem.operand2Buffer = regValue2
-	const.FLAG_OPFETCH_EXECUTED = True
-
-	#if(isConditionSatisfiedFunction(condition, 0)):
-	#	utilFunc.addSub(32, regValue1, regValue2, '0', datasize, '1', 0) #sending a dummy destination register value(32)
-	#else:
-	#	utilFunc.setFlags(flags)
+	mem.operand1Buffer = regValue1
+	mem.operand2Buffer = regValue2

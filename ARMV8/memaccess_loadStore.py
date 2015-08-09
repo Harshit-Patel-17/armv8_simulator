@@ -36,6 +36,8 @@ def helper_l(binary, instr):
     if(signed):
         data = utilFunc.signExtend(data, 64)
     mem.writeBackBuffer[0] = data.zfill(64)
+    mem.regValueAvailableInWB[rtKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rtKey] = 0
     
 
 #---Load Register (Literal)---
@@ -105,12 +107,18 @@ def helper_rp(wback, postIndex, binary, instr):
             data2 = utilFunc.signExtend(data2, 64)
 
         mem.writeBackBuffer[0] = data1.zfill(64)
-        mem.writeBackBuffer[1] = data2.zfill(64)     
+        mem.writeBackBuffer[1] = data2.zfill(64)
+        mem.regValueAvailableInWB[rtKey] = True
+        mem.regValueAvailableInWB[rt2Key] = True
+        mem.regValueAvailableInWB_buffer_indices[rtKey] = 0
+        mem.regValueAvailableInWB_buffer_indices[rt2Key] = 1     
      
     if(wback):       
         if postIndex:
             mem.ALUResultBuffer = mem.ALUResultBuffer + offset
-        mem.writeBackBuffer[2] = utilFunc.intToBinary(mem.ALUResultBuffer, 64)            
+        mem.writeBackBuffer[2] = utilFunc.intToBinary(mem.ALUResultBuffer, 64) 
+        mem.regValueAvailableInWB[rnKey] = True
+        mem.regValueAvailableInWB_buffer_indices[rnKey] = 2           
     
     
 #---Load/Store Register-Pair (Post-Indexed)---    
@@ -403,8 +411,12 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
             data = utilFunc.zeroExtend(data, regSize)
     
         mem.writeBackBuffer[0] = data.zfill(64)
+        mem.regValueAvailableInWB[rtKey] = True
+        mem.regValueAvailableInWB_buffer_indices[rtKey] = 0
         
     if(wback):
         if postIndex:
             mem.ALUResultBuffer = mem.ALUResultBuffer + offset
         mem.writeBackBuffer[2] = utilFunc.intToBinary(mem.ALUResultBuffer, 64)
+        mem.regValueAvailableInWB[rnKey] = True
+        mem.regValueAvailableInWB_buffer_indices[rnKey] = 2

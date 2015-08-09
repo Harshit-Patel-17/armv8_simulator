@@ -19,27 +19,45 @@ def getFields_r(binary):
 
 
 def execAsr_r32(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = '0' * 32 + utilFunc.asr(mem.operand1Buffer[32:64], int(mem.operand2Buffer[59:64], 2))
+    mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+    mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True
                        
 def execLsl_r32(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = '0' * 32 + utilFunc.lsl(mem.operand1Buffer[32:64], int(mem.operand2Buffer[59:64], 2))
+    mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+    mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True
     
 def execLsr_r32(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = '0' * 32 + utilFunc.lsr(mem.operand1Buffer[32:64], int(mem.operand2Buffer[59:64], 2))
+    mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+    mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True
     
 def execAsr_r64(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = utilFunc.asr(mem.operand1Buffer, int(mem.operand2Buffer[58:64], 2))
+    mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+    mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True 
                        
 def execLsl_r64(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = utilFunc.lsl(mem.operand1Buffer, int(mem.operand2Buffer[58:64], 2))
+    mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+    mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True
     
 def execLsr_r64(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = utilFunc.lsr(mem.operand1Buffer, int(mem.operand2Buffer[58:64], 2))
+    mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+    mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True
     
 # Immediate operations
@@ -48,6 +66,8 @@ def execAsr_i32(binary):
     if(imms == '011111'):
         shiftVal = int(immr,2)
         mem.ALUResultBuffer = '0' * 32 + utilFunc.asr(mem.operand1Buffer[32:64], shiftVal)
+        mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+        mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True
     
 def execAsr_i64(binary):
@@ -55,6 +75,8 @@ def execAsr_i64(binary):
     if(imms == '111111'):
         shiftVal = int(immr,2)
         mem.ALUResultBuffer = utilFunc.asr(mem.operand1Buffer, shiftVal)
+        mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+        mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True
                        
 def execLslLsr_i32(binary):
@@ -65,10 +87,14 @@ def execLslLsr_i32(binary):
         #LSR
         shiftVal = immrVal
         mem.ALUResultBuffer = '0' * 32 + utilFunc.lsr(mem.operand1Buffer[32:64], shiftVal)
+        mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+        mem.regValueAvailableInALU[rdKey] = True
     elif(immrVal == immsVal+1):
         #LSL
         shiftVal = 63-immsVal
         mem.ALUResultBuffer = '0' * 32 + utilFunc.lsl(mem.operand1Buffer[32:64], shiftVal)
+        mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+        mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True
     
 def execLslLsr_i64(binary):
@@ -79,10 +105,14 @@ def execLslLsr_i64(binary):
         #LSR
         shiftVal = immrVal
         mem.ALUResultBuffer = utilFunc.lsr(mem.operand1Buffer, shiftVal)
+        mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+        mem.regValueAvailableInALU[rdKey] = True
     elif(immrVal == immsVal+1):
         #LSL
         shiftVal = 63-immsVal
         mem.ALUResultBuffer = utilFunc.lsl(mem.operand1Buffer, shiftVal)
+        mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+        mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True
 
 # Helper function

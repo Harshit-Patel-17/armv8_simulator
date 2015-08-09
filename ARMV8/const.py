@@ -12,6 +12,7 @@ FLAG_OPFETCH_EXECUTED = False #Shows whether operand fetch stage executed or not
 FLAG_OP_FETCHED = False #Shows whether operands are successfully fetched or not
 FLAG_WRITEBACK_EXECUTED = False
 FLAG_MEMACCESS_EXECUTED = False
+FLAG_DATA_FORWARDING = False
 
 MEM_OP_LOAD = "Load"
 MEM_OP_STORE = "Store"

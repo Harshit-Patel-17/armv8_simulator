@@ -14,8 +14,8 @@ def memaccessADC_64(hexcode):
 
 #utility function for adding with carry
 def execADC(hexcode, datasize):
-	'''
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+	'''
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 
@@ -35,6 +35,8 @@ def execADC(hexcode, datasize):
 	utilFunc.finalize(destRegister, resultBinary, "ADC", isSP)
 	'''
 	mem.writeBackBuffer[0] = mem.ALUResultBuffer
+	mem.regValueAvailableInWB[destRegister] = True
+	mem.regValueAvailableInWB_buffer_indices[destRegister] = 0
 	mem.isSPWriteBackBuffer = mem.isSPBuffer
 	const.FLAG_MEMACCESS_EXECUTED = True
 

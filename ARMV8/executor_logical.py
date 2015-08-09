@@ -9,7 +9,9 @@ import mem
 import const
 
 def op_i(binary, N, setFlags):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
+    mem.regValueAvailableInALU[rdKey] = True
     if(setFlags):
     	flags = mem.ALUResultBuffer[0] + utilFunc.isZero(mem.ALUResultBuffer) + '00'
     	utilFunc.setFlags(flags)
@@ -29,21 +31,33 @@ def execAnds_i64(binary):
 	op_i(binary, 64, 1)
     
 def execAnd_sr32(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
+    mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+    mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True
     
 def execAnd_sr64(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
+    mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+    mem.regValueAvailableInALU[rdKey] = True
     const.FLAG_INST_EXECUTED = True
 
 def execAnds_sr32(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
+    mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+    mem.regValueAvailableInALU[rdKey] = True
     flags = mem.ALUResultBuffer[0] + utilFunc.isZero(mem.ALUResultBuffer) + '00'
     utilFunc.setFlags(flags)
     const.FLAG_INST_EXECUTED = True
 
 def execAnds_sr64(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
+    mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
+    mem.regValueAvailableInALU[rdKey] = True
     flags = mem.ALUResultBuffer[0] + utilFunc.isZero(mem.ALUResultBuffer) + '00'
     utilFunc.setFlags(flags)
     const.FLAG_INST_EXECUTED = True

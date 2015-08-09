@@ -91,7 +91,7 @@ def execConditionalCompareNegative_r64(hexcode):
 
 #utility function for conditional set
 def executeConditionalSet(hexcode, datasize):
-	#destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	condition = hexcode[16:20]
 	isConditionSatisfied = isConditionSatisfiedFunction(condition, 1)
 
@@ -99,37 +99,15 @@ def executeConditionalSet(hexcode, datasize):
 	resultBinary = resultBinary.zfill(64)
 	
 	mem.ALUResultBuffer = resultBinary
+	mem.regValueAvailableInALU[destRegister] = True
 	const.FLAG_INST_EXECUTED = True 
-	'''
-	if(datasize == 32):
-		registerType = "w"
-	else:
-		registerType = "x"
-
-	instruction = "CSET " + registerType + str(destRegister) + ", " + const.CONDITIONS_MAP_LSB_INVERTED[condition]
-
-	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
-	'''
 
 #utility function for conditional select increment
 def executeConditionalSelectInverse(hexcode, datasize):
-	#destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 
-	'''
-	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
-	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
-
-
-	if(datasize == 32):
-		registerType = "w"
-		reg1Value = reg1Value[32:64]
-		reg2Value = reg2Value[32:64]
-	else:
-		registerType = "x"
-
-	'''
 	reg1Value = mem.operand1Buffer
 	reg2Value = mem.operand2Buffer
 	condition = hexcode[16:20]
@@ -155,29 +133,14 @@ def executeConditionalSelectInverse(hexcode, datasize):
 
 	resultBinary = resultBinary.zfill(64)
 	mem.ALUResultBuffer = resultBinary
+	mem.regValueAvailableInALU[destRegister] = True
 	const.FLAG_INST_EXECUTED = True 
-	'''
-	if(datasize == 32):
-		registerType = "w"
-	else:
-		registerType = "x"
-		
-	if(command == "CINV "):
-		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + const.CONDITIONS_MAP_LSB_INVERTED[condition]
-	else: 
-		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + registerType + str(operandRegister2) + ", " + const.CONDITIONS_MAP[condition]
-		
-	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
-	'''
 
 #utility function for conditional select negate
 def executeConditionalSelectNegate(hexcode, datasize):
-	#destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
-
-	#reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
-	#reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
 	
 	reg1Value = mem.operand1Buffer
 	reg2Value = mem.operand2Buffer
@@ -208,29 +171,12 @@ def executeConditionalSelectNegate(hexcode, datasize):
 	
 	resultBinary = resultBinary.zfill(64)
 	mem.ALUResultBuffer = resultBinary
+	mem.regValueAvailableInALU[destRegister] = True
 	const.FLAG_INST_EXECUTED = True 
-	'''
-	if(datasize == 32):
-		registerType = "w"
-	else:
-		registerType = "x"
-
-	if(command == "CNEG "):
-		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + const.CONDITIONS_MAP_LSB_INVERTED[condition]
-	else: 
-		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + registerType + str(operandRegister2) + ", " + const.CONDITIONS_MAP[condition]
-
-	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
-	'''
 
 #utility function for select conditional increment
 def executeConditionalSelectIncrement(hexcode, datasize):
-	#destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
-	#operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
-	#operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
-
-	#reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
-	#reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'1')
+	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	
 	reg1Value = mem.operand1Buffer
 	reg2Value = mem.operand2Buffer
@@ -248,39 +194,13 @@ def executeConditionalSelectIncrement(hexcode, datasize):
 	
 	resultBinary = resultBinary.zfill(64)
 	mem.ALUResultBuffer = resultBinary
+	mem.regValueAvailableInALU[destRegister] = True
 	const.FLAG_INST_EXECUTED = True 
-	'''
-	if(datasize == 32):
-		registerType = "w"
-	else:
-		registerType = "x"
-
-	if(command == "CNEG "):
-		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + const.CONDITIONS_MAP_LSB_INVERTED[condition]
-	else: 
-		instruction = command + registerType + str(destRegister) +", " + registerType + str(operandRegister1) + ", " + registerType + str(operandRegister2) + ", " + const.CONDITIONS_MAP[condition]
-
-	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
-	'''
 
 #utility function for conditional compare negative immediate
 def execConditionalCompareNegativeImmediate(hexcode, datasize):
 	flags = hexcode[28:32]
-	#operandRegister = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	condition = hexcode[16:20]
-	#immediateBinary = hexcode[12:17]
-
-	#regValue = utilFunc.getRegValueByStringkey(hexcode[22:27], 0)
-
-	#immediateValue = int(immediateBinary, 2)
-
-	'''
-	if(datasize == 32):
-		registerType = "w"
-		regValue = regValue[32:64]
-	else:
-		datasize = "x"
-	'''
 
 	if(isConditionSatisfiedFunction(condition, 0)):
 		utilFunc.addSub(32, mem.operand1Buffer, mem.operand2Buffer, '0', datasize, '1', 0) #sending a dummy destination register value(32)
@@ -291,22 +211,8 @@ def execConditionalCompareNegativeImmediate(hexcode, datasize):
 #utility function for conditional compare negative register
 def execConditionalCompareNegativeRegister(hexcode, datasize):
 	flags = hexcode[28:32]
-	#operandRegister1 = utilFunc.getRegValueByStringkey(hexcode[22:27])
-	#operandRegister2 = utilFunc.getRegValueByStringkey(hexcode[11:16])
 
 	condition = hexcode[16:20]
-
-	#regValue1 = utilFunc.getRegValueByStringkey(hexcode[22:27], 0)
-	#regValue2 = utilFunc.getRegValueByStringkey(hexcode[11:16], 0)
-
-	'''
-	if(datasize == 32):
-		registerType = "w"
-		regValue1 = regValue1[32:64]
-		regValue2 = regValue2[32:64]
-	else:
-		datasize = "x"
-	'''
 	
 	if(isConditionSatisfiedFunction(condition, 0)):
 		utilFunc.addSub(32, mem.operand1Buffer, mem.operand2Buffer, '0', datasize, '1', 0) #sending a dummy destination register value(32)

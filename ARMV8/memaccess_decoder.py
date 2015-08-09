@@ -4,9 +4,13 @@ import const
 import memaccess_dicts_branch
 import memaccess_dicts_loadStore
 import sys
+import mem
 
 def decodeInstr(hexCode): 
     binary = utilFunc.hexToBin(hexCode)
+    mem.regValueAvailableInWB = list(False for i in range(mem.regNum))
+    mem.regValueAvailableInWB_buffer_indices = list(-1 for i in range(mem.regNum))
+    mem.regValueAvailableinWB_last_modified_indices = []
     const.FLAG_MEMACCESS_EXECUTED = False
     #Checking for branch type
     if(binary[3:6] == '101'):

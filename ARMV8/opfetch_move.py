@@ -33,36 +33,37 @@ def mov_imm(binary, instr, inverted, N):
     mem.regObsolete[rdKey] = True
     mem.regObsolete_last_modified_indices.append(rdKey)
     const.FLAG_OPFETCH_EXECUTED = True
-    
-    '''
-    if(inverted == '1'):
-        result = utilFunc.negate(result)
-    instr = instr + str(rdKey)+", #"+utilFunc.binaryToHexStr(result)
-    utilFunc.finalize(rdKey, result.zfill(const.REG_SIZE), instr, '0')
-    const.FLAG_OPFETCH_EXECUTED = True
-    const.FLAG_OP_FETCHED = True
-    '''
 
 def mov_reg(binary, N):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rmKey = utilFunc.getRegKeyByStringKey(binary[11:16])
+    
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(mem.regObsolete[rmKey] == False):
+        const.FLAG_OP_FETCHED = True
+        rmVal = utilFunc.getRegValueByStringkey(binary[11:16],'0')
+    elif(const.FLAG_DATA_FORWARDING):
+        forwardedValues = mem.findForwardedValues(rmKey)
+        if(forwardedValues[0] != None):
+            const.FLAG_OP_FETCHED = True
+            rmVal = forwardedValues[0]
+        else:
+            return
+    else:
+        return
+    
+    mem.regObsolete[rdKey] = True
+    mem.regObsolete_last_modified_indices.append(rdKey)
 
-    rmVal = utilFunc.getRegValueByStringkey(binary[11:16], '0')
+    #rmVal = utilFunc.getRegValueByStringkey(binary[11:16], '0')
     
     if(N == 32):
         rmVal = rmVal[32:64]
         r = 'w'
     elif(N == 64):
         r = 'x'
-        
-    if(mem.regObsolete[rmKey] == False):
-        const.FLAG_OP_FETCHED = True
-        mem.operand1Buffer = rmVal.zfill(const.REG_SIZE)
-        mem.regObsolete[rdKey] = True
-        mem.regObsolete_last_modified_indices.append(rdKey)
-    const.FLAG_OPFETCH_EXECUTED = True
-    #instr = "MOV "+r+str(rdKey)+", "+r+str(rmKey)
-    #utilFunc.finalize(rdKey, rmVal.zfill(const.REG_SIZE), instr, '0')
+     
+    mem.operand1Buffer = rmVal.zfill(const.REG_SIZE)    
 
 def opfetchMov_r32(binary):
     mov_reg(binary, 32)

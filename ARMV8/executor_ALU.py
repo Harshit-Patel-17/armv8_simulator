@@ -22,18 +22,8 @@ def executeCLZ_64(hexcode):
 
 #utility function for counting the number of leading sign bits
 def executeCLS(hexcode, datasize):
-	'''
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
-	operandRegister = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 
-	regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
-
-	if(datasize == 32):
-		registerType = "w"
-		regValue = regValue[32:64]
-	else:
-		registerType = "x"
-	'''
 	result = utilFunc.countLeadingSignBits(mem.operand1Buffer, datasize)
 	print "HERE"
 	print mem.operand1Buffer
@@ -41,35 +31,17 @@ def executeCLS(hexcode, datasize):
 	
 	resultBinary = resultBinary.zfill(64)
 	mem.ALUResultBuffer = resultBinary
+	mem.regValueAvailableInALU[destRegister] = True
 	const.FLAG_INST_EXECUTED = True 
-	'''
-	instruction = "CLS " + registerType + str(destRegister) + ", " + registerType + str(operandRegister)
-
-	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
-	'''
 
 #utility function for counting the number of leading zero bits
 def executeCLZ(hexcode, datasize):
-	'''
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
-	operandRegister = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 
-	regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'1')
-
-	if(datasize == 32):
-		registerType = "w"
-		regValue = regValue[32:64]
-	else:
-		registerType = "x"
-	'''
 	result = utilFunc.countLeadingZeroBits(mem.operand1Buffer, datasize)
 	resultBinary = "{0:b}".format(result)
 	
 	resultBinary = resultBinary.zfill(64)
 	mem.ALUResultBuffer = resultBinary
+	mem.regValueAvailableInALU[destRegister] = True
 	const.FLAG_INST_EXECUTED = True 
-	'''
-	instruction = "CLS " + registerType + str(destRegister) + ", " + registerType + str(operandRegister)
-
-	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
-	'''

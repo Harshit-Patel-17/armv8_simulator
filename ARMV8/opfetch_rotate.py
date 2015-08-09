@@ -27,8 +27,25 @@ def execRotateImmediate(hexcode, datasize):
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 	
 	assert operandRegister1 == operandRegister2
+	
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(mem.regObsolete[operandRegister1] == False):
+		const.FLAG_OP_FETCHED = True
+		reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+	elif(const.FLAG_DATA_FORWARDING):
+		forwardedValues = mem.findForwardedValues(operandRegister1)
+		if(forwardedValues[0] != None):
+			const.FLAG_OP_FETCHED = True
+			reg1Value = forwardedValues[0]
+		else:
+			return
+	else:
+		return
+	
+	mem.regObsolete[destRegister] = True
+	mem.regObsolete_last_modified_indices.append(destRegister)
 
-	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+	#reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
 
 	if(datasize == 32):
 		registerType = "w"
@@ -39,27 +56,36 @@ def execRotateImmediate(hexcode, datasize):
 	immediate = hexcode[16:22]
 	immediate = int(immediate,2)
 	
-	if(mem.regObsolete[operandRegister1] == False):
-		const.FLAG_OP_FETCHED = True
-		mem.operand1Buffer = reg1Value
-		mem.operand2Buffer = immediate
-		mem.regObsolete[destRegister] = True
-		mem.regObsolete_last_modified_indices.append(destRegister)
-	const.FLAG_OPFETCH_EXECUTED = True
-
-	#resultBinary = utilFunc.rotateRightByBits(reg1Value,immediate,datasize)
-
-	#instruction = "ROR " + registerType + str(destRegister) + ", " + registerType + str(operandRegister1) + ", #" + str(immediate)
-	#utilFunc.finalize(destRegister, resultBinary, instruction, '1')
+	mem.operand1Buffer = reg1Value
+	mem.operand2Buffer = immediate
 
 #utility function for rotaton by a number stored in a register
 def execRotateRegister(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
+	
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
+		const.FLAG_OP_FETCHED = True
+		reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+		reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
+	elif(const.FLAG_DATA_FORWARDING):
+		forwardedValues = mem.findForwardedValues(operandRegister1, operandRegister2)
+		if(forwardedValues[0] != None and forwardedValues[1] != None):
+			const.FLAG_OP_FETCHED = True
+			reg1Value = forwardedValues[0]
+			reg2Value = forwardedValues[1]
+		else:
+			return
+	else:
+		return
+	
+	mem.regObsolete[destRegister] = True
+	mem.regObsolete_last_modified_indices.append(destRegister)
 
-	reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
-	reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
+	#reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+	#reg2Value = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
 
 	if(datasize == 32):
 		registerType = "w"
@@ -68,17 +94,5 @@ def execRotateRegister(hexcode, datasize):
 	else:
 		registerType = "x"
 
-	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
-		const.FLAG_OP_FETCHED = True
-		mem.operand1Buffer = reg1Value
-		mem.operand2Buffer = reg2Value
-		mem.regObsolete[destRegister] = True
-		mem.regObsolete_last_modified_indices.append(destRegister)
-	const.FLAG_OPFETCH_EXECUTED = True
-
-	#bitsToBeRotated = int(reg2Value,2) % datasize
-
-	#resultBinary = utilFunc.rotateRightByBits(reg1Value,bitsToBeRotated,datasize)
-
-	#instruction = "ROR " + registerType + str(destRegister) + ", " + registerType + str(operandRegister1) + ", " + registerType + str(operandRegister2)
-	#utilFunc.finalize(destRegister, resultBinary, instruction, '1')
+	mem.operand1Buffer = reg1Value
+	mem.operand2Buffer = reg2Value

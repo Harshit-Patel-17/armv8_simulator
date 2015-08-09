@@ -9,7 +9,10 @@ import mem
 import const
 
 def op_i(binary, N):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
 
@@ -28,12 +31,18 @@ def memaccessAnds_i64(binary):
     
     
 def memaccessAnd_sr32(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
 def memaccessAnd_sr64(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
 

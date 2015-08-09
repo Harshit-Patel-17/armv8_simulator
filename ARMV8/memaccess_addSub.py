@@ -4,7 +4,10 @@ import const
 
 
 def memaccess_i(binary, N, instr, sub_op, setFlags):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
 
@@ -48,7 +51,10 @@ def fetchOp2_sr(rmVal, shiftType, amt, instr):
 
     
 def memaccess_sr(binary, N, instr, sub_op, setFlags):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
     
@@ -78,7 +84,10 @@ def memaccessSubs_sr64(binary):
     
     
 def memaccess_er(binary, N, instr, sub_op, setFlags):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
     mem.isSPWriteBackBuffer = mem.isSPBuffer
     const.FLAG_MEMACCESS_EXECUTED = True
        
