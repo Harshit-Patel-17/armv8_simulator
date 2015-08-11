@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Configuration>
+	<System>
+			<GlobalClock>
+				<LeakageEnergy>0.3456</LeakageEnergy>
+				<DynamicEnergy>0.2886</DynamicEnergy>
+			</GlobalClock>
+			
+		
+			<Core>
+				<PipelineType>inOrder</PipelineType>	
+				<CoreFrequency>1600</CoreFrequency>		
+				<CoreVoltage>1</CoreVoltage>		
+
+				<Decode>								
+					<Width>1</Width>			
+					<LeakageEnergy>0.0598</LeakageEnergy>
+					<DynamicEnergy>0.0347</DynamicEnergy>
+				</Decode>
+
+				<RegisterFile>
+					<Integer>
+						<IntArchRegNum>32</IntArchRegNum>		
+						<LeakageEnergy>0.0108</LeakageEnergy>
+						<DynamicEnergy>0.0572</DynamicEnergy>
+					</Integer>
+				
+					<Float>
+						<FloatArchRegNum>32</FloatArchRegNum>		
+						<LeakageEnergy>0.0075</LeakageEnergy>
+						<DynamicEnergy>0.0572</DynamicEnergy>
+					</Float>
+				</RegisterFile>
+			
+				<IntShifterALU>
+					<Num>1</Num>
+					<Latency>1</Latency>		
+					<LeakageEnergyShifter>0.0542</LeakageEnergyShifter>
+					<DynamicEnergyShifter>0.1257</DynamicEnergyShifter>
+					<LeakageEnergyALU>0.0542</LeakageEnergyALU>
+					<DynamicEnergyALU>0.1257</DynamicEnergyALU>
+				</IntShifterALU>
+			
+				<IntMul>
+					<Num>1</Num>
+					<Latency>3</Latency>
+					<LeakageEnergy>0.0271</LeakageEnergy>
+					<DynamicEnergy>0.6514</DynamicEnergy>			
+				</IntMul>
+			
+				<IntDiv>
+					<Num>1</Num>
+					<Latency>21</Latency>
+					<LeakageEnergy>0.0271</LeakageEnergy>
+					<DynamicEnergy>0.6514</DynamicEnergy>			
+				</IntDiv>
+			
+				<FloatALU>
+					<Num>1</Num>
+					<Latency>3</Latency>
+					<LeakageEnergy>0.0654</LeakageEnergy>
+					<DynamicEnergy>0.5366</DynamicEnergy>			
+				</FloatALU>
+			
+				<FloatMul>
+					<Num>1</Num>
+					<Latency>5</Latency>
+					<LeakageEnergy>0.0271</LeakageEnergy>
+					<DynamicEnergy>0.6514</DynamicEnergy>			
+				</FloatMul>
+			
+				<FloatDiv>
+					<Num>1</Num>
+					<Latency>24</Latency>
+					<LeakageEnergy>0.0271</LeakageEnergy>
+					<DynamicEnergy>0.6514</DynamicEnergy>			
+				</FloatDiv>
+			</Core>
+		
+	</System>
+
+	<Library>
+			<ICache_32K_8>
+				<Latency>3</Latency>				
+				<AccessPorts>1</AccessPorts>			
+				<LeakageEnergy>0.1092</LeakageEnergy>
+				<ReadDynamicEnergy>0.33964264705</ReadDynamicEnergy>
+				<WriteDynamicEnergy>0.33964264705</WriteDynamicEnergy>
+				<CacheType>Instruction</CacheType>  
+			</ICache_32K_8>
+		
+			<L1Cache_32K_8>
+				<Latency>3</Latency>				
+				<AccessPorts>1</AccessPorts>			
+				<LeakageEnergy>0.1092</LeakageEnergy>
+				<ReadDynamicEnergy>0.33964264705</ReadDynamicEnergy>
+				<WriteDynamicEnergy>0.33964264705</WriteDynamicEnergy>
+				<CacheType>Data</CacheType>  
+			</L1Cache_32K_8>
+	</Library>
+</Configuration>
