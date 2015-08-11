@@ -12,6 +12,7 @@ import executor_ALU
 import executor_rotate
 import executor_bitwise_shift
 import executor_adc
+import executor_moveWide
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -34,6 +35,7 @@ def INSTRUCTION_TYPE(binary, i):
             15 : ROTATE_REGISTER,
             16 : BITWISE_SHIFT_REGISTER,
             17 : ADD_WITH_CARRY,
+            18 : MOVE_WIDE,
         }[i](binary)
     except KeyError:
         i = i
@@ -217,4 +219,15 @@ def ADD_WITH_CARRY(binary):
   return {
     "00011010000-----000000"  : executor_adc.execADC_32,
     "10011010000-----000000"  : executor_adc.execADC_64,
+  }[key](binary)
+
+def MOVE_WIDE(binary):
+  key = binary[0:9]
+  return {
+    "011100101" : executor_MoveWide.execMoveK_32,
+    "111100101" : executor_MoveWide.execMoveK_64,
+    "000100101" : executor_MoveWide.execMoveN_32,
+    "100100101" : executor_MoveWide.execMoveN_64,
+    "010100101" : executor_MoveWide.execMoveZ_32,
+    "110100101" : executor_MoveWide.execMoveZ_64,
   }[key](binary)
