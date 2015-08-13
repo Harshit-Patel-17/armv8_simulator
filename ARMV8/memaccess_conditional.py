@@ -3,6 +3,7 @@
 import utilFunc
 import const
 import mem
+import armdebug
 
 #returns if the given condition is satisfied or not
 #note for cset the lsb of the condition is inverted
@@ -90,53 +91,89 @@ def memaccessConditionalCompareNegative_r64(hexcode):
 
 #utility function for conditional set
 def executeConditionalSet(hexcode, datasize):
+	const.FLAG_MEMACCESS_EXECUTED = True    
+	const.FLAG_MEMACCESS_COMPLETED = True
+	if(armdebug.pipelineStages[4] != '--------'):
+		return
+
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	mem.writeBackBuffer[0] = mem.ALUResultBuffer
 	mem.regValueAvailableInWB[destRegister] = True
 	mem.regValueAvailableInWB_buffer_indices[destRegister] = 0
 	mem.isSPWriteBackBuffer = mem.isSPBuffer
-	const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_COMPLETED = True
 
 #utility function for conditional select inverse
 def executeConditionalSelectInverse(hexcode, datasize):
+	const.FLAG_MEMACCESS_EXECUTED = True    
+	const.FLAG_MEMACCESS_COMPLETED = True
+	if(armdebug.pipelineStages[4] != '--------'):
+		return
+
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	mem.writeBackBuffer[0] = mem.ALUResultBuffer
 	mem.regValueAvailableInWB[destRegister] = True
 	mem.regValueAvailableInWB_buffer_indices[destRegister] = 0
 	mem.isSPWriteBackBuffer = mem.isSPBuffer
-	const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_COMPLETED = True
 
 
 #utility function for conditional select negate
 def executeConditionalSelectNegate(hexcode, datasize):
+	const.FLAG_MEMACCESS_EXECUTED = True    
+	const.FLAG_MEMACCESS_COMPLETED = True
+	if(armdebug.pipelineStages[4] != '--------'):
+		return
+
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	mem.writeBackBuffer[0] = mem.ALUResultBuffer
 	mem.regValueAvailableInWB[destRegister] = True
 	mem.regValueAvailableInWB_buffer_indices[destRegister] = 0
 	mem.isSPWriteBackBuffer = mem.isSPBuffer
-	const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_COMPLETED = True
 
 #utility function for conditional select increment
 def executeConditionalSelectIncrement(hexcode, datasize):
+	const.FLAG_MEMACCESS_EXECUTED = True    
+	const.FLAG_MEMACCESS_COMPLETED = True
+	if(armdebug.pipelineStages[4] != '--------'):
+		return
+
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	mem.writeBackBuffer[0] = mem.ALUResultBuffer
 	mem.regValueAvailableInWB[destRegister] = True
 	mem.regValueAvailableInWB_buffer_indices[destRegister] = 0
 	mem.isSPWriteBackBuffer = mem.isSPBuffer
-	const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_COMPLETED = True
 
 
 #utility function for conditional compare negative immediate
 def execConditionalCompareNegativeImmediate(hexcode, datasize):
+	const.FLAG_MEMACCESS_EXECUTED = True    
+	const.FLAG_MEMACCESS_COMPLETED = True
+	if(armdebug.pipelineStages[4] != '--------'):
+		return
+
 	mem.writeBackBuffer[0] = mem.ALUResultBuffer
 	mem.isSPWriteBackBuffer = mem.isSPBuffer
-	const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_COMPLETED = True
 
 #utility function for conditional compare negative register
 def execConditionalCompareNegativeRegister(hexcode, datasize):
+	const.FLAG_MEMACCESS_EXECUTED = True    
+	const.FLAG_MEMACCESS_COMPLETED = True
+	if(armdebug.pipelineStages[4] != '--------'):
+		return
+
 	mem.writeBackBuffer[0] = mem.ALUResultBuffer
 	mem.isSPWriteBackBuffer = mem.isSPBuffer
-	const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_COMPLETED = True

@@ -3,6 +3,8 @@
 import utilFunc
 import mem
 import const
+import config
+import armdebug
 
 #executes CLS instruction(32 bit) 
 def executeCLS_32(hexcode):
@@ -22,6 +24,20 @@ def executeCLZ_64(hexcode):
 
 #utility function for counting the number of leading sign bits
 def executeCLS(hexcode, datasize):
+	const.FLAG_INST_EXECUTED = True	
+	if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+		const.EXECUTION_COUNTER = config.latency['IntALU']
+	
+	if(const.EXECUTION_COUNTER != 0):
+		const.EXECUTION_COUNTER -= 1
+		
+	if(const.EXECUTION_COUNTER == 0):
+		const.FLAG_EXECUTION_COMPLETED = True
+		if(armdebug.pipelineStages[3] != '--------'):
+			return
+	else:
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	result = utilFunc.countLeadingSignBits(mem.operand1Buffer, datasize)
@@ -34,6 +50,20 @@ def executeCLS(hexcode, datasize):
 
 #utility function for counting the number of leading zero bits
 def executeCLZ(hexcode, datasize):
+	const.FLAG_INST_EXECUTED = True	
+	if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+		const.EXECUTION_COUNTER = config.latency['IntALU']
+	
+	if(const.EXECUTION_COUNTER != 0):
+		const.EXECUTION_COUNTER -= 1
+		
+	if(const.EXECUTION_COUNTER == 0):
+		const.FLAG_EXECUTION_COMPLETED = True
+		if(armdebug.pipelineStages[3] != '--------'):
+			return
+	else:
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	result = utilFunc.countLeadingZeroBits(mem.operand1Buffer, datasize)

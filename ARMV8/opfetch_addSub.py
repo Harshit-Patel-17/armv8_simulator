@@ -1,13 +1,17 @@
 import utilFunc
 import mem
 import const
+import armdebug
 
 
 def opfetch_i(binary, N, instr, sub_op, setFlags):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     
-    const.FLAG_OPFETCH_EXECUTED = True
     if(mem.regObsolete[rnKey] == False):
         const.FLAG_OP_FETCHED = True
         rnVal = utilFunc.getRegValueByStringkey(binary[22:27],'0')
@@ -86,13 +90,16 @@ def fetchOp2_sr(rmVal, shiftType, amt, instr):
 
     
 def opfetch_sr(binary, N, instr, sub_op, setFlags):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rmkey = utilFunc.getRegKeyByStringKey(binary[11:16])
     imm6 = binary[16:22]
     imm6Val = int(imm6, 2)
     
-    const.FLAG_OPFETCH_EXECUTED = True
     if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmkey] == False):
         const.FLAG_OP_FETCHED = True
         rnVal = utilFunc.getRegValueByStringkey(binary[22:27],'0')
@@ -155,11 +162,14 @@ def opfetchSubs_sr64(binary):
     
     
 def opfetch_er(binary, N, instr, sub_op, setFlags):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rmkey = utilFunc.getRegKeyByStringKey(binary[11:16])
     
-    const.FLAG_OPFETCH_EXECUTED = True
     if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmkey] == False):
         const.FLAG_OP_FETCHED = True
         rnVal = utilFunc.getRegValueByStringkey(binary[22:27],'0')

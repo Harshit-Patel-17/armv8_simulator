@@ -3,16 +3,23 @@
 import utilFunc
 import mem
 import const
+import armdebug
 
 #executes multiplation of two unsigned numbers.Takes as input the hex code for the UMULL instruction
 def memaccessMul(hexcode):
+	const.FLAG_MEMACCESS_EXECUTED = True    
+	const.FLAG_MEMACCESS_COMPLETED = True
+	if(armdebug.pipelineStages[4] != '--------'):
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	mem.writeBackBuffer[0] = mem.ALUResultBuffer
 	mem.regValueAvailableInWB[destRegister] = True
 	mem.regValueAvailableInWB_buffer_indices[destRegister] = 0
 	mem.isSPWriteBackBuffer = mem.isSPBuffer
-	const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_COMPLETED = True
 
 #executes division of two unsigned numbers(32 bit)
 def memaccessUnsignedDiv_32(hexcode):
@@ -31,10 +38,16 @@ def memaccessSignedDiv_64(hexcode):
 
 #common utility function for dividing two unsigned numbers
 def executeDivision(hexcode, datasize, isSignedDivision):
+	const.FLAG_MEMACCESS_EXECUTED = True    
+	const.FLAG_MEMACCESS_COMPLETED = True
+	if(armdebug.pipelineStages[4] != '--------'):
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	mem.writeBackBuffer[0] = mem.ALUResultBuffer
 	mem.regValueAvailableInWB[destRegister] = True
 	mem.regValueAvailableInWB_buffer_indices[destRegister] = 0
 	mem.isSPWriteBackBuffer = mem.isSPBuffer
-	const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_EXECUTED = True
+	#const.FLAG_MEMACCESS_COMPLETED = True

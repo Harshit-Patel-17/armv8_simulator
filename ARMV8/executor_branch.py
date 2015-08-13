@@ -7,14 +7,28 @@ Created on Aug 8, 2014
 import utilFunc
 import const
 import mem
-#from utilFunc import uInt, signExtend, getRegValueByStringkey
+import config
 import armdebug
 
 def execB(binary):
     const.FLAG_INST_EXECUTED = True
     
 def execBCond(binary):
-    const.FLAG_INST_EXECUTED = True
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+    
+    #const.FLAG_INST_EXECUTED = True
     bits_four=binary[-4:]
     xx=utilFunc.conditionHolds(bits_four)    
     if not xx[0]:
@@ -52,7 +66,20 @@ def execCBNZ_64(binary):
     CBZClass(binary, 64, False)
 
 def CBZClass(binary,width,bool):
-    const.FLAG_INST_EXECUTED = True
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+    
     rtKey=binary[-5:]
 
     (instpart,offset)=utilFunc.getOffset(mem.operand1Buffer)

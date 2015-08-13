@@ -17,6 +17,7 @@ def execADC(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], mem.isSPWriteBackBuffer)
+	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
 	mem.regObsolete[destRegister] = False
 	#utilFunc.finalize(destRegister, resultBinary, "ADC", isSP)

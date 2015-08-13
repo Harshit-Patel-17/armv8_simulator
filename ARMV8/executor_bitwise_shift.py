@@ -3,6 +3,8 @@
 import utilFunc
 import mem
 import const
+import config
+import armdebug
 
 def execBitwiseShift_32(hexcode):
 	executeBitwiseShiftRegister(hexcode, 32, 0)
@@ -17,6 +19,20 @@ def execBitwiseShiftSetFlags_64(hexcode):
 	executeBitwiseShiftRegister(hexcode, 64, 1)
 
 def executeBitwiseShiftRegister(hexcode, datasize, setFlags):
+	const.FLAG_INST_EXECUTED = True	
+	if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+		const.EXECUTION_COUNTER = config.latency['IntALU']
+	
+	if(const.EXECUTION_COUNTER != 0):
+		const.EXECUTION_COUNTER -= 1
+		
+	if(const.EXECUTION_COUNTER == 0):
+		const.FLAG_EXECUTION_COMPLETED = True
+		if(armdebug.pipelineStages[3] != '--------'):
+			return
+	else:
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	shiftAmountBinary = hexcode[16:22]

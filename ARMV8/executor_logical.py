@@ -7,8 +7,24 @@ Created on Aug 8, 2014
 import utilFunc
 import mem
 import const
+import config
+import armdebug
 
 def op_i(binary, N, setFlags):
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
     mem.regValueAvailableInALU[rdKey] = True
@@ -31,6 +47,20 @@ def execAnds_i64(binary):
 	op_i(binary, 64, 1)
     
 def execAnd_sr32(binary):
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
     mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
@@ -38,6 +68,20 @@ def execAnd_sr32(binary):
     const.FLAG_INST_EXECUTED = True
     
 def execAnd_sr64(binary):
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
     mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
@@ -45,6 +89,20 @@ def execAnd_sr64(binary):
     const.FLAG_INST_EXECUTED = True
 
 def execAnds_sr32(binary):
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
     mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
@@ -54,6 +112,20 @@ def execAnds_sr32(binary):
     const.FLAG_INST_EXECUTED = True
 
 def execAnds_sr64(binary):
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer = utilFunc.logical_and(mem.operand1Buffer,mem.operand2Buffer).zfill(const.REG_SIZE)
     mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)

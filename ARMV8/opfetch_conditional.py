@@ -3,6 +3,7 @@
 import utilFunc
 import const
 import mem
+import armdebug
 
 #returns if the given condition is satisfied or not
 #note for cset the lsb of the condition is inverted
@@ -90,37 +91,26 @@ def opfetchConditionalCompareNegative_r64(hexcode):
 
 #utility function for conditional set
 def executeConditionalSet(hexcode, datasize):
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(armdebug.pipelineStages[2] != '--------'):
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	
 	const.FLAG_OP_FETCHED = True
 	mem.regObsolete[destRegister] = True
 	mem.regObsolete_last_modified_indices.append(destRegister)
-	const.FLAG_OPFETCH_EXECUTED = True
-	'''
-	condition = hexcode[16:20]
-
-	isConditionSatisfied = isConditionSatisfiedFunction(condition, 1)
-
-	resultBinary = ("{0:b}".format(isConditionSatisfied))
-	resultBinary.zfill(datasize)
-
-	if(datasize == 32):
-		registerType = "w"
-	else:
-		registerType = "x"
-
-	instruction = "CSET " + registerType + str(destRegister) + ", " + const.CONDITIONS_MAP_LSB_INVERTED[condition]
-
-	utilFunc.finalize(destRegister, resultBinary, instruction, '1')
-	'''
 
 #utility function for conditional select inverse
 def executeConditionalSelectInverse(hexcode, datasize):
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(armdebug.pipelineStages[2] != '--------'):
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 	
-	const.FLAG_OPFETCH_EXECUTED = True
 	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
 		const.FLAG_OP_FETCHED = True
 		reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
@@ -152,11 +142,14 @@ def executeConditionalSelectInverse(hexcode, datasize):
 
 #utility function for conditional select negate
 def executeConditionalSelectNegate(hexcode, datasize):
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(armdebug.pipelineStages[2] != '--------'):
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 	
-	const.FLAG_OPFETCH_EXECUTED = True
 	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
 		const.FLAG_OP_FETCHED = True
 		reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
@@ -187,11 +180,14 @@ def executeConditionalSelectNegate(hexcode, datasize):
 	
 #utility function for conditional select increment
 def executeConditionalSelectIncrement(hexcode, datasize):
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(armdebug.pipelineStages[2] != '--------'):
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 	
-	const.FLAG_OPFETCH_EXECUTED = True
 	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
 		const.FLAG_OP_FETCHED = True
 		reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
@@ -219,12 +215,15 @@ def executeConditionalSelectIncrement(hexcode, datasize):
 
 #utility function for conditional compare negative immediate
 def execConditionalCompareNegativeImmediate(hexcode, datasize):
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(armdebug.pipelineStages[2] != '--------'):
+		return
+	
 	#flags = hexcode[28:32]
 	operandRegister = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	#condition = hexcode[16:20]
 	immediateBinary = hexcode[11:16]
 	
-	const.FLAG_OPFETCH_EXECUTED = True
 	if(mem.regObsolete[operandRegister] == False):
 		const.FLAG_OP_FETCHED = True
 		regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
@@ -253,11 +252,14 @@ def execConditionalCompareNegativeImmediate(hexcode, datasize):
 
 #utility function for conditional compare negative register
 def execConditionalCompareNegativeRegister(hexcode, datasize):
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(armdebug.pipelineStages[2] != '--------'):
+		return
+	
 	#flags = hexcode[28:32]
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 	
-	const.FLAG_OPFETCH_EXECUTED = True
 	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
 		const.FLAG_OP_FETCHED = True
 		regValue1 = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')

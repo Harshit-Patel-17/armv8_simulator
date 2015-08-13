@@ -3,6 +3,7 @@
 import utilFunc
 import const
 import mem
+import armdebug
 
 #executes CLS instruction(32 bit) 
 def opfetchCLS_32(hexcode):
@@ -22,10 +23,13 @@ def opfetchCLZ_64(hexcode):
 
 #utility function for counting the number of leading sign bits
 def executeCLS(hexcode, datasize):
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(armdebug.pipelineStages[2] != '--------'):
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	
-	const.FLAG_OPFETCH_EXECUTED = True
 	if(mem.regObsolete[operandRegister] == False):
 		const.FLAG_OP_FETCHED = True
 		regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
@@ -54,10 +58,13 @@ def executeCLS(hexcode, datasize):
 
 #utility function for counting the number of leading zero bits
 def executeCLZ(hexcode, datasize):
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(armdebug.pipelineStages[2] != '--------'):
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	
-	const.FLAG_OPFETCH_EXECUTED = True
 	if(mem.regObsolete[operandRegister] == False):
 		const.FLAG_OP_FETCHED = True
 		regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')

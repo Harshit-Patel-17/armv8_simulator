@@ -10,21 +10,27 @@ import const
 import armdebug
 
 def writebackB(binary):
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     
 def writebackBCond(binary):
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     
 def writebackBL(binary):
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     
 def writebackBR(binary):
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     
 def writebackBLR(binary):
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     
 def writebackRET(binary):
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     
 def writebackCBZ_32(binary):
@@ -40,4 +46,5 @@ def writebackCBNZ_64(binary):
     CBZClass(binary, 64, False)
 
 def CBZClass(binary,width,bool):
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True

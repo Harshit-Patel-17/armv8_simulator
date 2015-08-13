@@ -9,6 +9,10 @@ import armdebug
 import mem
 
 def helper_l(binary, instr):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     rtKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     imm19 = binary[8:27]
         
@@ -20,7 +24,6 @@ def helper_l(binary, instr):
     mem.operand2Buffer = offset
     mem.regObsolete[rtKey] = True
     mem.regObsolete_last_modified_index = rtKey
-    const.FLAG_OPFETCH_EXECUTED = True
     
 
 #---Load Register (Literal)---
@@ -45,6 +48,10 @@ def helper_rp_offset(binary, instr):
     helper_rp(False, False, binary, instr)
     
 def helper_rp(wback, postIndex, binary, instr):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     rtKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rt2Key = utilFunc.getRegKeyByStringKey(binary[17:22])
@@ -63,7 +70,6 @@ def helper_rp(wback, postIndex, binary, instr):
     offset = utilFunc.lsl(utilFunc.signExtend(imm7, 64), scale)
     offset = utilFunc.sInt(offset, 64)
     
-    const.FLAG_OPFETCH_EXECUTED = True
     if(mem.regObsolete[rnKey] == False):
         const.FLAG_OP_FETCHED = True
         address = utilFunc.getRegValueByStringkey(binary[22:27],'1')
@@ -338,6 +344,10 @@ def helper_reg(binary, instr):
 
     
 def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale, instr):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     if(opc[0] == '0'):
         if(opc[1] == '1'):
             memOp = const.MEM_OP_LOAD
@@ -349,7 +359,6 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
         else:
             memOp = const.MEM_OP_LOAD
             
-    const.FLAG_OPFETCH_EXECUTED = True
     if(mem.regObsolete[rnKey] == False):
         const.FLAG_OP_FETCHED = True
         address = utilFunc.getRegValueByStringkey(binary[22:27],'1')

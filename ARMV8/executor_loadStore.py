@@ -6,11 +6,26 @@ Created on Aug 8, 2014
 import const
 import utilFunc
 import armdebug
+import config
 import mem
 
-def helper_l(binary, instr):    
+def helper_l(binary, instr):
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+        
     mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
-    const.FLAG_INST_EXECUTED = True
+    #const.FLAG_INST_EXECUTED = True
 
 #---Load Register (Literal)---
 def execLDR_l32(binary):    
@@ -33,12 +48,26 @@ def helper_rp_prei(binary, instr):
 def helper_rp_offset(binary, instr):
     helper_rp(False, False, binary, instr)
     
-def helper_rp(wback, postIndex, binary, instr):     
+def helper_rp(wback, postIndex, binary, instr):
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+         
     if not(postIndex):
         mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
     else:
         mem.ALUResultBuffer = mem.operand1Buffer
-    const.FLAG_INST_EXECUTED = True
+    #const.FLAG_INST_EXECUTED = True
     
 #---Load/Store Register-Pair (Post-Indexed)---    
 def execSTP_rp_posti_32(binary):
@@ -289,8 +318,22 @@ def helper_reg(binary, instr):
 
     
 def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale, instr):    
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+    
     if not(postIndex):
         mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
     else:
         mem.ALUResultBuffer = mem.operand1Buffer
-    const.FLAG_INST_EXECUTED = True
+    #const.FLAG_INST_EXECUTED = True

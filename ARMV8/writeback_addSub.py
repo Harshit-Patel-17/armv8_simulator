@@ -8,6 +8,7 @@ def writeback_i(binary, N, instr, sub_op, setFlags):
     
     if(rdKey != 31): #if CMN instruction,discard the result
         utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), mem.isSPWriteBackBuffer)
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
 
@@ -55,6 +56,7 @@ def writeback_sr(binary, N, instr, sub_op, setFlags):
 
     if(rdKey != 31): #if CMN instruction,discard the result
         utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), '0')
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     
@@ -88,6 +90,7 @@ def writeback_er(binary, N, instr, sub_op, setFlags):
 
     if(rdKey != 31): #if CMN instruction,discard the result
         utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), mem.isSPWriteBackBuffer)
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
        

@@ -3,9 +3,25 @@
 import utilFunc
 import mem
 import const
+import config
+import armdebug
 
 #executes multiplation of two unsigned numbers.Takes as input the hex code for the UMULL instruction
 def execMul(hexcode):
+	const.FLAG_INST_EXECUTED = True	
+	if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+		const.EXECUTION_COUNTER = config.latency['IntMul']
+	
+	if(const.EXECUTION_COUNTER != 0):
+		const.EXECUTION_COUNTER -= 1
+		
+	if(const.EXECUTION_COUNTER == 0):
+		const.FLAG_EXECUTION_COMPLETED = True
+		if(armdebug.pipelineStages[3] != '--------'):
+			return
+	else:
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	unsigned_multiplication = int(mem.operand1Buffer,2) * int(mem.operand2Buffer,2)
@@ -13,7 +29,6 @@ def execMul(hexcode):
 	resultBinary = resultBinary.zfill(64)
 	mem.ALUResultBuffer = resultBinary
 	mem.regValueAvailableInALU[destRegister] = True
-	const.FLAG_INST_EXECUTED = True
 
 #executes division of two unsigned numbers(32 bit)
 def execUnsignedDiv_32(hexcode):
@@ -32,6 +47,20 @@ def execSignedDiv_64(hexcode):
 
 #common utility function for dividing two unsigned numbers
 def executeDivision(hexcode, datasize, isSignedDivision):
+	const.FLAG_INST_EXECUTED = True	
+	if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+		const.EXECUTION_COUNTER = config.latency['IntDiv']
+	
+	if(const.EXECUTION_COUNTER != 0):
+		const.EXECUTION_COUNTER -= 1
+		
+	if(const.EXECUTION_COUNTER == 0):
+		const.FLAG_EXECUTION_COMPLETED = True
+		if(armdebug.pipelineStages[3] != '--------'):
+			return
+	else:
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	if(int(mem.operand2Buffer,2) == 0):

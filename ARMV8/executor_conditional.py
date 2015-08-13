@@ -3,6 +3,8 @@
 import utilFunc
 import const
 import mem
+import config
+import armdebug
 
 #returns if the given condition is satisfied or not
 #note for cset the lsb of the condition is inverted
@@ -91,6 +93,20 @@ def execConditionalCompareNegative_r64(hexcode):
 
 #utility function for conditional set
 def executeConditionalSet(hexcode, datasize):
+	const.FLAG_INST_EXECUTED = True	
+	if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+		const.EXECUTION_COUNTER = config.latency['IntALU']
+	
+	if(const.EXECUTION_COUNTER != 0):
+		const.EXECUTION_COUNTER -= 1
+		
+	if(const.EXECUTION_COUNTER == 0):
+		const.FLAG_EXECUTION_COMPLETED = True
+		if(armdebug.pipelineStages[3] != '--------'):
+			return
+	else:
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	condition = hexcode[16:20]
 	isConditionSatisfied = isConditionSatisfiedFunction(condition, 1)
@@ -100,10 +116,24 @@ def executeConditionalSet(hexcode, datasize):
 	
 	mem.ALUResultBuffer = resultBinary
 	mem.regValueAvailableInALU[destRegister] = True
-	const.FLAG_INST_EXECUTED = True 
+	#const.FLAG_INST_EXECUTED = True 
 
 #utility function for conditional select increment
 def executeConditionalSelectInverse(hexcode, datasize):
+	const.FLAG_INST_EXECUTED = True	
+	if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+		const.EXECUTION_COUNTER = config.latency['IntALU']
+	
+	if(const.EXECUTION_COUNTER != 0):
+		const.EXECUTION_COUNTER -= 1
+		
+	if(const.EXECUTION_COUNTER == 0):
+		const.FLAG_EXECUTION_COMPLETED = True
+		if(armdebug.pipelineStages[3] != '--------'):
+			return
+	else:
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
@@ -134,10 +164,24 @@ def executeConditionalSelectInverse(hexcode, datasize):
 	resultBinary = resultBinary.zfill(64)
 	mem.ALUResultBuffer = resultBinary
 	mem.regValueAvailableInALU[destRegister] = True
-	const.FLAG_INST_EXECUTED = True 
+	#const.FLAG_INST_EXECUTED = True 
 
 #utility function for conditional select negate
 def executeConditionalSelectNegate(hexcode, datasize):
+	const.FLAG_INST_EXECUTED = True	
+	if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+		const.EXECUTION_COUNTER = config.latency['IntALU']
+	
+	if(const.EXECUTION_COUNTER != 0):
+		const.EXECUTION_COUNTER -= 1
+		
+	if(const.EXECUTION_COUNTER == 0):
+		const.FLAG_EXECUTION_COMPLETED = True
+		if(armdebug.pipelineStages[3] != '--------'):
+			return
+	else:
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
@@ -172,10 +216,24 @@ def executeConditionalSelectNegate(hexcode, datasize):
 	resultBinary = resultBinary.zfill(64)
 	mem.ALUResultBuffer = resultBinary
 	mem.regValueAvailableInALU[destRegister] = True
-	const.FLAG_INST_EXECUTED = True 
+	#const.FLAG_INST_EXECUTED = True 
 
 #utility function for select conditional increment
 def executeConditionalSelectIncrement(hexcode, datasize):
+	const.FLAG_INST_EXECUTED = True	
+	if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+		const.EXECUTION_COUNTER = config.latency['IntALU']
+	
+	if(const.EXECUTION_COUNTER != 0):
+		const.EXECUTION_COUNTER -= 1
+		
+	if(const.EXECUTION_COUNTER == 0):
+		const.FLAG_EXECUTION_COMPLETED = True
+		if(armdebug.pipelineStages[3] != '--------'):
+			return
+	else:
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	
 	reg1Value = mem.operand1Buffer
@@ -195,10 +253,24 @@ def executeConditionalSelectIncrement(hexcode, datasize):
 	resultBinary = resultBinary.zfill(64)
 	mem.ALUResultBuffer = resultBinary
 	mem.regValueAvailableInALU[destRegister] = True
-	const.FLAG_INST_EXECUTED = True 
+	#const.FLAG_INST_EXECUTED = True 
 
 #utility function for conditional compare negative immediate
 def execConditionalCompareNegativeImmediate(hexcode, datasize):
+	const.FLAG_INST_EXECUTED = True	
+	if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+		const.EXECUTION_COUNTER = config.latency['IntALU']
+	
+	if(const.EXECUTION_COUNTER != 0):
+		const.EXECUTION_COUNTER -= 1
+		
+	if(const.EXECUTION_COUNTER == 0):
+		const.FLAG_EXECUTION_COMPLETED = True
+		if(armdebug.pipelineStages[3] != '--------'):
+			return
+	else:
+		return
+	
 	flags = hexcode[28:32]
 	condition = hexcode[16:20]
 
@@ -206,10 +278,24 @@ def execConditionalCompareNegativeImmediate(hexcode, datasize):
 		utilFunc.addSub(32, mem.operand1Buffer, mem.operand2Buffer, '0', datasize, '1', 0) #sending a dummy destination register value(32)
 	else:
 		utilFunc.setFlags(flags)
-	const.FLAG_INST_EXECUTED = True
+	#const.FLAG_INST_EXECUTED = True
 
 #utility function for conditional compare negative register
 def execConditionalCompareNegativeRegister(hexcode, datasize):
+	const.FLAG_INST_EXECUTED = True	
+	if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+		const.EXECUTION_COUNTER = config.latency['IntALU']
+	
+	if(const.EXECUTION_COUNTER != 0):
+		const.EXECUTION_COUNTER -= 1
+		
+	if(const.EXECUTION_COUNTER == 0):
+		const.FLAG_EXECUTION_COMPLETED = True
+		if(armdebug.pipelineStages[3] != '--------'):
+			return
+	else:
+		return
+	
 	flags = hexcode[28:32]
 
 	condition = hexcode[16:20]
@@ -218,7 +304,7 @@ def execConditionalCompareNegativeRegister(hexcode, datasize):
 		utilFunc.addSub(32, mem.operand1Buffer, mem.operand2Buffer, '0', datasize, '1', 0) #sending a dummy destination register value(32)
 	else:
 		utilFunc.setFlags(flags)
-	const.FLAG_INST_EXECUTED = True
+	#const.FLAG_INST_EXECUTED = True
 
 
 

@@ -6,7 +6,7 @@
 import utilFunc
 import mem
 import const
-
+import armdebug
 
 # Helper function
 def getFields_r(binary):
@@ -19,8 +19,11 @@ def getFields_r(binary):
 
 
 def opfetchAsr_r32(binary):
-    rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
     const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
+    rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
     if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
@@ -40,8 +43,11 @@ def opfetchAsr_r32(binary):
     mem.regObsolete_last_modified_indices.append(rdKey)
                        
 def opfetchLsl_r32(binary):
-    rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
     const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
+    rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
     if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
@@ -61,8 +67,11 @@ def opfetchLsl_r32(binary):
     mem.regObsolete_last_modified_indices.append(rdKey)
     
 def opfetchLsr_r32(binary):
-    rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
     const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
+    rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
     if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
@@ -82,8 +91,11 @@ def opfetchLsr_r32(binary):
     mem.regObsolete_last_modified_indices.append(rdKey)
     
 def opfetchAsr_r64(binary):
-    rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
     const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
+    rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
     if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
@@ -103,8 +115,11 @@ def opfetchAsr_r64(binary):
     mem.regObsolete_last_modified_indices.append(rdKey)
                        
 def opfetchLsl_r64(binary):
-    rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
     const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
+    rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
     if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
@@ -124,8 +139,11 @@ def opfetchLsl_r64(binary):
     mem.regObsolete_last_modified_indices.append(rdKey)
     
 def opfetchLsr_r64(binary):
-    rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
     const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
+    rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
     if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
@@ -145,9 +163,12 @@ def opfetchLsr_r64(binary):
     mem.regObsolete_last_modified_indices.append(rdKey)
 
 # Immediate operations
-def opfetchAsr_i32(binary):    
-    rdKey, rnKey, rnVal, immr, imms = getFields_i(binary)
+def opfetchAsr_i32(binary):
     const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+        
+    rdKey, rnKey, rnVal, immr, imms = getFields_i(binary)
     if(mem.regObsolete[rnKey] == False):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
@@ -167,8 +188,11 @@ def opfetchAsr_i32(binary):
     mem.regObsolete_last_modified_indices.append(rdKey)
     
 def opfetchAsr_i64(binary):
-    rdKey, rnKey, rnVal, immr, imms = getFields_i(binary)
     const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
+    rdKey, rnKey, rnVal, immr, imms = getFields_i(binary)
     if(mem.regObsolete[rnKey] == False):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
@@ -188,8 +212,11 @@ def opfetchAsr_i64(binary):
     mem.regObsolete_last_modified_indices.append(rdKey)
                        
 def opfetchLslLsr_i32(binary):
-    rdKey, rnKey, rnVal, immr, imms = getFields_i(binary)
     const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
+    rdKey, rnKey, rnVal, immr, imms = getFields_i(binary)
     if(mem.regObsolete[rnKey] == False):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
@@ -209,8 +236,11 @@ def opfetchLslLsr_i32(binary):
     mem.regObsolete_last_modified_indices.append(rdKey)
     
 def opfetchLslLsr_i64(binary):
-    rdKey, rnKey, rnVal, immr, imms = getFields_i(binary)
     const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
+    rdKey, rnKey, rnVal, immr, imms = getFields_i(binary)
     if(mem.regObsolete[rnKey] == False):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal

@@ -9,6 +9,10 @@ import mem
 import const
     
 def opfetchADR(binary):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     inst='ADR X'
     rdKey=binary[-5:]
     regnum=utilFunc.uInt(rdKey)
@@ -24,9 +28,12 @@ def opfetchADR(binary):
     mem.operand2Buffer = offset
     mem.regObsolete[regnum] = True
     mem.regObsolete_last_modified_indices.append(regnum)
-    const.FLAG_OPFETCH_EXECUTED = True
 
 def opfetchADRP(binary):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     inst='ADRP X'
     rdKey=binary[-5:]
     regnum=utilFunc.uInt(rdKey)
@@ -44,8 +51,10 @@ def opfetchADRP(binary):
     mem.operand2Buffer = offset
     mem.regObsolete[regnum] = True
     mem.regObsolete_last_modified_indices.append(regnum)
-    const.FLAG_OPFETCH_EXECUTED = True
 
 def opfetchNOP(binary):
-    const.FLAG_OP_FETCHED = True
     const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
+    const.FLAG_OP_FETCHED = True

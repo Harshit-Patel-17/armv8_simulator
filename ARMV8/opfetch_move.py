@@ -6,7 +6,7 @@ Created on Aug 8, 2014
 import const
 import utilFunc
 import mem
-
+import armdebug
 
 def opfetchMov_iwi32(binary):
     mov_imm(binary, "MOV w", '1', 32)
@@ -20,7 +20,11 @@ def opfetchMov_wi32(binary):
 def opfetchMov_wi64(binary):
     mov_imm(binary, "MOV x", '0', 64)
     
-def mov_imm(binary, instr, inverted, N):    
+def mov_imm(binary, instr, inverted, N):  
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+      
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     hw = binary[9:11]
     pos = utilFunc.uInt(hw+'0000')
@@ -32,13 +36,15 @@ def mov_imm(binary, instr, inverted, N):
     mem.operand1Buffer = result
     mem.regObsolete[rdKey] = True
     mem.regObsolete_last_modified_indices.append(rdKey)
-    const.FLAG_OPFETCH_EXECUTED = True
 
 def mov_reg(binary, N):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rmKey = utilFunc.getRegKeyByStringKey(binary[11:16])
     
-    const.FLAG_OPFETCH_EXECUTED = True
     if(mem.regObsolete[rmKey] == False):
         const.FLAG_OP_FETCHED = True
         rmVal = utilFunc.getRegValueByStringkey(binary[11:16],'0')
@@ -73,16 +79,12 @@ def opfetchMov_r64(binary):
                            
                            
 def mov_bmi(binary, N):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     inst = 'MOV '
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
-    
-    '''
-    if(N == 32):
-        r = 'w'
-    else:
-        r = 'x'
-    inst += r + str(rdKey)
-    '''
     
     immr = binary[10:16]
     imms = binary[16:22]
@@ -94,12 +96,6 @@ def mov_bmi(binary, N):
     mem.operand1Buffer = imm
     mem.regObsolete[rdKey] = True
     mem.regObsolete_last_modified_indices.append(rdKey)
-    const.FLAG_OPFETCH_EXECUTED = True
-    #inst += ', #' + utilFunc.binaryToHexStr(imm)
-    #result = utilFunc.logical_or('0'*N,imm).zfill(const.REG_SIZE)
-    #utilFunc.finalize(rdKey, result, inst, '1')
-    #const.FLAG_OPFETCH_EXECUTED = True
-    #const.FLAG_OP_FETCHED = True
     
 def opfetchMov_bmi32(binary):
     mov_bmi(binary, 32)

@@ -3,6 +3,7 @@
 import utilFunc
 import mem
 import const
+import armdebug
 
 # immediate rotate 32 bit
 def opfetchRotate_i32(hexcode):
@@ -22,13 +23,16 @@ def opfetchRotate_r64(hexcode):
 
 #utility function for rotation by an immediate value
 def execRotateImmediate(hexcode, datasize):
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(armdebug.pipelineStages[2] != '--------'):
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 	
 	assert operandRegister1 == operandRegister2
 	
-	const.FLAG_OPFETCH_EXECUTED = True
 	if(mem.regObsolete[operandRegister1] == False):
 		const.FLAG_OP_FETCHED = True
 		reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
@@ -61,11 +65,14 @@ def execRotateImmediate(hexcode, datasize):
 
 #utility function for rotaton by a number stored in a register
 def execRotateRegister(hexcode, datasize):
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(armdebug.pipelineStages[2] != '--------'):
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 	
-	const.FLAG_OPFETCH_EXECUTED = True
 	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
 		const.FLAG_OP_FETCHED = True
 		reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')

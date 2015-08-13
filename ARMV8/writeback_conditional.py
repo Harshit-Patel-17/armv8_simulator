@@ -93,6 +93,7 @@ def executeConditionalSet(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
+	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
 	mem.regObsolete[destRegister] = False
 
@@ -101,6 +102,7 @@ def executeConditionalSelectInverse(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
+	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
 	mem.regObsolete[destRegister] = False
 
@@ -110,6 +112,7 @@ def executeConditionalSelectNegate(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
+	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
 	mem.regObsolete[destRegister] = False
 
@@ -118,13 +121,16 @@ def executeConditionalSelectNegate(hexcode, datasize):
 def executeConditionalSelectIncrement(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], mem.isSPWriteBackBuffer)
+	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
 	mem.regObsolete[destRegister] = False
 
 #utility function for conditional compare negative immediate
 def execConditionalCompareNegativeImmediate(hexcode, datasize):
+	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
 
 #utility function for conditional compare negative register
 def execConditionalCompareNegativeRegister(hexcode, datasize):
+	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True

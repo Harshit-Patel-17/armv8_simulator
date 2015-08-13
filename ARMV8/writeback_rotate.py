@@ -25,6 +25,7 @@ def execRotateImmediate(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
+	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
 	mem.regObsolete[destRegister] = False
 
@@ -33,5 +34,6 @@ def execRotateRegister(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
+	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
 	mem.regObsolete[destRegister] = False

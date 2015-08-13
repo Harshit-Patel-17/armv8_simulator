@@ -3,6 +3,7 @@
 import utilFunc
 import mem
 import const
+import armdebug
 
 def opfetchBitwiseShift_32(hexcode):
 	executeBitwiseShiftRegister(hexcode, 32, 0)
@@ -17,11 +18,14 @@ def opfetchBitwiseShiftSetFlags_64(hexcode):
 	executeBitwiseShiftRegister(hexcode, 64, 1)
 
 def executeBitwiseShiftRegister(hexcode, datasize, setFlags):
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(armdebug.pipelineStages[2] != '--------'):
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 	
-	const.FLAG_OPFETCH_EXECUTED = True
 	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
 		const.FLAG_OP_FETCHED = True
 		reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')

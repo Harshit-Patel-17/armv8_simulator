@@ -1,4 +1,5 @@
 _start:
-mov w2,#4294967295
-mov w3,#4294967295
+mov w2,#4
+mov w3,#4
 umull x1, w2, w3
+mov x2, x1

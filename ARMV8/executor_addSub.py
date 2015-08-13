@@ -4,9 +4,25 @@
 import utilFunc
 import mem
 import const
+import config
+import armdebug
 
 
 def op_i(binary, N, instr, sub_op, setFlags):
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer, mem.isSPBuffer = utilFunc.addSub(rdKey, mem.operand1Buffer, mem.operand2Buffer, sub_op, N, setFlags, 0)
     mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
@@ -53,6 +69,20 @@ def fetchOp2_sr(rmVal, shiftType, amt, instr):
 
     
 def op_sr(binary, N, instr, sub_op, setFlags):
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer,mem.isSPBuffer = utilFunc.addSub(rdKey, mem.operand1Buffer, mem.operand2Buffer, sub_op, N, setFlags, 0) #isSp ignored
     mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
@@ -85,6 +115,20 @@ def execSubs_sr64(binary):
     
     
 def op_er(binary, N, instr, sub_op, setFlags):
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     mem.ALUResultBuffer, mem.isSPBuffer = utilFunc.addSub(rdKey, mem.operand1Buffer, mem.operand2Buffer, sub_op, N, setFlags, 0)
     mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)

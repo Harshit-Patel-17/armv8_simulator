@@ -3,14 +3,18 @@
 import utilFunc
 import mem
 import const
+import armdebug
 
 #executes multiplation of two unsigned numbers.Takes as input the hex code for the UMULL instruction
 def opfetchMul(hexcode):
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(armdebug.pipelineStages[2] != '--------'):
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 	
-	const.FLAG_OPFETCH_EXECUTED = True
 	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
 		const.FLAG_OP_FETCHED = True
 		reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
@@ -54,11 +58,14 @@ def opfetchSignedDiv_64(hexcode):
 
 #common utility function for dividing two unsigned numbers
 def executeDivision(hexcode, datasize, isSignedDivision):
+	const.FLAG_OPFETCH_EXECUTED = True
+	if(armdebug.pipelineStages[2] != '--------'):
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 
-	const.FLAG_OPFETCH_EXECUTED = True
 	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
 		const.FLAG_OP_FETCHED = True
 		reg1Value = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')

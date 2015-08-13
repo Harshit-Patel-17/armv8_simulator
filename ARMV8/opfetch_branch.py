@@ -10,6 +10,10 @@ import mem
 import armdebug
 
 def opfetchB(binary):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     inst ='B OFFSET('
     imm26key=binary[6:32]
     
@@ -19,15 +23,21 @@ def opfetchB(binary):
     utilFunc.branchWithOffset(offset-4) #the magic!
     armdebug.pipelineStages[0] = '--------'
     const.FLAG_OP_FETCHED = True
-    const.FLAG_OPFETCH_EXECUTED = True
-    
+        
 def opfetchBCond(binary):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     imm19key=binary[8:27]
     mem.operand1Buffer = imm19key
     const.FLAG_OP_FETCHED = True
-    const.FLAG_OPFETCH_EXECUTED = True
     
 def opfetchBL(binary):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     inst='BL OFFSET('
     imm26key=binary[-26:]
     
@@ -39,13 +49,15 @@ def opfetchBL(binary):
     utilFunc.branchWithOffset(offset-4)
     armdebug.pipelineStages[0] = '--------'
     const.FLAG_OP_FETCHED = True
-    const.FLAG_OPFETCH_EXECUTED = True
     
 def opfetchBR(binary):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     inst = 'BR X'
     rnKey=binary[22:27]
     
-    const.FLAG_OPFETCH_EXECUTED = True
     #Check whether stalls are required or not
     if(mem.regObsolete[utilFunc.getRegKeyByStringKey(rnKey)] == False):
         const.FLAG_OP_FETCHED = True
@@ -63,10 +75,13 @@ def opfetchBR(binary):
     armdebug.pipelineStages[0] = '--------'
     
 def opfetchBLR(binary):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     inst='BLR X'
     rnKey=binary[22:27]
     
-    const.FLAG_OPFETCH_EXECUTED = True
     #Check whether stalls are required or not
     if(mem.regObsolete[rnKey] == False):
         const.FLAG_OP_FETCHED = True
@@ -86,10 +101,13 @@ def opfetchBLR(binary):
     armdebug.pipelineStages[0] = '--------'
     
 def opfetchRET(binary):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     inst = 'RET X'
     rnKey=binary[22:27]
     
-    const.FLAG_OPFETCH_EXECUTED = True
     #Check whether stalls are required or not
     if(mem.regObsolete[utilFunc.getRegKeyByStringKey(rnKey)] == False):
         const.FLAG_OP_FETCHED = True
@@ -120,9 +138,12 @@ def opfetchCBNZ_64(binary):
     CBZClass(binary, 64, False)
 
 def CBZClass(binary,width,bool):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     rtKey=binary[-5:]
     
-    const.FLAG_OPFETCH_EXECUTED = True
     #Check whether stalls are required or not
     if(mem.regObsolete[utilFunc.getRegKeyByStringKey(rtKey)] == False):
         const.FLAG_OP_FETCHED = True

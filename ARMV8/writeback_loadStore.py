@@ -12,6 +12,7 @@ def helper_l(binary, instr):
     
     utilFunc.setRegValue(rtKey, mem.writeBackBuffer[0], '0')
     mem.regObsolete[rtKey] = False
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     
 
@@ -37,6 +38,19 @@ def helper_rp_offset(binary, instr):
     helper_rp(False, False, binary, instr)
     
 def helper_rp(wback, postIndex, binary, instr):
+    const.FLAG_WRITEBACK_EXECUTED = True    
+    if(const.FLAG_WRITEBACK_COMPLETED == False and const.WRITEBACK_COUNTER == 0):
+        if(binary[9] == '1'):
+            const.WRITEBACK_COUNTER = 2
+        else:
+            const.WRITEBACK_COUNTER = 1
+    
+    if(const.WRITEBACK_COUNTER != 0):
+        const.WRITEBACK_COUNTER -= 1
+        
+    if(const.WRITEBACK_COUNTER == 0):
+        const.FLAG_WRITEBACK_COMPLETED = True
+    
     rtKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rt2Key = utilFunc.getRegKeyByStringKey(binary[17:22])
@@ -49,16 +63,19 @@ def helper_rp(wback, postIndex, binary, instr):
         memOp = const.MEM_OP_STORE
         
     if(memOp == const.MEM_OP_LOAD):
-        utilFunc.setRegValue(rtKey, mem.writeBackBuffer[0], '0')
-        mem.regObsolete[rtKey] = False
-        utilFunc.setRegValue(rt2Key, mem.writeBackBuffer[1], '0')
-        mem.regObsolete[rt2Key] = False
-     
-    if(wback):                  
-        utilFunc.setRegValue(rnKey, mem.writeBackBuffer[2], '1')
-        mem.regObsolete[rnKey] = False
+        if(const.WRITEBACK_COUNTER == 1):
+            utilFunc.setRegValue(rtKey, mem.writeBackBuffer[0], '0')
+            mem.regObsolete[rtKey] = False
+        if(const.WRITEBACK_COUNTER == 0):
+            utilFunc.setRegValue(rt2Key, mem.writeBackBuffer[1], '0')
+            mem.regObsolete[rt2Key] = False
     
-    const.FLAG_WRITEBACK_EXECUTED = True
+    if(const.WRITEBACK_COUNTER == 0): 
+        if(wback):                  
+            utilFunc.setRegValue(rnKey, mem.writeBackBuffer[2], '1')
+            mem.regObsolete[rnKey] = False
+    
+    #const.FLAG_WRITEBACK_EXECUTED = True
     
     
 #---Load/Store Register-Pair (Post-Indexed)---    
@@ -328,4 +345,5 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
         utilFunc.setRegValue(rnKey, mem.writeBackBuffer[2], '1')
         mem.regObsolete[rnKey] = False
     
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True

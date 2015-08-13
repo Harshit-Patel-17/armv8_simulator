@@ -7,8 +7,23 @@ import const
 import utilFunc
 import armdebug
 import mem
+import config
 
 def helper_l(binary, instr):
+    const.FLAG_MEMACCESS_EXECUTED = True    
+    if(const.FLAG_MEMACCESS_COMPLETED == False and const.MEMACCESS_COUNTER == 0):
+        const.MEMACCESS_COUNTER = config.latency['L1Cache']
+    
+    if(const.MEMACCESS_COUNTER != 0):
+        const.MEMACCESS_COUNTER -= 1
+        
+    if(const.MEMACCESS_COUNTER == 0):
+        const.FLAG_MEMACCESS_COMPLETED = True
+        if(armdebug.pipelineStages[4] != '--------'):
+            return
+    else:
+        return
+    
     rtKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     opc = binary[0:2]
     signed = False
@@ -25,7 +40,7 @@ def helper_l(binary, instr):
     
     data = utilFunc.fetchFromMemory(mem.ALUResultBuffer, dataSize)
     
-    const.FLAG_MEMACCESS_EXECUTED = True
+    #const.FLAG_MEMACCESS_EXECUTED = True
     
     if(data == const.TRAP):
             print "HEY!!! There seems to be a problem - memory location can not be accessed"
@@ -62,6 +77,19 @@ def helper_rp_offset(binary, instr):
     helper_rp(False, False, binary, instr)
     
 def helper_rp(wback, postIndex, binary, instr):
+    const.FLAG_MEMACCESS_EXECUTED = True  
+    if(const.FLAG_MEMACCESS_COMPLETED == False and const.MEMACCESS_COUNTER == 0):
+        const.MEMACCESS_COUNTER = 2*config.latency['L1Cache']
+    
+    if(const.MEMACCESS_COUNTER != 0):
+        const.MEMACCESS_COUNTER -= 1
+        
+    if(const.MEMACCESS_COUNTER % 3 == 0):
+        if(const.MEMACCESS_COUNTER == 0):
+            const.FLAG_MEMACCESS_COMPLETED = True
+    else:
+        return
+    
     rtKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rt2Key = utilFunc.getRegKeyByStringKey(binary[17:22])
@@ -84,41 +112,50 @@ def helper_rp(wback, postIndex, binary, instr):
      
     dbytes = dataSize / 8;
     
-    const.FLAG_MEMACCESS_EXECUTED = True
+    #const.FLAG_MEMACCESS_EXECUTED = True
      
     if(memOp == const.MEM_OP_STORE):
-        data1 = utilFunc.getRegValueByStringkey(binary[27:32], '0')
-        data2 = utilFunc.getRegValueByStringkey(binary[17:22], '0')  
-        utilFunc.storeToMemory(data1, mem.ALUResultBuffer, dataSize)
-        utilFunc.storeToMemory(data2, mem.ALUResultBuffer + dbytes, dataSize)
+        if(const.MEMACCESS_COUNTER == 3):
+            data1 = utilFunc.getRegValueByStringkey(binary[27:32], '0')
+            utilFunc.storeToMemory(data1, mem.ALUResultBuffer, dataSize)
+        if(const.MEMACCESS_COUNTER == 0):
+            data2 = utilFunc.getRegValueByStringkey(binary[17:22], '0')  
+            utilFunc.storeToMemory(data2, mem.ALUResultBuffer + dbytes, dataSize)
              
     elif(memOp == const.MEM_OP_LOAD):
-        data1 = utilFunc.fetchFromMemory(mem.ALUResultBuffer, dataSize)
-        data2 = utilFunc.fetchFromMemory(mem.ALUResultBuffer + dbytes, dataSize)
+        if(const.MEMACCESS_COUNTER == 3):
+            data1 = utilFunc.fetchFromMemory(mem.ALUResultBuffer, dataSize)
+            if(data1 == const.TRAP):
+                print "HEY!!! There seems to be a problem - memory location can not be accessed"
+                print "Moving ahead without executing the instruction"
+                armdebug.pipelineStages[3] = '--------'
+                return
+            if(signed):
+                data1 = utilFunc.signExtend(data1, 64)
+            mem.writeBackBuffer[0] = data1.zfill(64)
+            mem.regValueAvailableInWB[rtKey] = True
+            mem.regValueAvailableInWB_buffer_indices[rtKey] = 0
         
-        if(data1 == const.TRAP or data2 == const.TRAP):
-            print "HEY!!! There seems to be a problem - memory location can not be accessed"
-            print "Moving ahead without executing the instruction"
-            armdebug.pipelineStages[3] = '--------'
-            return
-        
-        if(signed):
-            data1 = utilFunc.signExtend(data1, 64)
-            data2 = utilFunc.signExtend(data2, 64)
-
-        mem.writeBackBuffer[0] = data1.zfill(64)
-        mem.writeBackBuffer[1] = data2.zfill(64)
-        mem.regValueAvailableInWB[rtKey] = True
-        mem.regValueAvailableInWB[rt2Key] = True
-        mem.regValueAvailableInWB_buffer_indices[rtKey] = 0
-        mem.regValueAvailableInWB_buffer_indices[rt2Key] = 1     
+        if(const.MEMACCESS_COUNTER == 0):
+            data2 = utilFunc.fetchFromMemory(mem.ALUResultBuffer + dbytes, dataSize)
+            if(data2 == const.TRAP):
+                print "HEY!!! There seems to be a problem - memory location can not be accessed"
+                print "Moving ahead without executing the instruction"
+                armdebug.pipelineStages[3] = '--------'
+                return
+            if(signed):
+                data2 = utilFunc.signExtend(data2, 64)
+            mem.writeBackBuffer[1] = data2.zfill(64)
+            mem.regValueAvailableInWB[rt2Key] = True
+            mem.regValueAvailableInWB_buffer_indices[rt2Key] = 1    
      
-    if(wback):       
-        if postIndex:
-            mem.ALUResultBuffer = mem.ALUResultBuffer + offset
-        mem.writeBackBuffer[2] = utilFunc.intToBinary(mem.ALUResultBuffer, 64) 
-        mem.regValueAvailableInWB[rnKey] = True
-        mem.regValueAvailableInWB_buffer_indices[rnKey] = 2           
+    if(const.MEMACCESS_COUNTER == 0):
+        if(wback):       
+            if postIndex:
+                mem.ALUResultBuffer = mem.ALUResultBuffer + offset
+            mem.writeBackBuffer[2] = utilFunc.intToBinary(mem.ALUResultBuffer, 64) 
+            mem.regValueAvailableInWB[rnKey] = True
+            mem.regValueAvailableInWB_buffer_indices[rnKey] = 2           
     
     
 #---Load/Store Register-Pair (Post-Indexed)---    
@@ -369,6 +406,20 @@ def helper_reg(binary, instr):
 
     
 def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale, instr):
+    const.FLAG_MEMACCESS_EXECUTED = True    
+    if(const.FLAG_MEMACCESS_COMPLETED == False and const.MEMACCESS_COUNTER == 0):
+        const.MEMACCESS_COUNTER = config.latency['L1Cache']
+    
+    if(const.MEMACCESS_COUNTER != 0):
+        const.MEMACCESS_COUNTER -= 1
+        
+    if(const.MEMACCESS_COUNTER == 0):
+        const.FLAG_MEMACCESS_COMPLETED = True
+        if(armdebug.pipelineStages[4] != '--------'):
+            return
+    else:
+        return
+    
     if(opc[0] == '0'):
         if(opc[1] == '1'):
             memOp = const.MEM_OP_LOAD
@@ -392,7 +443,7 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
             
     dataSize = 8 << scale
     
-    const.FLAG_MEMACCESS_EXECUTED = True
+    #const.FLAG_MEMACCESS_EXECUTED = True
         
     if(memOp == const.MEM_OP_STORE):
         data = utilFunc.getRegValueByStringkey(binary[27:32], '0')

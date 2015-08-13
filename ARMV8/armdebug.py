@@ -14,6 +14,7 @@ import memaccess_decoder
 import mem
 import traceback
 import const
+import config
 
 pipelineStages = ['--------', '--------', '--------', '--------', '--------'] 
 DEBUG_MODE=False
@@ -316,6 +317,7 @@ def executeRUN():
         pipelineStages[0] = hexes[getCurrentInstNumber()]
     except IndexError:
         pipelineStages[0] = '--------'
+    incPC()
     while(not isPipelineEmpty()):
         executeStages()
     print pipelineStages
@@ -328,43 +330,64 @@ def executeStages():
     #Execute stage 5
     if(pipelineStages[4] != '--------'):
         writeback_decoder.decodeInstr(pipelineStages[4])
-    pipelineStages[4] = '--------'
+    if(const.FLAG_WRITEBACK_COMPLETED == True):
+        pipelineStages[4] = '--------'
     
     #Execute stage 4    
     if(pipelineStages[3] != '--------'):
         memaccess_decoder.decodeInstr(pipelineStages[3])
-    pipelineStages[4] = pipelineStages[3]
-    pipelineStages[3] = '--------'
+    if(pipelineStages[4] == '--------' and const.FLAG_MEMACCESS_COMPLETED == True):
+        const.FLAG_WRITEBACK_COMPLETED = False
+        pipelineStages[4] = pipelineStages[3]
+        pipelineStages[3] = '--------'
     
     #Execute stage 3
     if(pipelineStages[2] != '--------'):
-        utilFunc.resetInstrFlag()
         decoder.decodeInstr(pipelineStages[2])
-    pipelineStages[3] = pipelineStages[2]
-    pipelineStages[2] = '--------'
+    if(pipelineStages[3] == '--------' and const.FLAG_EXECUTION_COMPLETED == True):
+        const.FLAG_MEMACCESS_COMPLETED = False
+        pipelineStages[3] = pipelineStages[2]
+        pipelineStages[2] = '--------'
     
     #Execute stage 2
     if(pipelineStages[1] != '--------'):
         opfetch_decoder.decodeInstr(pipelineStages[1])
-        if(const.FLAG_OP_FETCHED):
+        if(pipelineStages[2] == '--------' and const.FLAG_OP_FETCHED == True):
+            const.FLAG_EXECUTION_COMPLETED = False
             pipelineStages[2] = pipelineStages[1]
-            pipelineStages[1] = pipelineStages[0]
-            incPC()
-            try:
-                pipelineStages[0] = hexes[getCurrentInstNumber()]
-            except IndexError:
-                pipelineStages[0] = '--------'
-        else:
+            pipelineStages[1] = '--------'
+        elif(pipelineStages[2] == '--------' and const.FLAG_OP_FETCHED == False):
             incStalls()
-    else:
-        pipelineStages[2] = pipelineStages[1]
-        pipelineStages[1] = pipelineStages[0]
-        incPC()
-        try:
-            pipelineStages[0] = hexes[getCurrentInstNumber()]
-        except IndexError:
-            pipelineStages[0] = '--------'
+    
+    #Execute stage 1
+    if(pipelineStages[0] != '--------'):
+        fetchNewInstruction(False)
     incCycles()
+    
+def fetchNewInstruction(breakAtNextInstuction):   
+    if(const.FLAG_FETCH_COMPLETED == False and const.FETCH_COUNTER == 0):
+        const.FETCH_COUNTER = config.latency['ICache']
+    
+    if(const.FETCH_COUNTER != 0):
+        const.FETCH_COUNTER -= 1
+        
+    if(const.FETCH_COUNTER == 0):
+        const.FLAG_FETCH_COMPLETED = True
+        if(pipelineStages[1] != '--------'):
+            return
+    else:
+        return
+    
+    try:
+        pipelineStages[1] = pipelineStages[0]
+        if(breakAtNextInstuction == False):
+            pipelineStages[0] = hexes[getCurrentInstNumber()]
+            incPC()
+        else:
+            pipelineStages[0] = '--------'
+        const.FLAG_FETCH_COMPLETED = False
+    except IndexError:
+        pipelineStages[0] = '--------'
  
 def completeAllInstructionsInPipeline():
     while(not isPipelineEmpty()):
@@ -372,34 +395,38 @@ def completeAllInstructionsInPipeline():
         #Execute stage 5
         if(pipelineStages[4] != '--------'):
             writeback_decoder.decodeInstr(pipelineStages[4])
-        pipelineStages[4] = '--------'
+        if(const.FLAG_WRITEBACK_COMPLETED == True):
+            pipelineStages[4] = '--------'
         
         #Execute stage 4    
         if(pipelineStages[3] != '--------'):
             memaccess_decoder.decodeInstr(pipelineStages[3])
-        pipelineStages[4] = pipelineStages[3]
-        pipelineStages[3] = '--------'
+        if(pipelineStages[4] == '--------' and const.FLAG_MEMACCESS_COMPLETED == True):
+            const.FLAG_WRITEBACK_COMPLETED = False
+            pipelineStages[4] = pipelineStages[3]
+            pipelineStages[3] = '--------'
         
         #Execute stage 3
         if(pipelineStages[2] != '--------'):
-            utilFunc.resetInstrFlag()
             decoder.decodeInstr(pipelineStages[2])
-        pipelineStages[3] = pipelineStages[2]
-        pipelineStages[2] = '--------'
+        if(pipelineStages[3] == '--------' and const.FLAG_EXECUTION_COMPLETED == True):
+            const.FLAG_MEMACCESS_COMPLETED = False
+            pipelineStages[3] = pipelineStages[2]
+            pipelineStages[2] = '--------'
         
         #Execute stage 2
         if(pipelineStages[1] != '--------'):
             opfetch_decoder.decodeInstr(pipelineStages[1])
-            if(const.FLAG_OP_FETCHED):
+            if(pipelineStages[2] == '--------' and const.FLAG_OP_FETCHED == True):
+                const.FLAG_EXECUTION_COMPLETED = False
                 pipelineStages[2] = pipelineStages[1]
-                pipelineStages[1] = pipelineStages[0]
-                pipelineStages[0] = '--------'
-            else:
+                pipelineStages[1] = '--------'
+            elif(pipelineStages[2] == '--------' and const.FLAG_OP_FETCHED == False):
                 incStalls()
-        else:
-            pipelineStages[2] = pipelineStages[1]
-            pipelineStages[1] = pipelineStages[0]
-            pipelineStages[0] = '--------'
+                
+        #Execute statge 1
+        if(pipelineStages[0] != '--------'):
+            fetchNewInstruction(True)
         incCycles()
     print pipelineStages 
    
@@ -501,22 +528,6 @@ def executeDel(address):
     else:
         print 'Not valid hex address for current state'
         
-'''    
-def executeC():
-    print "Executing command type: "+"'c'"
-    x=getCurrentInstNumber()
-    if(x >= len(getHexes())):
-        print 'instructions exhausted!!'
-        return
-    while (x <  len(getHexes()) and (not isBkPoint(x))):
-        #print 'X: '+str(x)
-        executeNextInst()
-        x=getCurrentInstNumber()
-    if (x==len(getHexes())):
-        print 'no breakpoints encountered. instructions exhausted!!'
-        return
-    print "Arrived at the break point. Type 's' or 'run'..."
-'''
         
 def executeC():
     print ""
@@ -528,12 +539,14 @@ def executeC():
         pipelineStages[0] = hexes[getCurrentInstNumber()]
     except IndexError:
         pipelineStages[0] = '--------'
+    incPC()
     while(not isPipelineEmpty()):
         if(isBkPoint(getCurrentInstNumber())):
-            completeAllFetchedInstructionsInPipeline()
+            completeAllInstructionsInPipeline()
             break
         else:
             executeStages()
+    print pipelineStages
              
 def executePrint(command):
     print "Executing command type: "+"'print'"

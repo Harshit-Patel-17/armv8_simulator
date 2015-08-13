@@ -21,6 +21,7 @@ def writebackAsr_r32(binary):
     rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
     
     utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False 
                        
@@ -28,6 +29,7 @@ def writebackLsl_r32(binary):
     rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
 
     utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     
@@ -35,6 +37,7 @@ def writebackLsr_r32(binary):
     rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
 
     utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     
@@ -42,6 +45,7 @@ def writebackAsr_r64(binary):
     rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
 
     utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False 
                        
@@ -49,6 +53,7 @@ def writebackLsl_r64(binary):
     rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
 
     utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     
@@ -56,6 +61,7 @@ def writebackLsr_r64(binary):
     rdKey, rnKey, rmKey, rnVal, rmVal = getFields_r(binary)
 
     utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
 
@@ -64,6 +70,7 @@ def writebackAsr_i32(binary):
     rdKey, rnKey, rnVal, immr, imms = getFields_i(binary)
     if(imms == '011111'):
         utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     
@@ -71,6 +78,7 @@ def writebackAsr_i64(binary):
     rdKey, rnKey, rnVal, immr, imms = getFields_i(binary)
     if(imms == '111111'):
         utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False 
                        
@@ -78,6 +86,7 @@ def writebackLslLsr_i32(binary):
     rdKey, rnKey, rnVal, immr, imms = getFields_i(binary)
 
     utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
     
@@ -85,6 +94,7 @@ def writebackLslLsr_i64(binary):
     rdKey, rnKey, rnVal, immr, imms = getFields_i(binary)
 
     utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0], '0')
+    const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] = False
 

@@ -7,8 +7,13 @@ Created on Aug 8, 2014
 import utilFunc
 import mem
 import const
+import armdebug
 
 def op_i(binary, N, setFlags):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     if(setFlags):
         inst = "ANDS "
     else:
@@ -17,7 +22,6 @@ def op_i(binary, N, setFlags):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     
-    const.FLAG_OPFETCH_EXECUTED = True
     if(mem.regObsolete[rnKey] == False):
         const.FLAG_OP_FETCHED = True
         rnValue = utilFunc.getRegValueByStringkey(binary[22:27],'0')
@@ -68,12 +72,15 @@ def opfetchAnds_i64(binary):
     
     
 def opfetchAnd_sr32(binary):    
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     inst = 'AND '
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rmKey = utilFunc.getRegKeyByStringKey(binary[11:16])    
     
-    const.FLAG_OPFETCH_EXECUTED = True
     if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
         const.FLAG_OP_FETCHED = True
         rnValue = utilFunc.getRegValueByStringkey(binary[22:27],'0')
@@ -121,13 +128,16 @@ def opfetchAnd_sr32(binary):
     mem.operand2Buffer = rnValue[32:64]
     
 def opfetchAnd_sr64(binary):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
     inst = 'AND '
     
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rmKey = utilFunc.getRegKeyByStringKey(binary[11:16])
     
-    const.FLAG_OPFETCH_EXECUTED = True
     if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
         const.FLAG_OP_FETCHED = True
         rnValue = utilFunc.getRegValueByStringkey(binary[22:27],'0')
