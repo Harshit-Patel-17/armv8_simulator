@@ -476,7 +476,7 @@ def completeAllInstructionsInPipeline():
             elif(pipelineStages[2] == '--------' and const.FLAG_OP_FETCHED == False):
                 incStalls()
                 
-        #Execute statge 1
+        #Execute stage 1
         if(pipelineStages[0] != '--------'):
             fetchNewInstruction(True)
         incCycles()

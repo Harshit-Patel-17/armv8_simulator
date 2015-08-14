@@ -434,6 +434,8 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
             data = utilFunc.getRegValueByStringkey(binary[27:32], '0')
             address = utilFunc.getRegValueByStringkey(binary[22:27],'1')
             armdebug.intRFActivityCounter += 1
+            mem.IF_ID_dataBuffer = []
+            mem.IF_ID_dataBuffer.append(data)
         elif(const.FLAG_DATA_FORWARDING):
             forwardedValues = mem.findForwardedValues(rtKey, rnKey)
             if(forwardedValues[0] == None and mem.regObsolete[rtKey] != 0):
