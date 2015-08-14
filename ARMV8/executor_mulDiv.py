@@ -13,6 +13,7 @@ def execMul(hexcode):
 		const.EXECUTION_COUNTER = config.latency['IntMul']
 	
 	if(const.EXECUTION_COUNTER != 0):
+		armdebug.intMulActivityCounter += 1
 		const.EXECUTION_COUNTER -= 1
 		
 	if(const.EXECUTION_COUNTER == 0):
@@ -52,6 +53,7 @@ def executeDivision(hexcode, datasize, isSignedDivision):
 		const.EXECUTION_COUNTER = config.latency['IntDiv']
 	
 	if(const.EXECUTION_COUNTER != 0):
+		armdebug.intDivActivityCounter += 1
 		const.EXECUTION_COUNTER -= 1
 		
 	if(const.EXECUTION_COUNTER == 0):

@@ -23,22 +23,30 @@ def execADC(hexcode, datasize):
 	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	operandRegister2 = utilFunc.getRegKeyByStringKey(hexcode[11:16])
 	
-	if(mem.regObsolete[operandRegister1] == False and mem.regObsolete[operandRegister2] == False):
+	if(mem.regObsolete[operandRegister1] == 0 and mem.regObsolete[operandRegister2] == 0):
 		const.FLAG_OP_FETCHED = True
 		regValue1 = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
 		regValue2 = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
+		armdebug.intRFActivityCounter += 1
 	elif(const.FLAG_DATA_FORWARDING):
 		forwardedValues = mem.findForwardedValues(operandRegister1, operandRegister2)
-		if(forwardedValues[0] != None and forwardedValues[1] != None):
-			const.FLAG_OP_FETCHED = True
-			regValue1 = forwardedValues[0]
-			regValue2 = forwardedValues[1]
-		else:
+		if(forwardedValues[0] == None and mem.regObsolete[operandRegister1] != 0):
 			return
+		if(forwardedValues[1] == None and mem.regObsolete[operandRegister2] != 0):
+			return
+		const.FLAG_OP_FETCHED = True
+		regValue1 = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+		regValue2 = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
+		if(forwardedValues[0] != None):
+			regValue1 = forwardedValues[0]
+		if(forwardedValues[1] != None):
+			regValue2 = forwardedValues[1]
+		if(None in forwardedValues):
+			armdebug.intRFActivityCounter += 1
 	else:
 		return
 	
-	mem.regObsolete[destRegister] = True
+	mem.regObsolete[destRegister] += 1
 	mem.regObsolete_last_modified_indices.append(destRegister)
 
 	#regValue1 = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
@@ -53,3 +61,5 @@ def execADC(hexcode, datasize):
 		
 	mem.operand1Buffer = regValue1
 	mem.operand2Buffer = regValue2
+	
+	armdebug.intRFActivityCounter += 1

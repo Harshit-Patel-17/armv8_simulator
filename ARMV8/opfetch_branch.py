@@ -74,6 +74,8 @@ def opfetchBR(binary):
     utilFunc.branchToAddress(int(hexstr,16))
     armdebug.pipelineStages[0] = '--------'
     
+    armdebug.intRFActivityCounter += 1
+    
 def opfetchBLR(binary):
     const.FLAG_OPFETCH_EXECUTED = True
     if(armdebug.pipelineStages[2] != '--------'):
@@ -100,6 +102,8 @@ def opfetchBLR(binary):
     utilFunc.branchToAddress(int(hexstr,16))
     armdebug.pipelineStages[0] = '--------'
     
+    armdebug.intRFActivityCounter += 1
+    
 def opfetchRET(binary):
     const.FLAG_OPFETCH_EXECUTED = True
     if(armdebug.pipelineStages[2] != '--------'):
@@ -124,6 +128,8 @@ def opfetchRET(binary):
         return
     utilFunc.branchToAddress(int(hexstr,16))
     armdebug.pipelineStages[0] = '--------'
+    
+    armdebug.intRFActivityCounter += 1
     
 def opfetchCBZ_32(binary):
     CBZClass(binary, 32, True)

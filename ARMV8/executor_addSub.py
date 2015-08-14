@@ -14,6 +14,7 @@ def op_i(binary, N, instr, sub_op, setFlags):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):
@@ -74,6 +75,7 @@ def op_sr(binary, N, instr, sub_op, setFlags):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):
@@ -120,6 +122,7 @@ def op_er(binary, N, instr, sub_op, setFlags):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):

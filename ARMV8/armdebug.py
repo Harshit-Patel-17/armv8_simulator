@@ -23,7 +23,52 @@ cycles = 0
 stalls = 0
 bkpoint=[]
 hexes=[]
-watchPause=False #
+watchPause=False 
+
+decodeActivityCounter = 0
+intRFActivityCounter = 0
+floatRFActivityCounter = 0
+intALUActivityCounter = 0
+intMulActivityCounter= 0
+intDivActivityCounter = 0
+floatALUActivityCounter = 0
+floatMulActivityCounter = 0
+floatDivActivityCounter = 0
+iCacheReadActivityCounter = 0
+iCacheWriteActivityCounter = 0
+l1CacheReadActivityCounter = 0
+l1CacheWriteActivityCounter = 0
+
+
+def printActivityCounters():
+    global decodeActivityCounter
+    global intRFActivityCounter
+    global floatRFActivityCounter
+    global intALUActivityCounter
+    global intMulActivityCounter
+    global intDivActivityCounter
+    global floatALUActivityCounter
+    global floatMulActivityCounter
+    global floatDivActivityCounter
+    global iCacheReadActivityCounter
+    global iCacheWriteActivityCounter
+    global l1CacheReadActivityCounter
+    global l1CacheWriteActivityCounter
+    print "Activity Counters"
+    print "================="
+    print "decodeActivityCounter......: ", decodeActivityCounter
+    print "intRFActivityCounter.......: ", intRFActivityCounter
+    print "floatRFActivityCounter.....: ", floatRFActivityCounter
+    print "intALUActivityCounter......: ", intALUActivityCounter
+    print "intMulActivityCounter......: ", intMulActivityCounter
+    print "intDivActivityCounter......: ", intDivActivityCounter
+    print "floatALUActivityCounter....: ", floatALUActivityCounter
+    print "floatMulActivityCounter....: ", floatMulActivityCounter
+    print "floatDivActivityCounter....: ", floatDivActivityCounter
+    print "iCacheReadActivityCounter..: ", iCacheReadActivityCounter
+    print "iCacheWriteActivityCounter.: ", iCacheWriteActivityCounter
+    print "l1CacheReadActivityCounter.: ", l1CacheReadActivityCounter
+    print "l1CacheWriteActivityCounter: ", l1CacheWriteActivityCounter
 
 def isWatchPause():
     return  watchPause
@@ -324,6 +369,8 @@ def executeRUN():
     print ""
     print "Total cycles = " + str(getCycles())
     print "Total stalls = " + str(getStalls())
+    print ""
+    printActivityCounters()
             
 def executeStages():
     print pipelineStages
@@ -364,11 +411,14 @@ def executeStages():
         fetchNewInstruction(False)
     incCycles()
     
-def fetchNewInstruction(breakAtNextInstuction):   
+def fetchNewInstruction(breakAtNextInstuction):
+    global iCacheReadActivityCounter
+    global decodeActivityCounter   
     if(const.FLAG_FETCH_COMPLETED == False and const.FETCH_COUNTER == 0):
         const.FETCH_COUNTER = config.latency['ICache']
     
     if(const.FETCH_COUNTER != 0):
+        iCacheReadActivityCounter += 1
         const.FETCH_COUNTER -= 1
         
     if(const.FETCH_COUNTER == 0):
@@ -379,13 +429,15 @@ def fetchNewInstruction(breakAtNextInstuction):
         return
     
     try:
+        const.FLAG_OP_FETCHED = False
         pipelineStages[1] = pipelineStages[0]
+        decodeActivityCounter += 1
+        const.FLAG_FETCH_COMPLETED = False
         if(breakAtNextInstuction == False):
             pipelineStages[0] = hexes[getCurrentInstNumber()]
             incPC()
         else:
             pipelineStages[0] = '--------'
-        const.FLAG_FETCH_COMPLETED = False
     except IndexError:
         pipelineStages[0] = '--------'
  

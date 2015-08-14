@@ -3,6 +3,7 @@
 import utilFunc
 import mem
 import const
+import armdebug
 
 # immediate rotate 32 bit
 def writebackRotate_i32(hexcode):
@@ -25,15 +26,17 @@ def execRotateImmediate(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
+	armdebug.intRFActivityCounter += 1
 	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
-	mem.regObsolete[destRegister] = False
+	mem.regObsolete[destRegister] -= 1
 
 #utility function for rotaton by a number stored in a register
 def execRotateRegister(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
+	armdebug.intRFActivityCounter += 1
 	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
-	mem.regObsolete[destRegister] = False
+	mem.regObsolete[destRegister] -= 1

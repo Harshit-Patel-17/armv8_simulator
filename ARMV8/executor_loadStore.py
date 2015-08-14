@@ -15,6 +15,7 @@ def helper_l(binary, instr):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):
@@ -54,6 +55,7 @@ def helper_rp(wback, postIndex, binary, instr):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):
@@ -67,7 +69,8 @@ def helper_rp(wback, postIndex, binary, instr):
         mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
     else:
         mem.ALUResultBuffer = mem.operand1Buffer
-    #const.FLAG_INST_EXECUTED = True
+        
+    mem.ID_EX_dataBuffer = mem.IF_ID_dataBuffer
     
 #---Load/Store Register-Pair (Post-Indexed)---    
 def execSTP_rp_posti_32(binary):
@@ -323,6 +326,7 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):
@@ -336,4 +340,5 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
         mem.ALUResultBuffer = mem.operand1Buffer + mem.operand2Buffer
     else:
         mem.ALUResultBuffer = mem.operand1Buffer
-    #const.FLAG_INST_EXECUTED = True
+        
+    mem.ID_EX_dataBuffer = mem.IF_ID_dataBuffer

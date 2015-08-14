@@ -19,6 +19,7 @@ def execBCond(binary):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):
@@ -71,6 +72,7 @@ def CBZClass(binary,width,bool):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):

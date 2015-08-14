@@ -29,6 +29,7 @@ def executeCLS(hexcode, datasize):
 		const.EXECUTION_COUNTER = config.latency['IntALU']
 	
 	if(const.EXECUTION_COUNTER != 0):
+		armdebug.intALUActivityCounter += 1
 		const.EXECUTION_COUNTER -= 1
 		
 	if(const.EXECUTION_COUNTER == 0):
@@ -55,6 +56,7 @@ def executeCLZ(hexcode, datasize):
 		const.EXECUTION_COUNTER = config.latency['IntALU']
 	
 	if(const.EXECUTION_COUNTER != 0):
+		armdebug.intALUActivityCounter += 1
 		const.EXECUTION_COUNTER -= 1
 		
 	if(const.EXECUTION_COUNTER == 0):

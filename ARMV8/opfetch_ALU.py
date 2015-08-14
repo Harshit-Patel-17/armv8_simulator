@@ -30,9 +30,10 @@ def executeCLS(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	
-	if(mem.regObsolete[operandRegister] == False):
+	if(mem.regObsolete[operandRegister] == 0):
 		const.FLAG_OP_FETCHED = True
 		regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+		armdebug.intRFActivityCounter += 1
 	elif(const.FLAG_DATA_FORWARDING):
 		forwardedValues = mem.findForwardedValues(operandRegister)
 		if(forwardedValues[0] != None):
@@ -43,7 +44,7 @@ def executeCLS(hexcode, datasize):
 	else:
 		return
 
-	mem.regObsolete[destRegister] = True
+	mem.regObsolete[destRegister] += 1
 	mem.regObsolete_last_modified_indices.append(destRegister)
 
 	#regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
@@ -65,9 +66,10 @@ def executeCLZ(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	operandRegister = utilFunc.getRegKeyByStringKey(hexcode[22:27])
 	
-	if(mem.regObsolete[operandRegister] == False):
+	if(mem.regObsolete[operandRegister] == 0):
 		const.FLAG_OP_FETCHED = True
 		regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
+		armdebug.intRFActivityCounter += 1
 	elif(const.FLAG_DATA_FORWARDING):
 		forwardedValues = mem.findForwardedValues(operandRegister)
 		if(forwardedValues[0] != None):
@@ -78,7 +80,7 @@ def executeCLZ(hexcode, datasize):
 	else:
 		return
 
-	mem.regObsolete[destRegister] = True
+	mem.regObsolete[destRegister] += 1
 	mem.regObsolete_last_modified_indices.append(destRegister)
 
 	#regValue = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')

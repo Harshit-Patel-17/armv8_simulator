@@ -1,6 +1,7 @@
 import utilFunc
 import mem
 import const
+import armdebug
 
 
 def writeback_i(binary, N, instr, sub_op, setFlags):
@@ -8,9 +9,10 @@ def writeback_i(binary, N, instr, sub_op, setFlags):
     
     if(rdKey != 31): #if CMN instruction,discard the result
         utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), mem.isSPWriteBackBuffer)
+        armdebug.intRFActivityCounter += 1
     const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
-    mem.regObsolete[rdKey] = False
+    mem.regObsolete[rdKey] -= 1
 
 def writebackAdd_i32(binary):
     return writeback_i(binary, 32, "ADD", '0', '0')
@@ -56,9 +58,10 @@ def writeback_sr(binary, N, instr, sub_op, setFlags):
 
     if(rdKey != 31): #if CMN instruction,discard the result
         utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), '0')
+        armdebug.intRFActivityCounter += 1
     const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
-    mem.regObsolete[rdKey] = False
+    mem.regObsolete[rdKey] -= 1
     
 def writebackAdd_sr32(binary):
     return writeback_sr(binary, 32, "ADD", '0', '0')
@@ -90,9 +93,10 @@ def writeback_er(binary, N, instr, sub_op, setFlags):
 
     if(rdKey != 31): #if CMN instruction,discard the result
         utilFunc.setRegValue(rdKey, mem.writeBackBuffer[0].zfill(const.REG_SIZE), mem.isSPWriteBackBuffer)
+        armdebug.intRFActivityCounter += 1
     const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
-    mem.regObsolete[rdKey] = False
+    mem.regObsolete[rdKey] -= 1
        
 
 # Add Subtract - Extended register

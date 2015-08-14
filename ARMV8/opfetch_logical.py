@@ -22,9 +22,10 @@ def op_i(binary, N, setFlags):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     
-    if(mem.regObsolete[rnKey] == False):
+    if(mem.regObsolete[rnKey] == 0):
         const.FLAG_OP_FETCHED = True
         rnValue = utilFunc.getRegValueByStringkey(binary[22:27],'0')
+        armdebug.intRFActivityCounter += 1
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rnKey)
         if(forwardedValues[0] != None):
@@ -35,7 +36,7 @@ def op_i(binary, N, setFlags):
     else:
         return
     
-    mem.regObsolete[rdKey] = True
+    mem.regObsolete[rdKey] += 1
     mem.regObsolete_last_modified_indices.append(rdKey)
     
     #rnValue = utilFunc.getRegValueByStringkey(binary[22:27], '0')
@@ -81,22 +82,30 @@ def opfetchAnd_sr32(binary):
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rmKey = utilFunc.getRegKeyByStringKey(binary[11:16])    
     
-    if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
+    if(mem.regObsolete[rnKey] == 0 and mem.regObsolete[rmKey] == 0):
         const.FLAG_OP_FETCHED = True
         rnValue = utilFunc.getRegValueByStringkey(binary[22:27],'0')
         rmValue = utilFunc.getRegValueByStringkey(binary[11:16],'0')
+        armdebug.intRFActivityCounter += 1
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rnKey, rmKey)
-        if(forwardedValues[0] != None and forwardedValues[1] != None):
-            const.FLAG_OP_FETCHED = True
-            rnValue = forwardedValues[0]
-            rmValue = forwardedValues[1]
-        else:
+        if(forwardedValues[0] == None and mem.regObsolete[rnKey] != 0):
             return
+        if(forwardedValues[1] == None and mem.regObsolete[rmKey] != 0):
+            return
+        const.FLAG_OP_FETCHED = True
+        rnValue = utilFunc.getRegValueByStringkey(binary[22:27],'0')
+        rmValue = utilFunc.getRegValueByStringkey(binary[11:16],'0')
+        if(forwardedValues[0] != None):
+            rnValue = forwardedValues[0]
+        if(forwardedValues[1] != None):
+            rmValue = forwardedValues[1]
+        if(None in forwardedValues):
+            armdebug.intRFActivityCounter += 1
     else:
         return
     
-    mem.regObsolete[rdKey] = True
+    mem.regObsolete[rdKey] += 1
     mem.regObsolete_last_modified_indices.append(rdKey)
     
     inst += 'w' + str(rdKey) + ', w' + str(rnKey) + ', w' + str(rmKey) + ', '    
@@ -138,22 +147,30 @@ def opfetchAnd_sr64(binary):
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rmKey = utilFunc.getRegKeyByStringKey(binary[11:16])
     
-    if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmKey] == False):
+    if(mem.regObsolete[rnKey] == 0 and mem.regObsolete[rmKey] == 0):
         const.FLAG_OP_FETCHED = True
         rnValue = utilFunc.getRegValueByStringkey(binary[22:27],'0')
         rmValue = utilFunc.getRegValueByStringkey(binary[11:16],'0')
+        armdebug.intRFActivityCounter += 1
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rnKey, rmKey)
-        if(forwardedValues[0] != None and forwardedValues[1] != None):
-            const.FLAG_OP_FETCHED = True
-            rnValue = forwardedValues[0]
-            rmValue = forwardedValues[1]
-        else:
+        if(forwardedValues[0] == None and mem.regObsolete[rnKey] != 0):
             return
+        if(forwardedValues[1] == None and mem.regObsolete[rmKey] != 0):
+            return
+        const.FLAG_OP_FETCHED = True
+        rnValue = utilFunc.getRegValueByStringkey(binary[22:27],'0')
+        rmValue = utilFunc.getRegValueByStringkey(binary[11:16],'0')
+        if(forwardedValues[0] != None):
+            rnValue = forwardedValues[0]
+        if(forwardedValues[1] != None):
+            rmValue = forwardedValues[1]
+        if(None in forwardedValues):
+            armdebug.intRFActivityCounter += 1
     else:
         return
     
-    mem.regObsolete[rdKey] = True
+    mem.regObsolete[rdKey] += 1
     mem.regObsolete_last_modified_indices.append(rdKey)
     
     inst += 'x' + str(rdKey) + ', x' + str(rnKey) + ', x' + str(rmKey) + ', '

@@ -3,6 +3,7 @@
 import utilFunc
 import const
 import mem
+import armdebug
 
 #returns if the given condition is satisfied or not
 #note for cset the lsb of the condition is inverted
@@ -93,18 +94,20 @@ def executeConditionalSet(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
+	armdebug.intRFActivityCounter += 1
 	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
-	mem.regObsolete[destRegister] = False
+	mem.regObsolete[destRegister] -= 1
 
 #utility function for conditional select inverse
 def executeConditionalSelectInverse(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
+	armdebug.intRFActivityCounter += 1
 	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
-	mem.regObsolete[destRegister] = False
+	mem.regObsolete[destRegister] -= 1
 
 
 #utility function for conditional select negate
@@ -112,18 +115,20 @@ def executeConditionalSelectNegate(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
+	armdebug.intRFActivityCounter += 1
 	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
-	mem.regObsolete[destRegister] = False
+	mem.regObsolete[destRegister] -= 1
 
 
 #utility function for conditional select increment
 def executeConditionalSelectIncrement(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], mem.isSPWriteBackBuffer)
+	armdebug.intRFActivityCounter += 1
 	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
-	mem.regObsolete[destRegister] = False
+	mem.regObsolete[destRegister] -= 1
 
 #utility function for conditional compare negative immediate
 def execConditionalCompareNegativeImmediate(hexcode, datasize):

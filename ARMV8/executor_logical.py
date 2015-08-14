@@ -16,6 +16,7 @@ def op_i(binary, N, setFlags):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):
@@ -52,6 +53,7 @@ def execAnd_sr32(binary):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):
@@ -73,6 +75,7 @@ def execAnd_sr64(binary):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):
@@ -94,6 +97,7 @@ def execAnds_sr32(binary):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):
@@ -117,6 +121,7 @@ def execAnds_sr64(binary):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):

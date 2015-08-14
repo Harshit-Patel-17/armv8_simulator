@@ -28,6 +28,7 @@ def mov_imm(binary, instr, inverted, N):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):
@@ -53,6 +54,7 @@ def mov_reg(binary, N):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):
@@ -82,6 +84,7 @@ def mov_bmi(binary, N):
         const.EXECUTION_COUNTER = config.latency['IntALU']
     
     if(const.EXECUTION_COUNTER != 0):
+        armdebug.intALUActivityCounter += 1
         const.EXECUTION_COUNTER -= 1
         
     if(const.EXECUTION_COUNTER == 0):

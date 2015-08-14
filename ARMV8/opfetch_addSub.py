@@ -12,9 +12,10 @@ def opfetch_i(binary, N, instr, sub_op, setFlags):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     
-    if(mem.regObsolete[rnKey] == False):
+    if(mem.regObsolete[rnKey] == 0):
         const.FLAG_OP_FETCHED = True
         rnVal = utilFunc.getRegValueByStringkey(binary[22:27],'0')
+        armdebug.intRFActivityCounter += 1
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rnKey)
         if(forwardedValues[0] != None):
@@ -23,7 +24,7 @@ def opfetch_i(binary, N, instr, sub_op, setFlags):
     else:
         return
     
-    mem.regObsolete[rdKey] = True
+    mem.regObsolete[rdKey] += 1
     mem.regObsolete_last_modified_indices.append(rdKey)
     
     if(N == 32):
@@ -100,22 +101,30 @@ def opfetch_sr(binary, N, instr, sub_op, setFlags):
     imm6 = binary[16:22]
     imm6Val = int(imm6, 2)
     
-    if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmkey] == False):
+    if(mem.regObsolete[rnKey] == 0 and mem.regObsolete[rmkey] == 0):
         const.FLAG_OP_FETCHED = True
         rnVal = utilFunc.getRegValueByStringkey(binary[22:27],'0')
         rmVal = utilFunc.getRegValueByStringkey(binary[11:16],'0')
+        armdebug.intRFActivityCounter += 1
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rnKey, rmkey)
-        if(forwardedValues[0] != None and forwardedValues[1] != None):
-            const.FLAG_OP_FETCHED = True
-            rnVal = forwardedValues[0]
-            rmVal = forwardedValues[1]
-        else:
+        if(forwardedValues[0] == None and mem.regObsolete[rnKey] != 0):
             return
+        if(forwardedValues[1] == None and mem.regObsolete[rmkey] != 0):
+            return
+        const.FLAG_OP_FETCHED = True
+        rnVal = utilFunc.getRegValueByStringkey(binary[22:27],'0')
+        rmVal = utilFunc.getRegValueByStringkey(binary[11:16],'0')
+        if(forwardedValues[0] != None):
+            rnVal = forwardedValues[0]
+        if(forwardedValues[1] != None):
+            rmVal = forwardedValues[1]
+        if(None in forwardedValues):
+            armdebug.intRFActivityCounter += 1
     else:
         return
     
-    mem.regObsolete[rdKey] = True
+    mem.regObsolete[rdKey] += 1
     mem.regObsolete_last_modified_indices.append(rdKey)
     
     if(N == 32):
@@ -170,22 +179,30 @@ def opfetch_er(binary, N, instr, sub_op, setFlags):
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rmkey = utilFunc.getRegKeyByStringKey(binary[11:16])
     
-    if(mem.regObsolete[rnKey] == False and mem.regObsolete[rmkey] == False):
+    if(mem.regObsolete[rnKey] == 0 and mem.regObsolete[rmkey] == 0):
         const.FLAG_OP_FETCHED = True
         rnVal = utilFunc.getRegValueByStringkey(binary[22:27],'0')
         rmVal = utilFunc.getRegValueByStringkey(binary[11:16],'0')
+        armdebug.intRFActivityCounter += 1
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rnKey, rmkey)
-        if(forwardedValues[0] != None and forwardedValues[1] != None):
-            const.FLAG_OP_FETCHED = True
-            rnVal = forwardedValues[0]
-            rmVal = forwardedValues[1]
-        else:
+        if(forwardedValues[0] == None and mem.regObsolete[rnKey] != 0):
             return
+        if(forwardedValues[1] == None and mem.regObsolete[rmkey] != 0):
+            return
+        const.FLAG_OP_FETCHED = True
+        rnVal = utilFunc.getRegValueByStringkey(binary[22:27],'0')
+        rmVal = utilFunc.getRegValueByStringkey(binary[11:16],'0')
+        if(forwardedValues[0] != None):
+            rnVal = forwardedValues[0]
+        if(forwardedValues[1] != None):
+            rmVal = forwardedValues[1]
+        if(None in forwardedValues):
+            armdebug.intRFActivityCounter += 1
     else:
         return
     
-    mem.regObsolete[rdKey] = True
+    mem.regObsolete[rdKey] += 1
     mem.regObsolete_last_modified_indices.append(rdKey)
     
     option = binary[16:19]

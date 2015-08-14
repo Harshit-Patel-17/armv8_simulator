@@ -13,18 +13,20 @@ def writebackADR(binary):
     regnum=utilFunc.uInt(rdKey)
 
     utilFunc.setRegValue(regnum, mem.writeBackBuffer[0], '0')
+    armdebug.intRFActivityCounter += 1
     const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
-    mem.regObsolete[regnum] = False
+    mem.regObsolete[regnum] -= 1
 
 def writebackADRP(binary):
     rdKey=binary[-5:]
     regnum=utilFunc.uInt(rdKey)
 
     utilFunc.setRegValue(regnum, mem.writeBackBuffer[0], '0')
+    armdebug.intRFActivityCounter += 1
     const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
-    mem.regObsolete[regnum] = False
+    mem.regObsolete[regnum] -= 1
 
 def writebackNOP(binary):
     const.FLAG_WRITEBACK_COMPLETED = True

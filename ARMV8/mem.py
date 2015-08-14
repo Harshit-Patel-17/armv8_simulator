@@ -10,7 +10,7 @@ regNum=32
 regFile = list('0'*64 for i in range(regNum))
 
 #Indicates whether register value is obsolete for use by next instructions
-regObsolete = list(False for i in range(regNum))
+regObsolete = list(0 for i in range(regNum))
 regObsolete_last_modified_indices = []
 
 #Indicates whether register value is available in ALUResultBuffer for use by next instructions
@@ -34,6 +34,12 @@ isSPBuffer = ''
 writeBackBuffer = ['', '', '']
 isSPWriteBackBuffer = ''
 
+#Interstage data buffers
+IF_ID_dataBuffer = []
+ID_EX_dataBuffer = []
+EX_MA_dataBuffer = []
+MA_WB_dataBuffer = []
+
 #flags-order: n,z,c,v
 flagFile = list('0' for i in range(4))
 
@@ -43,9 +49,10 @@ helper_memory_model={}
 
 watchReg = list(False for i in range(regNum))
 
-def findForwardedValues(operandRegister1, operandRegister2 = None):
+def findForwardedValues(operandRegister1, operandRegister2 = None, operandRegister3 = None):
     regValue1 = None
     regValue2 = None
+    regValue3 = None
     if(regValueAvailableInALU[operandRegister1]):
         regValue1 = ALUResultBuffer
     elif(regValueAvailableInWB[operandRegister1]):
@@ -56,8 +63,14 @@ def findForwardedValues(operandRegister1, operandRegister2 = None):
             regValue2 = ALUResultBuffer
         elif(regValueAvailableInWB[operandRegister2]):
             regValue2 = writeBackBuffer[regValueAvailableInWB_buffer_indices[operandRegister2]]
+            
+    if(operandRegister3 != None):
+        if(regValueAvailableInALU[operandRegister3]):
+            regValue3 = ALUResultBuffer
+        elif(regValueAvailableInWB[operandRegister3]):
+            regValue3 = writeBackBuffer[regValueAvailableInWB_buffer_indices[operandRegister3]]
     
-    return [regValue1, regValue2]
+    return [regValue1, regValue2, regValue3]
 
 def freeObsoleteRegisters():
     for index in regObsolete_last_modified_indices:

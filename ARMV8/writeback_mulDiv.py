@@ -3,15 +3,17 @@
 import utilFunc
 import mem
 import const
+import armdebug
 
 #executes multiplation of two unsigned numbers.Takes as input the hex code for the UMULL instruction
 def writebackMul(hexcode):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
+	armdebug.intRFActivityCounter += 1
 	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
-	mem.regObsolete[destRegister] = False
+	mem.regObsolete[destRegister] -= 1
 
 #executes division of two unsigned numbers(32 bit)
 def writebackUnsignedDiv_32(hexcode):
@@ -33,6 +35,7 @@ def executeDivision(hexcode, datasize, isSignedDivision):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
+	armdebug.intRFActivityCounter += 1
 	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
-	mem.regObsolete[destRegister] = False
+	mem.regObsolete[destRegister] -= 1

@@ -34,7 +34,7 @@ def mov_imm(binary, instr, inverted, N):
     
     const.FLAG_OP_FETCHED = True
     mem.operand1Buffer = result
-    mem.regObsolete[rdKey] = True
+    mem.regObsolete[rdKey] += 1
     mem.regObsolete_last_modified_indices.append(rdKey)
 
 def mov_reg(binary, N):
@@ -45,9 +45,10 @@ def mov_reg(binary, N):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rmKey = utilFunc.getRegKeyByStringKey(binary[11:16])
     
-    if(mem.regObsolete[rmKey] == False):
+    if(mem.regObsolete[rmKey] == 0):
         const.FLAG_OP_FETCHED = True
         rmVal = utilFunc.getRegValueByStringkey(binary[11:16],'0')
+        armdebug.intRFActivityCounter += 1
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rmKey)
         if(forwardedValues[0] != None):
@@ -58,7 +59,7 @@ def mov_reg(binary, N):
     else:
         return
     
-    mem.regObsolete[rdKey] = True
+    mem.regObsolete[rdKey] += 1
     mem.regObsolete_last_modified_indices.append(rdKey)
 
     #rmVal = utilFunc.getRegValueByStringkey(binary[11:16], '0')
@@ -94,7 +95,7 @@ def mov_bmi(binary, N):
     
     const.FLAG_OP_FETCHED = True
     mem.operand1Buffer = imm
-    mem.regObsolete[rdKey] = True
+    mem.regObsolete[rdKey] += 1
     mem.regObsolete_last_modified_indices.append(rdKey)
     
 def opfetchMov_bmi32(binary):

@@ -6,12 +6,14 @@ Created on Aug 8, 2014
 import const
 import utilFunc
 import mem
+import armdebug
 
 def helper_l(binary, instr):
     rtKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     
     utilFunc.setRegValue(rtKey, mem.writeBackBuffer[0], '0')
-    mem.regObsolete[rtKey] = False
+    armdebug.intRFActivityCounter += 1
+    mem.regObsolete[rtKey] -= 1
     const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True
     
@@ -65,15 +67,18 @@ def helper_rp(wback, postIndex, binary, instr):
     if(memOp == const.MEM_OP_LOAD):
         if(const.WRITEBACK_COUNTER == 1):
             utilFunc.setRegValue(rtKey, mem.writeBackBuffer[0], '0')
-            mem.regObsolete[rtKey] = False
+            armdebug.intRFActivityCounter += 1
+            mem.regObsolete[rtKey] -= 1
         if(const.WRITEBACK_COUNTER == 0):
             utilFunc.setRegValue(rt2Key, mem.writeBackBuffer[1], '0')
-            mem.regObsolete[rt2Key] = False
+            armdebug.intRFActivityCounter += 1
+            mem.regObsolete[rt2Key] -= 1
     
     if(const.WRITEBACK_COUNTER == 0): 
         if(wback):                  
             utilFunc.setRegValue(rnKey, mem.writeBackBuffer[2], '1')
-            mem.regObsolete[rnKey] = False
+            armdebug.intRFActivityCounter += 1
+            mem.regObsolete[rnKey] -= 1
     
     #const.FLAG_WRITEBACK_EXECUTED = True
     
@@ -339,11 +344,13 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
        
     if(memOp == const.MEM_OP_LOAD):
         utilFunc.setRegValue(rtKey, mem.writeBackBuffer[0], '0')
-        mem.regObsolete[rtKey] = False
+        armdebug.intRFActivityCounter += 1
+        mem.regObsolete[rtKey] -= 1
         
     if(wback):
         utilFunc.setRegValue(rnKey, mem.writeBackBuffer[2], '1')
-        mem.regObsolete[rnKey] = False
+        armdebug.intRFActivityCounter += 1
+        mem.regObsolete[rnKey] -= 1
     
     const.FLAG_WRITEBACK_COMPLETED = True
     const.FLAG_WRITEBACK_EXECUTED = True

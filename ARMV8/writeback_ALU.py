@@ -3,6 +3,7 @@
 import utilFunc
 import mem
 import const
+import armdebug
 
 #executes CLS instruction(32 bit) 
 def writebackCLS_32(hexcode):
@@ -25,15 +26,17 @@ def executeCLS(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
+	armdebug.intRFActivityCounter += 1
 	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
-	mem.regObsolete[destRegister] = False
+	mem.regObsolete[destRegister] -= 1
 
 #utility function for counting the number of leading zero bits
 def executeCLZ(hexcode, datasize):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	utilFunc.setRegValue(destRegister, mem.writeBackBuffer[0], '0')
+	armdebug.intRFActivityCounter += 1
 	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
-	mem.regObsolete[destRegister] = False
+	mem.regObsolete[destRegister] -= 1

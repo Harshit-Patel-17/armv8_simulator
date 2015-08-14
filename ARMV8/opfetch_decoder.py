@@ -8,7 +8,7 @@ import sys
 
 def decodeInstr(hexCode): 
     binary = utilFunc.hexToBin(hexCode)
-    const.FLAG_OP_FETCHED = False
+    #const.FLAG_OP_FETCHED = False
     const.FLAG_OPFETCH_EXECUTED = False
     mem.regObsolete_last_modified_indices = []
     #Checking for branch type

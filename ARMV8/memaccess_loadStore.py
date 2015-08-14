@@ -15,6 +15,7 @@ def helper_l(binary, instr):
         const.MEMACCESS_COUNTER = config.latency['L1Cache']
     
     if(const.MEMACCESS_COUNTER != 0):
+        armdebug.l1CacheReadActivityCounter += 1
         const.MEMACCESS_COUNTER -= 1
         
     if(const.MEMACCESS_COUNTER == 0):
@@ -77,19 +78,6 @@ def helper_rp_offset(binary, instr):
     helper_rp(False, False, binary, instr)
     
 def helper_rp(wback, postIndex, binary, instr):
-    const.FLAG_MEMACCESS_EXECUTED = True  
-    if(const.FLAG_MEMACCESS_COMPLETED == False and const.MEMACCESS_COUNTER == 0):
-        const.MEMACCESS_COUNTER = 2*config.latency['L1Cache']
-    
-    if(const.MEMACCESS_COUNTER != 0):
-        const.MEMACCESS_COUNTER -= 1
-        
-    if(const.MEMACCESS_COUNTER % 3 == 0):
-        if(const.MEMACCESS_COUNTER == 0):
-            const.FLAG_MEMACCESS_COMPLETED = True
-    else:
-        return
-    
     rtKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     rnKey = utilFunc.getRegKeyByStringKey(binary[22:27])
     rt2Key = utilFunc.getRegKeyByStringKey(binary[17:22])
@@ -102,6 +90,23 @@ def helper_rp(wback, postIndex, binary, instr):
         memOp = const.MEM_OP_LOAD
     else:
         memOp = const.MEM_OP_STORE
+        
+    const.FLAG_MEMACCESS_EXECUTED = True  
+    if(const.FLAG_MEMACCESS_COMPLETED == False and const.MEMACCESS_COUNTER == 0):
+        const.MEMACCESS_COUNTER = 2*config.latency['L1Cache']
+    
+    if(const.MEMACCESS_COUNTER != 0):
+        if(memOp == const.MEM_OP_LOAD):
+            armdebug.l1CacheReadActivityCounter += 1
+        elif(memOp == const.MEM_OP_STORE):
+            armdebug.l1CacheWriteActivityCounter += 1
+        const.MEMACCESS_COUNTER -= 1
+        
+    if(const.MEMACCESS_COUNTER % 3 == 0):
+        if(const.MEMACCESS_COUNTER == 0):
+            const.FLAG_MEMACCESS_COMPLETED = True
+    else:
+        return
 
     signed = (opc[1] != '0')
     scale = 2 + utilFunc.uInt(opc[0])
@@ -116,11 +121,11 @@ def helper_rp(wback, postIndex, binary, instr):
      
     if(memOp == const.MEM_OP_STORE):
         if(const.MEMACCESS_COUNTER == 3):
-            data1 = utilFunc.getRegValueByStringkey(binary[27:32], '0')
-            utilFunc.storeToMemory(data1, mem.ALUResultBuffer, dataSize)
+            #data1 = utilFunc.getRegValueByStringkey(binary[27:32], '0')
+            utilFunc.storeToMemory(mem.ID_EX_dataBuffer[0], mem.ALUResultBuffer, dataSize)
         if(const.MEMACCESS_COUNTER == 0):
-            data2 = utilFunc.getRegValueByStringkey(binary[17:22], '0')  
-            utilFunc.storeToMemory(data2, mem.ALUResultBuffer + dbytes, dataSize)
+            #data2 = utilFunc.getRegValueByStringkey(binary[17:22], '0')  
+            utilFunc.storeToMemory(mem.ID_EX_dataBuffer[1], mem.ALUResultBuffer + dbytes, dataSize)
              
     elif(memOp == const.MEM_OP_LOAD):
         if(const.MEMACCESS_COUNTER == 3):
@@ -406,20 +411,6 @@ def helper_reg(binary, instr):
 
     
 def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale, instr):
-    const.FLAG_MEMACCESS_EXECUTED = True    
-    if(const.FLAG_MEMACCESS_COMPLETED == False and const.MEMACCESS_COUNTER == 0):
-        const.MEMACCESS_COUNTER = config.latency['L1Cache']
-    
-    if(const.MEMACCESS_COUNTER != 0):
-        const.MEMACCESS_COUNTER -= 1
-        
-    if(const.MEMACCESS_COUNTER == 0):
-        const.FLAG_MEMACCESS_COMPLETED = True
-        if(armdebug.pipelineStages[4] != '--------'):
-            return
-    else:
-        return
-    
     if(opc[0] == '0'):
         if(opc[1] == '1'):
             memOp = const.MEM_OP_LOAD
@@ -440,14 +431,31 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
             else:
                 regSize = 64
             signed = True
+    
+    const.FLAG_MEMACCESS_EXECUTED = True    
+    if(const.FLAG_MEMACCESS_COMPLETED == False and const.MEMACCESS_COUNTER == 0):
+        const.MEMACCESS_COUNTER = config.latency['L1Cache']
+    
+    if(const.MEMACCESS_COUNTER != 0):
+        if(memOp == const.MEM_OP_LOAD):
+            armdebug.l1CacheReadActivityCounter += 1
+        elif(memOp == const.MEM_OP_STORE):
+            armdebug.l1CacheWriteActivityCounter += 1
+        const.MEMACCESS_COUNTER -= 1
+        
+    if(const.MEMACCESS_COUNTER == 0):
+        const.FLAG_MEMACCESS_COMPLETED = True
+        if(armdebug.pipelineStages[4] != '--------'):
+            return
+    else:
+        return
             
     dataSize = 8 << scale
     
     #const.FLAG_MEMACCESS_EXECUTED = True
         
     if(memOp == const.MEM_OP_STORE):
-        data = utilFunc.getRegValueByStringkey(binary[27:32], '0')
-        utilFunc.storeToMemory(data, mem.ALUResultBuffer, dataSize)
+        utilFunc.storeToMemory(mem.ID_EX_dataBuffer[0], mem.ALUResultBuffer, dataSize)
             
     elif(memOp == const.MEM_OP_LOAD):
         data = utilFunc.fetchFromMemory(mem.ALUResultBuffer, dataSize)

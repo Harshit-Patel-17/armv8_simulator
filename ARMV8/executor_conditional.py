@@ -98,6 +98,7 @@ def executeConditionalSet(hexcode, datasize):
 		const.EXECUTION_COUNTER = config.latency['IntALU']
 	
 	if(const.EXECUTION_COUNTER != 0):
+		armdebug.intALUActivityCounter += 1
 		const.EXECUTION_COUNTER -= 1
 		
 	if(const.EXECUTION_COUNTER == 0):
@@ -125,6 +126,7 @@ def executeConditionalSelectInverse(hexcode, datasize):
 		const.EXECUTION_COUNTER = config.latency['IntALU']
 	
 	if(const.EXECUTION_COUNTER != 0):
+		armdebug.intALUActivityCounter += 1
 		const.EXECUTION_COUNTER -= 1
 		
 	if(const.EXECUTION_COUNTER == 0):
@@ -173,6 +175,7 @@ def executeConditionalSelectNegate(hexcode, datasize):
 		const.EXECUTION_COUNTER = config.latency['IntALU']
 	
 	if(const.EXECUTION_COUNTER != 0):
+		armdebug.intALUActivityCounter += 1
 		const.EXECUTION_COUNTER -= 1
 		
 	if(const.EXECUTION_COUNTER == 0):
@@ -225,6 +228,7 @@ def executeConditionalSelectIncrement(hexcode, datasize):
 		const.EXECUTION_COUNTER = config.latency['IntALU']
 	
 	if(const.EXECUTION_COUNTER != 0):
+		armdebug.intALUActivityCounter += 1
 		const.EXECUTION_COUNTER -= 1
 		
 	if(const.EXECUTION_COUNTER == 0):
@@ -262,6 +266,7 @@ def execConditionalCompareNegativeImmediate(hexcode, datasize):
 		const.EXECUTION_COUNTER = config.latency['IntALU']
 	
 	if(const.EXECUTION_COUNTER != 0):
+		armdebug.intALUActivityCounter += 1
 		const.EXECUTION_COUNTER -= 1
 		
 	if(const.EXECUTION_COUNTER == 0):
@@ -287,6 +292,7 @@ def execConditionalCompareNegativeRegister(hexcode, datasize):
 		const.EXECUTION_COUNTER = config.latency['IntALU']
 	
 	if(const.EXECUTION_COUNTER != 0):
+		armdebug.intALUActivityCounter += 1
 		const.EXECUTION_COUNTER -= 1
 		
 	if(const.EXECUTION_COUNTER == 0):
