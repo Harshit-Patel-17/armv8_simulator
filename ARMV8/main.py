@@ -76,3 +76,5 @@ if __name__ == '__main__':
             executeRegs()
             print ''
             executeFlag()
+            print ''
+            executeFPSIMDRegs()

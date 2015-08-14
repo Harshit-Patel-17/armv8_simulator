@@ -9,6 +9,19 @@ regNum=32
 #31st register is used for SP
 regFile = list('0'*64 for i in range(regNum))
 
+'''registers for FP & SIMD instructions
+FP & SIMD use the same registers but they view the registers differently
+SIMD registers can be viewed as 32 64-bit registers/16 128-bit registers
+so a 128 bit Q register(let's say Q5) will map to D10 and D11 when we choose to view the registers as 64-bit ones(most significant part of Q5 maps to D11 while LSP to D10)
+for FP we view the registers as S0-S31(32 bit registers) or D0-D15(64 bit registers) mapping being Di to S(2*i) and S(2*i+1). D16-D31 aren't used for FP
+SIMD instructions use D registers(0-31) or Q registers(0-15) as we may choose to view them.
+we choose to represent the registers as 32 64-bit registers, and for FP registers 16-31 won't be used
+'''
+regFileFPSIMD = list('0'*64 for i in range(regNum))
+
+#floating point control register
+fpcrFile = list('0' for i in range(32))
+
 #Indicates whether register value is obsolete for use by next instructions
 regObsolete = list(False for i in range(regNum))
 regObsolete_last_modified_indices = []
@@ -134,12 +147,14 @@ def printHelperMemoryState():
     print helper_memory_model
     
 def init():
-    global regFile, flagFile, memory_model, regNum, watchReg
+    global regFile, flagFile, memory_model, regNum, watchReg, regFileFPSIMD, fpcrFile
     regNum=31
 
     regFile = list('0'*64 for i in range(regNum))
+    regFileFPSIMD = list('0'*64 for i in range(regNum))
     #flags-order: n,z,c,v
     flagFile = list('0' for i in range(4))
+    fpcrFile = list('0' for i in range(32))
 
     memory_model={}
 

@@ -13,6 +13,8 @@ import executor_rotate
 import executor_bitwise_shift
 import executor_adc
 import executor_moveWide
+import executor_FP_addSub
+import executor_Vector
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -36,6 +38,9 @@ def INSTRUCTION_TYPE(binary, i):
             16 : BITWISE_SHIFT_REGISTER,
             17 : ADD_WITH_CARRY,
             18 : MOVE_WIDE,
+            19 : FLOATING_POINT_ADD_SUB,
+            20 : FLOATING_POINT_MOVE, #only for testing purpose,to be removed later
+            21 : VECTOR_INSTRUCTIONS,
         }[i](binary)
     except KeyError:
         i = i
@@ -231,3 +236,34 @@ def MOVE_WIDE(binary):
     "010100101" : executor_MoveWide.execMoveZ_32,
     "110100101" : executor_MoveWide.execMoveZ_64,
   }[key](binary)
+
+def FLOATING_POINT_ADD_SUB(binary):
+  key = binary[0:11] + "-"*5 + binary[16:22]
+  return {
+    "00011110001-----001010" :  executor_FP_addSub.execFADD_scalar_SP,
+    "00011110011-----001010" :  executor_FP_addSub.execFADD_scalar_DP,
+    "00001110001-----110101" :  executor_FP_addSub.execFADD_vector_2S,
+    "01001110001-----110101" :  executor_FP_addSub.execFADD_vector_4S,
+    "01001110011-----110101" :  executor_FP_addSub.execFADD_vector_2D,
+    "00011110001-----001110" :  executor_FP_addSub.execFSUB_scalar_SP,
+    "00011110011-----001110" :  executor_FP_addSub.execFSUB_scalar_DP,
+    "00001110101-----110101" :  executor_FP_addSub.execFSUB_vector_2S,
+    "01001110101-----110101" :  executor_FP_addSub.execFSUB_vector_4S,
+    "01001110111-----110101" :  executor_FP_addSub.execFSUB_vector_2D,
+  }[key](binary)
+
+def FLOATING_POINT_MOVE(binary):
+  key = binary[0:11] + "-"*8 + binary[19:27]
+  return {
+    "00011110001--------10000000" : executor_move.execFMove_SP,
+    "00011110011--------10000000" : executor_move.execFMove_DP,
+  }[key](binary)
+
+def VECTOR_INSTRUCTIONS(binary):
+  key = binary[0:9] + "-" + binary[10:12] + "--" + binary[14:16] + "----" + binary[20:26] + "-" + binary[27]
+  return {
+    "111100111-11--00----010100-0" :  executor_Vector.execVCNT_A1_64,
+    "111100111-11--00----010101-0" :  executor_Vector.execVCNT_A1_128,
+    "111111111-11--00----010100-0" :  executor_Vector.execVCNT_T1_64,
+    "111111111-11--00----010101-0" :  executor_Vector.execVCNT_T1_128,
+  }

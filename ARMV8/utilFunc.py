@@ -4,6 +4,7 @@
 import const
 import mem
 import armdebug
+import math
 
 def hexToBin(s, numOfBits=const.INST_SIZE):
     scale = 16  # # equals to hexadecimal 
@@ -33,6 +34,18 @@ def getRegValueByStringkey(key, isSp):
         return mem.regFile[key]
     else:
         return '0' * 64
+
+# gives 64 bit, truncate when using
+# key should be 0 to 31 in binary string
+# used for FP & SIMD instructions
+def getRegValueByStringkeyFDSIMD(key):
+    key = int(key, 2)
+    assert key >= 0 and key <= 31
+    return mem.regFileFPSIMD[key]
+
+def getRegValueByRegkeyFDSIMD(key):
+    assert key >= 0 and key <= 31
+    return mem.regFileFPSIMD[key]
 
 def getRegKeyByStringKey(key):
     key = int(key, 2)
@@ -93,6 +106,12 @@ def setRegValue(rdKey, val, isSp):
         # ignoring the result - zero register        
         del mem.regFile[rdKey]
         mem.regFile.insert(rdKey, val)
+
+# val is 128 bit string to be stored in reg with rdkey
+def setRegValueSIMDFP(rdkey, val):
+    assert rdKey >= 0 and rdKey <= 31
+    del mem.regFile[rdKey]
+    mem.regFile.insert(rdKey, val)
         
 def ifWatch(rdKey):
     if mem.isWatchSet(rdKey):
@@ -451,6 +470,15 @@ def countLeadingZeroBits(input, datasize):
 def countLeadingSignBits(input, datasize):
     return countLeadingZeroBits(calculateXor(input[1:datasize],input[0:(datasize-1)]), datasize-1)
 
+def countSetBits(input):
+    i = 0
+    count = 0
+    for c in input:
+        if(c == '1'):
+            count = count + 1
+        i = i+1
+    return count 
+
 def setFlags(flags):
     if(flags[0]=='1'):
         set_N_flag()
@@ -499,3 +527,353 @@ def isZero(result):
         return '1'
     else:
         return '0'
+
+def isOnes(result, datasize):
+    if("1"*datasize == result):
+        return '1'
+    else:
+        return '0'
+
+#-------------Floating Point Util functions-----------------
+
+
+def FPDefaultNaN(datasize):
+    if(datasize == 16):
+        exp = 5
+    elif(datasize == 32):
+        exp = 8
+    else:
+        exp = 11
+
+    frac = datasize-1-exp
+
+    return "0" + "1"*exp + "1" + "0"*(frac-1)
+
+def FPInfinity(datasize, sign):
+    if(datasize == 16):
+        exp = 5
+    elif(datasize == 32):
+        exp = 8
+    else:
+        exp = 11
+
+    frac = datasize-1-exp
+
+    return sign + "1"*exp + "0"*frac
+
+def FPZero(datasize, sign):
+    if(datasize == 16):
+        exp = 5
+    elif(datasize == 32):
+        exp = 8
+    else:
+        exp = 11
+
+    frac = datasize-1-exp
+
+    return sign + "0"*exp + "0"*frac 
+
+def FPMaxNormal(datasize, sign):
+    if(datasize == 16):
+        exp = 5
+    elif(datasize == 32):
+        exp = 8
+    else:
+        exp = 11
+
+    frac = datasize-1-exp
+
+    return sign + "1"*(exp-1) + "0" + "1"*frac  
+
+def FPProcessNaN(type, op, datasize):
+    if(datasize == 32):
+        topFrac = 9
+    else:
+        topFrac = 12
+
+    result = op
+    if(type == "FPType_SNaN"):
+        result[topFrac] = '1'
+    if(getDNBit()=='1'):
+        result = FPDefaultNaN()
+    return result
+
+def FPProcessNaNs(type1, type2, op1, op2, datasize):
+    if(type1 == "FPType_SNaN"):
+        done = True
+        result = FPProcessNaN(type1, op1, datasize)
+    elif(type2 == "FPType_SNaN"):
+        done = True
+        result = FPProcessNaN(type2, op2, datasize)
+    elif(type1 == "FPType_QNaN"):
+        done = True 
+        result = FPProcessNaN(type1, op1, datasize)
+    elif(type2 == "FPType_QNaN"):
+        done = True
+        result = FPProcessNaN(type2, op2, datasize)
+    else:
+        done = False 
+        result = "0"*datasize; # 'Don't care' result
+    return (done, result)
+
+def getRoundingBits():
+    return mem.fpcrFile[8:10]
+
+def getDNBit():
+    return mem.fpcrFile[6]
+
+def getAHPBit():
+    return mem.fpcrFile[5]
+
+def getFZBit():
+    return mem.fpcrFile[7]
+
+def FPDecodeRounding(bits):
+    if(bits == "00"):
+        return "TIEEVEN"
+    elif(bits == "01"):
+        return "POSINF"
+    elif(bits == "10"):
+        return "NEGINF"
+    else:
+        return "ZERO"
+
+# decodes the floating point number
+def unpackFP(fpval, datasize):
+    if(datasize == 16):
+        sign = fpval[0]
+        exp16 = fpval[1:6]
+        frac16 = fpval[6:16]
+
+        if(IsZero(exp16)=='1'):
+            if(IsZero(frac16)):
+                typeOfVal = "FPType_Zero"
+                value = 0.0
+            else:
+                typeOfVal = "FPType_Nonzero"
+                value = 2.0**(-14) * uInt(frac16) * 2.0**(-10)
+        elif(isOnes(exp16, datasize) and getAHPBit() == '0'):
+            if(isZero(frac16)):
+                typeOfVal = "FPType_Infinity"
+                value = 2.0**(1000000)
+            else:
+                if(frac16[0] == '1'):
+                    typeOfVal = "FPType_QNaN" 
+                else:
+                    typeOfVal = "FPType_SNaN"
+                value = 0.0
+        else:
+            typeOfVal = "FPType_Nonzero"
+            value = 2.0**(uInt(exp16)-15) * (1.0 + uInt(frac16) * 2.0**(-10))
+
+    elif(datasize == 32):
+        sign = fpval[0]
+        exp32 = fpval[1:9]
+        frac32 = fpval[9:32]
+
+        if(IsZero(exp32)=='1'):
+            if(IsZero(frac32) or getFZBit() == '1'):
+                typeOfVal = "FPType_Zero"
+                value = 0.0
+            else:
+                typeOfVal = "FPType_Nonzero"
+                value = 2.0**(-126) * uInt(frac32) * 2.0**(-23)
+        elif(isOnes(exp32, datasize)):
+            if(isZero(frac32)):
+                typeOfVal = "FPType_Infinity"
+                value = 2.0**(1000000)
+            else:
+                if(frac32[0] == '1'):
+                    typeOfVal = "FPType_QNaN" 
+                else:
+                    typeOfVal = "FPType_SNaN"
+                value = 0.0
+        else:
+            typeOfVal = "FPType_Nonzero"
+            value = 2.0**(uInt(exp32)-127) * (1.0 + uInt(frac32) * 2.0**(-23))
+
+    else:
+        sign = fpval[0]
+        exp64 = fpval[1:12]
+        frac64 = fpval[12:64]
+
+        if(IsZero(exp64)=='1'):
+            if(IsZero(frac64) or getFZBit() =='1'):
+                typeOfVal = "FPType_Zero"
+                value = 0.0
+            else:
+                typeOfVal = "FPType_Nonzero"
+                value = 2.0**(-1022) * uInt(frac64) * 2.0**(-52)
+        elif(isOnes(exp64, datasize)):
+            if(isZero(frac64)):
+                typeOfVal = "FPType_Infinity"
+                value = 2.0**(1000000)
+            else:
+                if(frac64[0] == '1'):
+                    typeOfVal = "FPType_QNaN" 
+                else:
+                    typeOfVal = "FPType_SNaN"
+                value = 0.0
+        else:
+            typeOfVal = "FPType_Nonzero"
+            value = 2.0**(uInt(exp64)-1023) * (1.0 + uInt(frac64) * 2.0**(-52))
+
+
+    if(sign == '1'):
+        value = -value
+
+    return (typeOfVal, sign, value)
+
+#applies proper rounding technique and returns the binary represenattion of op
+def FPRound(op, rounding, datasize):
+    if(datasize == 16):
+        minimum_exp = -14
+        E = 5
+        F = 10
+    elif(datasize == 32):
+        minimum_exp = -126
+        E = 8
+        F = 23
+    else:
+        minimum_exp = -1022
+        E = 11
+        F = 52
+
+    if(op < 0.0):
+        sign = '1'
+        mantissa = -op
+    else:
+        sign = '0'
+        mantissa = op
+    exponent = 0
+
+    while(mantissa < 1.0):
+        mantissa = mantissa * 2.0
+        exponent = exponent - 1
+
+    while(mantissa >= 2.0):
+        mantissa = mantissa / 2.0
+        exponent = exponent + 1
+
+    if(getFZBit() == '1' and datasize != 16 and exponent < minimum_exp):
+        return FPZero(datasize, sign)
+
+    biased_exp = max((exponent - minimum_exp + 1), 0)
+    if(biased_exp == 0):
+        mantissa = mantissa / 2.0**(minimum_exp - exponent)
+
+    int_mant = math.floor(mantissa * 2.0**F)
+    error = mantissa * 2.0**F - int_mant
+
+    if(rounding == "TIEEVEN"):
+        round_up = (error > 0.5 or (error == 0.5 and int_mant%2 == 1))
+        overflow_to_inf = True
+    elif(rounding == "POSINF"):
+        round_up = (error != 0.0 and sign == '0')
+        overflow_to_inf = (sign == '0')
+    elif(rounding == "NEGINF"):
+        round_up = (error != 0.0 and sign == '1')
+        overflow_to_inf = (sign == '1')
+    else:
+        round_up = False
+        overflow_to_inf = False
+
+    if(round_up):
+        int_mant = int_mant + 1
+        if(int_mant == 2**F):
+            biased_exp = 1
+        if(int_mant == 2*(F+1)):
+            biased_exp = biased_exp + 1
+            int_mant = int_mant / 2
+
+    if(datasize != 16 or getAHPBit() == '0'):
+        if(biased_exp >= (2**E - 1)):
+            if(overflow_to_inf):
+                result = FPInfinity(datasize, sign)
+            else:
+                result = FPMaxNormal(datasize, sign)
+            error = 1.0
+        else:
+            biased_exp_binary = "{0:b}".format(biased_exp)
+            biased_exp_binary = biased_exp_binary[-(datasize - F -1):]
+            binary_mant = "{0:b}".format(int_mant)
+            binary_mant = binary_mant[-F:]
+            result = sign + biased_exp_binary + binary_mant
+    else:
+        if(biased_exp >= 2^E):
+            result = sign + "1"*(datasize - 1)
+            error = 0.0
+        else:
+            biased_exp_binary = "{0:b}".format(biased_exp)
+            biased_exp_binary = biased_exp_binary[-(datasize - F -1):]
+            binary_mant = "{0:b}".format(int_mant)
+            binary_mant = binary_mant[-F:]
+            result = sign + biased_exp_binary + binary_mant
+
+    return result
+
+
+def addFP(op1, op2, datasize):
+    rounding = FPDecodeRounding()
+
+    (type1, sign1, value1) = unpackFP(op1, datasize)
+    (type2, sign2, value2) = unpackFP(op2, datasize)
+
+    (done, result) = FPProcessNaNs(type1, type2, op1, op2)
+
+    if(not done):
+        inf1 = (type1 == "FPType_Infinity")
+        inf2 = (type2 == "FPType_Infinity")
+        zero1 = (type1 == "FPType_Zero")
+        zero2 = (type2 == "FPType_Zero")
+
+        if(inf1 and inf2 and (sign1 == negate(sign2))):
+            result = FPDefaultNaN()
+        elif((inf1 and sign1 == '0') or (inf2 and sign2 == '0')):
+            result = FPInfinity(datasize, "0")
+        elif((inf1 and sign1 == '1') or (inf2 and sign2 == '1')):
+            result = FPInfinity(datasize, "1")
+        elif(zero1 and zero2 and sign1 == sign2):
+            result = FPZero(sign1)
+        else:
+            result_value = value1 + value2
+            if(result_value == 0.0):
+                if(rounding == "NEGINF"):
+                    result_sign = "1"
+                else:
+                    result_sign = "0"
+                result = FPZero(result_sign)
+            else:
+                result = FPRound(result_value, rounding, datasize)
+
+    return result
+
+
+def subFP(op1, op2, datasize):
+    (type1, sign1, value1) = unpackFP(op1, datasize)
+    (type2, sign2, value2) = unpackFP(op2, datasize)
+
+    (done, result) = FPProcessNaNs(type1, type2, op1, op2)
+
+    if(not done):
+        inf1 = (type1 == "FPType_Infinity")
+        inf2 = (type2 == "FPType_Infinity")
+        zero1 = (type1 == "FPType_Zero")
+        zero2 = (type2 == "FPType_Zero")
+
+        if(inf1 and inf2 and (sign1 == negate(sign2))):
+            result = FPDefaultNaN()
+        elif((inf1 and sign1 == '0') or (inf2 and sign2 == '1')):
+            result = FPInfinity(datasize, "0")
+        elif((inf1 and sign1 == '1') or (inf2 and sign2 == '0')):
+            result = FPInfinity(datasize, "1")
+        elif(zero1 and zero2 and sign1 == negate(sign2)):
+            result = FPZero(sign1)
+        else:
+            result_value = value1 - value2
+            if(result_value == 0.0):
+                result = FPZero("0")
+            else:
+                result = FPRound(result_value)
+
+    return result
