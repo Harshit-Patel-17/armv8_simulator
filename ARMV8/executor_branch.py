@@ -11,6 +11,7 @@ import config
 import armdebug
 
 def execB(binary):
+    const.FLAG_EXECUTION_COMPLETED = True
     const.FLAG_INST_EXECUTED = True
     
 def execBCond(binary):
@@ -37,21 +38,27 @@ def execBCond(binary):
     
     (instpart,offset)=utilFunc.getOffset(mem.operand1Buffer)
     
-    utilFunc.branchWithOffset(offset-8) #the magic!
+    currentAddr = int(armdebug.programCounters[1], 16)
+    utilFunc.branchToAddress(currentAddr + offset)
+    #utilFunc.branchWithOffset(offset-8) #the magic!
     armdebug.pipelineStages[0] = '--------'
     armdebug.pipelineStages[1] = '--------'
-    mem.freeObsoleteRegisters()
+    #mem.freeObsoleteRegisters()
     
 def execBL(binary):
+    const.FLAG_EXECUTION_COMPLETED = True
     const.FLAG_INST_EXECUTED = True
     
 def execBR(binary):
+    const.FLAG_EXECUTION_COMPLETED = True
     const.FLAG_INST_EXECUTED = True
     
 def execBLR(binary):
+    const.FLAG_EXECUTION_COMPLETED = True
     const.FLAG_INST_EXECUTED = True
     
 def execRET(binary):
+    const.FLAG_EXECUTION_COMPLETED = True
     const.FLAG_INST_EXECUTED = True
     
 def execCBZ_32(binary):
@@ -83,20 +90,23 @@ def CBZClass(binary,width,bool):
         return
     
     rtKey=binary[-5:]
+    imm19Key=binary[8:27]
 
-    (instpart,offset)=utilFunc.getOffset(mem.operand1Buffer)
+    (instpart,offset)=utilFunc.getOffset(imm19Key)
+    currentAddr = int(armdebug.programCounters[2], 16) 
     
-    regValue=utilFunc.getRegValueByStringkey(rtKey, '0')
-    regValue=regValue[0:width]#since CBZ_32
+    #regValue=utilFunc.getRegValueByStringkey(rtKey, '0')
+    #regValue=regValue[0:width]#since CBZ_32
     if bool:
-        if regValue=='0'*width:
-            utilFunc.branchWithOffset(offset-8)
+        if mem.operand1Buffer=='0'*width:
+            #utilFunc.branchWithOffset(offset-4)
+            utilFunc.branchToAddress(currentAddr + offset)
             armdebug.pipelineStages[0] = '--------'
             armdebug.pipelineStages[1] = '--------'
-            mem.freeObsoleteRegisters()
+            #mem.freeObsoleteRegisters()
     else:
-        if regValue!='0'*width:
-            utilFunc.branchWithOffset(offset-8)
+        if mem.operand1Buffer!='0'*width:
+            utilFunc.branchToAddress(currentAddr + offset)
             armdebug.pipelineStages[0] = '--------'
             armdebug.pipelineStages[1] = '--------'
-            mem.freeObsoleteRegisters()
+            #mem.freeObsoleteRegisters()

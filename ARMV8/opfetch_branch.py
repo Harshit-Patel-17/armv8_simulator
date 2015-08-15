@@ -20,7 +20,9 @@ def opfetchB(binary):
     (instpart,offset)=utilFunc.getOffset(imm26key)
     inst+=instpart+')'
     
-    utilFunc.branchWithOffset(offset-4) #the magic!
+    currentAddr = int(armdebug.programCounters[1], 16)
+    utilFunc.branchToAddress(currentAddr + offset)
+    #utilFunc.branchWithOffset(offset-4) #the magic!
     armdebug.pipelineStages[0] = '--------'
     const.FLAG_OP_FETCHED = True
         
@@ -44,9 +46,11 @@ def opfetchBL(binary):
     (instpart,offset)=utilFunc.getOffset(imm26key)
     inst+=instpart+')'
     
-    nextAddr=armdebug.getPC()
+    #nextAddr=armdebug.getPC() - 4
+    currentAddr = int(armdebug.programCounters[1], 16)
+    nextAddr = int(armdebug.programCounters[1], 16) + 4
     utilFunc.setRegValue(30, utilFunc.intToBinary(nextAddr, 64), '0')
-    utilFunc.branchWithOffset(offset-4)
+    utilFunc.branchToAddress(currentAddr + offset)
     armdebug.pipelineStages[0] = '--------'
     const.FLAG_OP_FETCHED = True
     
@@ -59,12 +63,21 @@ def opfetchBR(binary):
     rnKey=binary[22:27]
     
     #Check whether stalls are required or not
-    if(mem.regObsolete[utilFunc.getRegKeyByStringKey(rnKey)] == False):
+    if(mem.regObsolete[utilFunc.getRegKeyByStringKey(rnKey)] == 0):
         const.FLAG_OP_FETCHED = True
+        address_binary=utilFunc.getRegValueByStringkey(rnKey, '0')
+        armdebug.intRFActivityCounter += 1
+    elif(const.FLAG_DATA_FORWARDING):
+        forwardedValues = mem.findForwardedValues(rnKey)
+        if(forwardedValues[0] != None):
+            const.FLAG_OP_FETCHED = True
+            address_binary = forwardedValues[0]
+        else:
+            return
     else:
         return
     
-    address_binary=utilFunc.getRegValueByStringkey(rnKey, '0')
+    #address_binary=utilFunc.getRegValueByStringkey(rnKey, '0')
     regnum=utilFunc.uInt(rnKey)
     inst+=str(regnum)
     hexstr = utilFunc.binaryToHexStr(address_binary)
@@ -73,8 +86,6 @@ def opfetchBR(binary):
         return
     utilFunc.branchToAddress(int(hexstr,16))
     armdebug.pipelineStages[0] = '--------'
-    
-    armdebug.intRFActivityCounter += 1
     
 def opfetchBLR(binary):
     const.FLAG_OPFETCH_EXECUTED = True
@@ -85,24 +96,31 @@ def opfetchBLR(binary):
     rnKey=binary[22:27]
     
     #Check whether stalls are required or not
-    if(mem.regObsolete[rnKey] == False):
+    if(mem.regObsolete[rnKey] == 0):
         const.FLAG_OP_FETCHED = True
+        address_binary=utilFunc.getRegValueByStringkey(rnKey, '0')
+        armdebug.intRFActivityCounter += 1
+    elif(const.FLAG_DATA_FORWARDING):
+        forwardedValues = mem.findForwardedValues(rnKey)
+        if(forwardedValues[0] != None):
+            const.FLAG_OP_FETCHED = True
+            address_binary = forwardedValues[0]
+        else:
+            return
     else:
         return
     
-    address_binary=utilFunc.getRegValueByStringkey(rnKey, '0')
+    #address_binary=utilFunc.getRegValueByStringkey(rnKey, '0')
     regnum=utilFunc.uInt(rnKey)
     inst+=str(regnum)
     hexstr = utilFunc.binaryToHexStr(address_binary)
     if not armdebug.checkIfValidBreakPoint(hexstr):
         print 'Instruction aborted. Invalid instruction address in register.'
         return
-    nextAddr=armdebug.getPC()
+    nextAddr = int(armdebug.programCounters[1], 16) + 4
     utilFunc.setRegValue(30, utilFunc.intToBinary(nextAddr, 64), '0')
     utilFunc.branchToAddress(int(hexstr,16))
     armdebug.pipelineStages[0] = '--------'
-    
-    armdebug.intRFActivityCounter += 1
     
 def opfetchRET(binary):
     const.FLAG_OPFETCH_EXECUTED = True
@@ -113,12 +131,21 @@ def opfetchRET(binary):
     rnKey=binary[22:27]
     
     #Check whether stalls are required or not
-    if(mem.regObsolete[utilFunc.getRegKeyByStringKey(rnKey)] == False):
+    if(mem.regObsolete[utilFunc.getRegKeyByStringKey(rnKey)] == 0):
         const.FLAG_OP_FETCHED = True
+        address_binary=utilFunc.getRegValueByStringkey(rnKey, '0')
+        armdebug.intRFActivityCounter += 1
+    elif(const.FLAG_DATA_FORWARDING):
+        forwardedValues = mem.findForwardedValues(rnKey)
+        if(forwardedValues[0] != None):
+            const.FLAG_OP_FETCHED = True
+            address_binary = forwardedValues[0]
+        else:
+            return
     else:
         return
     
-    address_binary=utilFunc.getRegValueByStringkey(rnKey, '0')
+    #address_binary=utilFunc.getRegValueByStringkey(rnKey, '0')
     regnum=utilFunc.uInt(rnKey)
     inst+=str(regnum)
 
@@ -128,8 +155,6 @@ def opfetchRET(binary):
         return
     utilFunc.branchToAddress(int(hexstr,16))
     armdebug.pipelineStages[0] = '--------'
-    
-    armdebug.intRFActivityCounter += 1
     
 def opfetchCBZ_32(binary):
     CBZClass(binary, 32, True)
@@ -153,9 +178,15 @@ def CBZClass(binary,width,bool):
     #Check whether stalls are required or not
     if(mem.regObsolete[utilFunc.getRegKeyByStringKey(rtKey)] == False):
         const.FLAG_OP_FETCHED = True
+        rtVal = utilFunc.getRegValueByStringkey(rtKey, '0')[64-width:64]
+        armdebug.intRFActivityCounter += 1
     else:
+        forwardedValues = mem.findForwardedValues(rtKey)
+        if(forwardedValues[0] != None):
+            const.FLAG_OP_FETCHED = True
+            rtVal = forwardedValues[0][64-width:64]
+        else:
+            return
         return
     
-    imm19Key=binary[8:27]
-    
-    mem.operand1Buffer = imm19Key
+    mem.operand1Buffer = rtVal

@@ -1,6 +1,6 @@
 _start:
 mov w1,#7
-B target
+B target2
 mov w2,#7
 target:
 mov w3,#7

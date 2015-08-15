@@ -24,7 +24,7 @@ def opfetchADR(binary):
     inst+=inst_part+')'
     
     const.FLAG_OP_FETCHED = True
-    mem.operand1Buffer = armdebug.getPC() - 4
+    mem.operand1Buffer = armdebug.getPC() - 8
     mem.operand2Buffer = offset
     mem.regObsolete[regnum] += 1
     mem.regObsolete_last_modified_indices.append(regnum)
@@ -45,7 +45,7 @@ def opfetchADRP(binary):
     inst+=inst_part+')'
     
     const.FLAG_OP_FETCHED = True
-    operand1 = utilFunc.intToBinary(armdebug.getPC() - 4, 64)
+    operand1 = utilFunc.intToBinary(armdebug.getPC() - 8, 64)
     operand1 = int(operand1[0:52] + '0'*12, 2)
     mem.operand1Buffer = operand1
     mem.operand2Buffer = offset

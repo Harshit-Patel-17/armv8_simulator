@@ -21,6 +21,8 @@ def opfetch_i(binary, N, instr, sub_op, setFlags):
         if(forwardedValues[0] != None):
             const.FLAG_OP_FETCHED = True
             rnVal = forwardedValues[0]
+        else:
+            return
     else:
         return
     

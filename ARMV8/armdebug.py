@@ -16,7 +16,8 @@ import traceback
 import const
 import config
 
-pipelineStages = ['--------', '--------', '--------', '--------', '--------'] 
+pipelineStages = ['--------', '--------', '--------', '--------', '--------']
+programCounters = ['--------', '--------', '--------', '--------', '--------']
 DEBUG_MODE=False
 PC = 0
 cycles = 0
@@ -360,8 +361,10 @@ def executeRUN():
     #executeStages()
     try:
         pipelineStages[0] = hexes[getCurrentInstNumber()]
+        programCounters[0] = format(getPC(), 'x').zfill(8)
     except IndexError:
         pipelineStages[0] = '--------'
+        programCounters[0] = '--------'
     incPC()
     while(not isPipelineEmpty()):
         executeStages()
@@ -379,6 +382,7 @@ def executeStages():
         writeback_decoder.decodeInstr(pipelineStages[4])
     if(const.FLAG_WRITEBACK_COMPLETED == True):
         pipelineStages[4] = '--------'
+        programCounters[4] = '--------'
     
     #Execute stage 4    
     if(pipelineStages[3] != '--------'):
@@ -386,7 +390,9 @@ def executeStages():
     if(pipelineStages[4] == '--------' and const.FLAG_MEMACCESS_COMPLETED == True):
         const.FLAG_WRITEBACK_COMPLETED = False
         pipelineStages[4] = pipelineStages[3]
+        programCounters[4] = programCounters[3]
         pipelineStages[3] = '--------'
+        programCounters[3] = '--------'
     
     #Execute stage 3
     if(pipelineStages[2] != '--------'):
@@ -394,7 +400,9 @@ def executeStages():
     if(pipelineStages[3] == '--------' and const.FLAG_EXECUTION_COMPLETED == True):
         const.FLAG_MEMACCESS_COMPLETED = False
         pipelineStages[3] = pipelineStages[2]
+        programCounters[3] = programCounters[2]
         pipelineStages[2] = '--------'
+        programCounters[2] = '--------'
     
     #Execute stage 2
     if(pipelineStages[1] != '--------'):
@@ -402,42 +410,48 @@ def executeStages():
         if(pipelineStages[2] == '--------' and const.FLAG_OP_FETCHED == True):
             const.FLAG_EXECUTION_COMPLETED = False
             pipelineStages[2] = pipelineStages[1]
+            programCounters[2] = programCounters[1]
             pipelineStages[1] = '--------'
-        elif(pipelineStages[2] == '--------' and const.FLAG_OP_FETCHED == False):
+            programCounters[1] = '--------'
+        elif(pipelineStages[2] == '--------' and const.FLAG_OP_FETCHED == False and const.OPFETCH_COUNTER == 0):
             incStalls()
     
     #Execute stage 1
-    if(pipelineStages[0] != '--------'):
-        fetchNewInstruction(False)
+    fetchNewInstruction(False)
     incCycles()
     
 def fetchNewInstruction(breakAtNextInstuction):
     global iCacheReadActivityCounter
-    global decodeActivityCounter   
-    if(const.FLAG_FETCH_COMPLETED == False and const.FETCH_COUNTER == 0):
-        const.FETCH_COUNTER = config.latency['ICache']
-    
-    if(const.FETCH_COUNTER != 0):
-        iCacheReadActivityCounter += 1
-        const.FETCH_COUNTER -= 1
+    global decodeActivityCounter  
+    if(pipelineStages[0] != '--------'): 
+        if(const.FLAG_FETCH_COMPLETED == False and const.FETCH_COUNTER == 0):
+            const.FETCH_COUNTER = config.latency['ICache']
         
-    if(const.FETCH_COUNTER == 0):
-        const.FLAG_FETCH_COMPLETED = True
-        if(pipelineStages[1] != '--------'):
+        if(const.FETCH_COUNTER != 0):
+            iCacheReadActivityCounter += 1
+            const.FETCH_COUNTER -= 1
+            
+        if(const.FETCH_COUNTER == 0):
+            const.FLAG_FETCH_COMPLETED = True
+            if(pipelineStages[1] == '--------'):
+                const.FLAG_OP_FETCHED = False
+                pipelineStages[1] = pipelineStages[0]
+                programCounters[1] = programCounters[0]
+                pipelineStages[0] = '--------'
+                programCounters[0] = '--------'
+                decodeActivityCounter += 1
+            else:
+                return
+        else:
             return
-    else:
-        return
     
     try:
-        const.FLAG_OP_FETCHED = False
-        pipelineStages[1] = pipelineStages[0]
-        decodeActivityCounter += 1
         const.FLAG_FETCH_COMPLETED = False
+        const.FETCH_COUNTER = 0
         if(breakAtNextInstuction == False):
             pipelineStages[0] = hexes[getCurrentInstNumber()]
+            programCounters[0] = format(getPC(), 'x').zfill(8)
             incPC()
-        else:
-            pipelineStages[0] = '--------'
     except IndexError:
         pipelineStages[0] = '--------'
  
