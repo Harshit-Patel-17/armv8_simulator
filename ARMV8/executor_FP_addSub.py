@@ -59,7 +59,7 @@ def executeFADD_scalar(hexcode, precision):
 		datasize = 64
 
 	resultBinary = utilFunc.addFP(reg1Value,reg2Value, datasize)
-	resultBinary.zfill(128)
+	resultBinary.zfill(64)
 
 	utilFunc.setRegValueSIMDFP(destRegister, resultBinary)
 
@@ -82,7 +82,7 @@ def executeFSUB_scalar(hexcode, precision):
 		datasize = 64
 
 	resultBinary = utilFunc.subFP(reg1Value,reg2Value, datasize)
-	resultBinary.zfill(128)
+	resultBinary.zfill(64)
 
 	utilFunc.setRegValueSIMDFP(destRegister, resultBinary)
 
@@ -113,7 +113,7 @@ def executeFADD_vector(hexcode, Q, size):
 
 		resultBinary = resultBinary + utilFunc.addFP(element1, element2, datasize)
 
-	resultBinary.zfill(128)
+	resultBinary.zfill(64)
 
 	utilFunc.setRegValueSIMDFP(destRegister, resultBinary)
 
@@ -144,7 +144,7 @@ def executeFSUB_vector(hexcode, Q, size):
 
 		resultBinary = resultBinary + utilFunc.subFP(element1, element2, datasize)
 
-	resultBinary.zfill(128)
+	resultBinary.zfill(64)
 
 	utilFunc.setRegValueSIMDFP(destRegister, resultBinary)
 

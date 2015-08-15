@@ -616,6 +616,30 @@ def FPProcessNaNs(type1, type2, op1, op2, datasize):
         result = "0"*datasize; # 'Don't care' result
     return (done, result)
 
+def FPProcessNaNs3(type1, type2, type3, op1,op2, op3, datasize):
+    if(type1 == "FPType_SNaN"):
+        done = True
+        result = FPProcessNaN(type1, op1, datasize)
+    elif(type2 == "FPType_SNaN"):
+        done = True
+        result = FPProcessNaN(type2, op2, datasize)
+    elif(type3 == "FPType_SNaN"):
+        done = True
+        result = FPProcessNaN(type3, op3, datasize)
+    elif(type1 == "FPType_QNaN"):
+        done = True 
+        result = FPProcessNaN(type1, op1, datasize)
+    elif(type2 == "FPType_QNaN"):
+        done = True
+        result = FPProcessNaN(type2, op2, datasize)
+    elif(type3 == "FPType_QNaN"):
+        done = True
+        result = FPProcessNaN(type3, op3, datasize)
+    else:
+        done = False 
+        result = "0"*datasize; # 'Don't care' result
+    return (done, result)
+
 def getRoundingBits():
     return mem.fpcrFile[8:10]
 
@@ -850,6 +874,8 @@ def addFP(op1, op2, datasize):
 
 
 def subFP(op1, op2, datasize):
+    rounding = FPDecodeRounding()
+
     (type1, sign1, value1) = unpackFP(op1, datasize)
     (type2, sign2, value2) = unpackFP(op2, datasize)
 
@@ -872,8 +898,65 @@ def subFP(op1, op2, datasize):
         else:
             result_value = value1 - value2
             if(result_value == 0.0):
-                result = FPZero("0")
+                if(rounding == "NEGINF"):
+                    result_sign = "1"
+                else:
+                    result_sign = "0"
+                result = FPZero(result_sign)
             else:
-                result = FPRound(result_value)
+                result = FPRound(result_value, rounding, datasize)
+
+    return result
+
+def negFP(op, datasize):
+    if(op[0] == '0'):
+        sign = '1'
+    else:
+        sign = '0'
+
+    return sign + op[1:datasize]
+
+def mulAddFP(addend, op1, op2):
+    rounding = FPDecodeRounding()
+
+    (typeA, signA, valueA) = unpackFP(addend, datasize)
+    (type1, sign1, value1) = unpackFP(op1, datasize)
+    (type2, sign2, value2) = unpackFP(op2, datasize)
+
+    inf1 = (type1 == "FPType_Infinity")
+    inf2 = (type2 == "FPType_Infinity")
+    zero1 = (type1 == "FPType_Zero")
+    zero2 = (type2 == "FPType_Zero")
+
+    (done, result) = FPProcessNaNs3(typeA, type1, type2, addend, op1, op2)
+
+    if(typeA == "FPType_QNaN" and ((inf1 and zero2) or (zero1 and inf2))):
+        result = FPDefaultNaN()
+
+    if(not done):
+        infA = (typeA == "FPType_Infinity")
+        zeroA = (typeA == "FPType_Zero")
+        signP = calculateXor(sign1, sign2)
+        infP = inf1 or inf2
+        zeroP = zero1 or zero2
+
+    if((inf1 and zero2) or (zero1 and inf2) or (infA and infP and signA != signP)):
+        result = FPDefaultNaN()
+    elif((infA and signA == '0') or (infP and signP == '0')):
+        result = FPInfinity('0')
+    elif((infA and signA == '1') or (infP and signP == '1')):
+        result = FPInfinity('1')
+    elif(zeroA and zeroP and signA == signP):
+        result = FPZero(signA)
+    else:
+        result_value = valueA + (value1 * value2)
+        if(result_value == 0.0):
+            if(rounding == "NEGINF"):
+                    result_sign = "1"
+                else:
+                    result_sign = "0"
+                result = FPZero(result_sign)
+            else:
+                result = FPRound(result_value, rounding, datasize)
 
     return result
