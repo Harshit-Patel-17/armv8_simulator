@@ -297,6 +297,7 @@ def parseCommand(command):
     
     if command == 'regs':
         executeRegs()
+        executeFPSIMDRegs()
         return
     
     if command == 'help':
@@ -755,6 +756,11 @@ def executeFlag():
 def executeRegs():
     i=0;
     for x in mem.regFile:
+        print 'Register'+str(i)+': '+utilFunc.binaryToHexStr(x)
+        i=i+1
+def executeFPSIMDRegs():
+    i=0;
+    for x in mem.regFileFPSIMD:
         print 'Register'+str(i)+': '+utilFunc.binaryToHexStr(x)
         i=i+1
     

@@ -105,3 +105,19 @@ def execMov_bmi32(binary):
     
 def execMov_bmi64(binary):
     mov_bmi(binary, 64)
+
+#------------------- floating point moves----------------
+
+def execFMove_SP(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    resultBinary = binary[11:19]
+    resultBinary = resultBinary.zfill(128)
+
+    utilFunc.setRegValueSIMDFP(rdKey, resultBinary)
+
+def execFMove_DP(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    resultBinary = binary[11:19]
+    resultBinary = resultBinary.zfill(128)
+
+    utilFunc.setRegValueSIMDFP(rdKey, resultBinary)
