@@ -732,6 +732,7 @@ def unpackFP(fpval, datasize):
             value = 2.0**(uInt(exp32)-127) * (1.0 + uInt(frac32) * 2.0**(-23))
 
     else:
+        print fpval
         sign = fpval[0]
         exp64 = fpval[1:12]
         frac64 = fpval[12:64]
@@ -881,7 +882,7 @@ def addFP(op1, op2, datasize):
                     result_sign = "1"
                 else:
                     result_sign = "0"
-                result = FPZero(result_sign)
+                result = FPZero(datasize, result_sign)
             else:
                 result = FPRound(result_value, rounding, datasize)
 
@@ -917,7 +918,7 @@ def subFP(op1, op2, datasize):
                     result_sign = "1"
                 else:
                     result_sign = "0"
-                result = FPZero(result_sign)
+                result = FPZero(datasize, result_sign)
             else:
                 result = FPRound(result_value, rounding, datasize)
 
@@ -931,8 +932,8 @@ def negFP(op, datasize):
 
     return sign + op[1:datasize]
 
-def mulAddFP(addend, op1, op2):
-    rounding = FPDecodeRounding()
+def mulAddFP(addend, op1, op2, datasize):
+    rounding = FPDecodeRounding(getRoundingBits())
 
     (typeA, signA, valueA) = unpackFP(addend, datasize)
     (type1, sign1, value1) = unpackFP(op1, datasize)
@@ -967,11 +968,11 @@ def mulAddFP(addend, op1, op2):
         result_value = valueA + (value1 * value2)
         if(result_value == 0.0):
             if(rounding == "NEGINF"):
-                    result_sign = "1"
-                else:
-                    result_sign = "0"
-                result = FPZero(result_sign)
+                result_sign = "1"
             else:
-                result = FPRound(result_value, rounding, datasize)
+                result_sign = "0"
+            result = FPZero(result_sign)
+        else:
+            result = FPRound(result_value, rounding, datasize)
 
     return result

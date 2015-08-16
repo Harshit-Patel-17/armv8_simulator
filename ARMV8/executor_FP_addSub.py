@@ -105,7 +105,7 @@ def executeFSUB_scalar(hexcode, precision):
 
 # utility function for floating point vector addition
 def executeFADD_vector(hexcode, Q, size):
-	esize = 32<<int(size, 2)
+	esize = 32<<size
 	if(Q == '1'):
 		datasize = 128
 	else:
@@ -131,20 +131,18 @@ def executeFADD_vector(hexcode, Q, size):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	resultBinary = ""
-
+	
 	for e in range(elements):
-		element1 = mem.operand1Buffer[(e*esize):(e*esize + size)]
-		element2 = mem.operand2Buffer[(e*esize):(e*esize + size)]
+		element1 = mem.operand1Buffer[(e*esize):(e*esize + esize)]
+		element2 = mem.operand2Buffer[(e*esize):(e*esize + esize)]
+		resultBinary = resultBinary + utilFunc.addFP(element1, element2, esize)
 
-		resultBinary = resultBinary + utilFunc.addFP(element1, element2, datasize)
-
-	resultBinary.zfill(64)
-	mem.ALUResultBuffer = resultBinary.zfill(128)
+	mem.ALUResultBuffer = resultBinary
 	mem.regValueAvailableInFloatALU[destRegister] = True
 
 # utility function for floating point vector subtraction
 def executeFSUB_vector(hexcode, Q, size):
-	esize = 32<<int(size, 2)
+	esize = 32<<size
 	if(Q == '1'):
 		datasize = 128
 	else:
@@ -172,12 +170,10 @@ def executeFSUB_vector(hexcode, Q, size):
 	resultBinary = ""
 
 	for e in range(elements):
-		element1 = mem.operand1Buffer[(e*esize):(e*esize + size)]
-		element2 = mem.operand2Buffer[(e*esize):(e*esize + size)]
+		element1 = mem.operand1Buffer[(e*esize):(e*esize + esize)]
+		element2 = mem.operand2Buffer[(e*esize):(e*esize + esize)]
+		resultBinary = resultBinary + utilFunc.subFP(element1, element2, esize)
 
-		resultBinary = resultBinary + utilFunc.subFP(element1, element2, datasize)
-
-	resultBinary.zfill(64)
-	mem.ALUResultBuffer = resultBinary.zfill(128)
+	mem.ALUResultBuffer = resultBinary
 	mem.regValueAvailableInFloatALU[destRegister] = True
 

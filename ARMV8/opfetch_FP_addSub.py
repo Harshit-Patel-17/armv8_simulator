@@ -176,18 +176,11 @@ def executeFADD_vector(hexcode, Q, size):
 			armdebug.floatRFActivityCounter += 1
 	else:
 		return
-	
+
 	mem.regFloatObsolete[destRegister] += 1
 	mem.regFloatObsolete_last_modified_indices.append(destRegister)
 	#reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
 	#reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
-
-	if(Q == '1'):
-		datasize = 128
-	else:
-		datasize = 64
-		reg1Value = reg1Value[64:128]
-		reg2Value = reg2Value[64:128]
 	
 	mem.operand1Buffer = reg1Value
 	mem.operand2Buffer = reg2Value
@@ -229,13 +222,6 @@ def executeFSUB_vector(hexcode, Q, size):
 	mem.regFloatObsolete_last_modified_indices.append(destRegister)
 	#reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
 	#reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
-
-	if(Q == '1'):
-		datasize = 128
-	else:
-		datasize = 64
-		reg1Value = reg1Value[64:128]
-		reg2Value = reg2Value[64:128]
 		
 	mem.operand1Buffer = reg1Value
 	mem.operand2Buffer = reg2Value

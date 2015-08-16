@@ -4,7 +4,7 @@ import utilFunc
 
 #executes vector addition for integers in A1 configuration
 def execVADD_intA1(hexcode):
-	execudeVADD_int(hexcode)
+	executeVADD_int(hexcode)
 
 #executes vector addition for integers in T1 configuration
 def execVADD_intT1(hexcode):
@@ -45,8 +45,8 @@ def executeVADD_int(hexcode):
 		regs = 2
 		operandRegister3 = operandRegister1 + 1
 		operandRegister4 = operandRegister2 + 1
-		regValue3 = getRegValueByRegkeyFDSIMD(operandRegister3)
-		regValue4 = getRegValueByRegkeyFDSIMD(operandRegister4)
+		regValue3 = utilFunc.getRegValueByRegkeyFDSIMD(operandRegister3)
+		regValue4 = utilFunc.getRegValueByRegkeyFDSIMD(operandRegister4)
 		resultBinaryHigher = ""
 
 	resultBinaryLower = ""
@@ -70,6 +70,7 @@ def executeVADD_int(hexcode):
 
 #executes vector addition for floating point numbers
 def executeVADD_FloatingPoint(hexcode):
+	Q = hexcode[25]
 	esize = 32
 	elements = 2
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[9] + hexcode[16:20])
@@ -85,8 +86,8 @@ def executeVADD_FloatingPoint(hexcode):
 		regs = 2
 		operandRegister3 = operandRegister1 + 1
 		operandRegister4 = operandRegister2 + 1
-		regValue3 = getRegValueByRegkeyFDSIMD(operandRegister3)
-		regValue4 = getRegValueByRegkeyFDSIMD(operandRegister4)
+		regValue3 = utilFunc.getRegValueByRegkeyFDSIMD(operandRegister3)
+		regValue4 = utilFunc.getRegValueByRegkeyFDSIMD(operandRegister4)
 		resultBinaryHigher = ""
 
 	resultBinaryLower = ""
@@ -110,6 +111,7 @@ def executeVADD_FloatingPoint(hexcode):
 
 #executes vector fused multiplication
 def executeVFMA(hexcode):
+	Q = hexcode[25]
 	op1_neg = (hexcode[10] == '1')
 	esize = 32
 	elements = 2
@@ -128,9 +130,9 @@ def executeVFMA(hexcode):
 		destRegister2 = destRegister1 + 1
 		operandRegister3 = operandRegister1 + 1
 		operandRegister4 = operandRegister2 + 1
-		destValue2 = getRegValueByRegkeyFDSIMD(destRegister2)
-		regValue3 = getRegValueByRegkeyFDSIMD(operandRegister3)
-		regValue4 = getRegValueByRegkeyFDSIMD(operandRegister4)
+		destValue2 = utilFunc.getRegValueByRegkeyFDSIMD(destRegister2)
+		regValue3 = utilFunc.getRegValueByRegkeyFDSIMD(operandRegister3)
+		regValue4 = utilFunc.getRegValueByRegkeyFDSIMD(operandRegister4)
 		resultBinaryHigher = ""
 
 	resultBinaryLower = ""
@@ -141,7 +143,7 @@ def executeVFMA(hexcode):
 			element1 = utilFunc.negFP(element1, esize)
 		element2 = regValue2[(e*esize):(e*esize + esize)]
 		destElement = destValue1[(e*esize):(e*esize + esize)]
-		result = utilFunc.mulAddFP(destElement, element1, element2)
+		result = utilFunc.mulAddFP(destElement, element1, element2, esize)
 		resultBinaryLower = resultBinaryLower + result
 
 	utilFunc.setRegValueSIMDFP(destRegister1, resultBinaryLower)
@@ -153,7 +155,7 @@ def executeVFMA(hexcode):
 				element1 = utilFunc.negFP(element1, esize)
 			element2 = regValue4[(e*esize):(e*esize + esize)]
 			destElement = destValue2[(e*esize):(e*esize + esize)]
-			result = utilFunc.mulAddFP(destElement, element1, element2)
+			result = utilFunc.mulAddFP(destElement, element1, element2, esize)
 			resultBinaryHigher = resultBinaryHigher + result
 
 		utilFunc.setRegValueSIMDFP(destRegister1, resultBinaryHigher)

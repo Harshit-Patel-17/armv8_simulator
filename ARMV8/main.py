@@ -64,7 +64,10 @@ if __name__ == '__main__':
             print "He's dead Larry." 
             print "The inputfile seems to be a not compatibe ARMv8 elf."
             sys.exit(0)
-        
+
+        #Testcases for floating point vector addition and subtraction
+        #mem.regFileFPSIMD[1] = '110000001011' + '0'*20 + '010000001001' + '0'*20
+        #mem.regFileFPSIMD[2] = '010000001011' + '0'*20 + '110000001001' + '0'*20
         
         armdebug.setHexes(hexes)
         armdebug.saveAllToMemoryModel()

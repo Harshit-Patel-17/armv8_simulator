@@ -15,7 +15,7 @@ import executor_adc
 import executor_moveWide
 import executor_FP_addSub
 import executor_Vector
-import executor_Vector_AddMUl
+import executor_Vector_AddMul
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -272,11 +272,11 @@ def FLOATING_POINT_MOVE(binary):
 
 def VECTOR_ADD_MUL(binary):
   key = binary[0:9] + "-"*11 + binary[20:24] + "-"*3 + binary[27]
-  retturn {
-    "111100100-----------1000---0" :  executor_Vector_AddMUl.execVADD_intA1,
-    "111011110-----------1000---0" :  executor_Vector_AddMUl.execVADD_intT1,
-    "111100100-----------1101---0" :  executor_Vector_AddMUl.execVADD_FPA1,
-    "111011110-----------1101---0" :  executor_Vector_AddMUl.execVADD_FPT1,
-    "111100100-----------1100---1" :  executor_Vector_AddMUl.execVFMA_A1,
-    "111011110-----------1100---1" :  executor_Vector_AddMUl.execVFMA_T1,
+  return {
+    "111100100-----------1000---0" :  executor_Vector_AddMul.execVADD_intA1,
+    "111011110-----------1000---0" :  executor_Vector_AddMul.execVADD_intT1,
+    "111100100-----------1101---0" :  executor_Vector_AddMul.execVADD_FPA1,
+    "111011110-----------1101---0" :  executor_Vector_AddMul.execVADD_FPT1,
+    "111100100-----------1100---1" :  executor_Vector_AddMul.execVFMA_A1,
+    "111011110-----------1100---1" :  executor_Vector_AddMul.execVFMA_T1,
   }[key](binary)
