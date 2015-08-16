@@ -10,7 +10,7 @@ import os
 
 import parsehelper
 import armdebug
-from armdebug import isDebugMode, executeRegs, executeFlag
+from armdebug import isDebugMode, executeRegs, executeFlag, executeFPSIMDRegs
 from utilFunc import resetInstrFlag
 import sys
 import global_data
@@ -72,9 +72,13 @@ if __name__ == '__main__':
             armdebug.startInteraction()
         else:       
             armdebug.startRunEngine() 
-            print ''             
+            print ''
+            print 'Integer Register File'
+            print '====================='             
             executeRegs()
             print ''
-            executeFlag()
-            print ''
+            print 'Float Register File'
+            print '==================='
             executeFPSIMDRegs()
+            print ''
+            executeFlag()

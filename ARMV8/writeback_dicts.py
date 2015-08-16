@@ -12,6 +12,9 @@ import writeback_ALU
 import writeback_rotate
 import writeback_bitwise_shift
 import writeback_adc
+import writeback_moveWide
+import writeback_FP_addSub
+import writeback_Vector
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -34,6 +37,10 @@ def INSTRUCTION_TYPE(binary, i):
             15 : ROTATE_REGISTER,
             16 : BITWISE_SHIFT_REGISTER,
             17 : ADD_WITH_CARRY,
+            18 : MOVE_WIDE,
+            19 : FLOATING_POINT_ADD_SUB,
+            20 : FLOATING_POINT_MOVE, #only for testing purpose,to be removed later
+            21 : VECTOR_INSTRUCTIONS,
         }[i](binary)
     except KeyError:
         i = i
@@ -217,3 +224,45 @@ def ADD_WITH_CARRY(binary):
       "00011010000-----000000"  : writeback_adc.writebackADC_32,
       "10011010000-----000000"  : writeback_adc.writebackADC_64,
     }[key](binary)
+
+def MOVE_WIDE(binary):
+    key = binary[0:9]
+    return {
+      "011100101" : writeback_moveWide.writebackMoveK_32,
+      "111100101" : writeback_moveWide.writebackMoveK_64,
+      "000100101" : writeback_moveWide.writebackMoveN_32,
+      "100100101" : writeback_moveWide.writebackMoveN_64,
+      "010100101" : writeback_moveWide.writebackMoveZ_32,
+      "110100101" : writeback_moveWide.writebackMoveZ_64,
+    }[key](binary)
+    
+def FLOATING_POINT_MOVE(binary):
+    key = binary[0:11] + "-"*8 + binary[19:27]
+    return {
+      "00011110001--------10000000" : writeback_move.writebackFMove_SP,
+      "00011110011--------10000000" : writeback_move.writebackFMove_DP,
+    }[key](binary)
+
+def FLOATING_POINT_ADD_SUB(binary):
+  key = binary[0:11] + "-"*5 + binary[16:22]
+  return {
+    "00011110001-----001010" :  writeback_FP_addSub.writebackFADD_scalar_SP,
+    "00011110011-----001010" :  writeback_FP_addSub.writebackFADD_scalar_DP,
+    "00001110001-----110101" :  writeback_FP_addSub.writebackFADD_vector_2S,
+    "01001110001-----110101" :  writeback_FP_addSub.writebackFADD_vector_4S,
+    "01001110011-----110101" :  writeback_FP_addSub.writebackFADD_vector_2D,
+    "00011110001-----001110" :  writeback_FP_addSub.writebackFSUB_scalar_SP,
+    "00011110011-----001110" :  writeback_FP_addSub.writebackFSUB_scalar_DP,
+    "00001110101-----110101" :  writeback_FP_addSub.writebackFSUB_vector_2S,
+    "01001110101-----110101" :  writeback_FP_addSub.writebackFSUB_vector_4S,
+    "01001110111-----110101" :  writeback_FP_addSub.writebackFSUB_vector_2D,
+  }[key](binary)
+
+def VECTOR_INSTRUCTIONS(binary):
+  key = binary[0:9] + "-" + binary[10:12] + "--" + binary[14:16] + "----" + binary[20:26] + "-" + binary[27]
+  return {
+    "111100111-11--00----010100-0" :  writeback_Vector.writebackVCNT_A1_64,
+    "111100111-11--00----010101-0" :  writeback_Vector.writebackVCNT_A1_128,
+    "111111111-11--00----010100-0" :  writeback_Vector.writebackVCNT_T1_64,
+    "111111111-11--00----010101-0" :  writeback_Vector.writebackVCNT_T1_128,
+  }

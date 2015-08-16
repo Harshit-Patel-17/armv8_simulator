@@ -1,6 +1,10 @@
 # author swarnadeep
 
 import utilFunc
+import mem
+import const
+import armdebug
+import config
 
 # executes Move Wide with Keep for 32 bits
 def execMoveK_32(hexcode):
@@ -19,56 +23,91 @@ def execMoveN_64(hexcode):
 	executeMoveWideWithNot(hexcode, 64)
 
 # executes Move Wide with Zero for 32 bits
-def execMoveN_32(hexcode):
+def execMoveZ_32(hexcode):
 	executeMoveWideWithZero(hexcode, 32)
 
 # executes Move Wide with Zero for 64 bits
-def execMoveN_64(hexcode):
+def execMoveZ_64(hexcode):
 	executeMoveWideWithZero(hexcode, 64)
 
 # utility function for Move Wide with Keep
 def executeMoveWideWithKeep(hexcode, datasize):
+	const.FLAG_INST_EXECUTED = True	
+	if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+		const.EXECUTION_COUNTER = config.latency['IntALU']
+	
+	if(const.EXECUTION_COUNTER != 0):
+		armdebug.intALUActivityCounter += 1
+		const.EXECUTION_COUNTER -= 1
+		
+	if(const.EXECUTION_COUNTER == 0):
+		const.FLAG_EXECUTION_COMPLETED = True
+		if(armdebug.pipelineStages[3] != '--------'):
+			return
+	else:
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
-	immediate = binary[11:27]
+	immediate = hexcode[11:27]
 
-	position = binary[9:11]
-	position = int(position, 2)*16
+	position = int(hexcode[9:11], 2)*16
 
-	destRegisterValue = utilFunc.getRegValueByStringkey(hexcode[27:32],'0')
 
-	if(datasize == 32):
-		destRegisterValue = destRegisterValue[32:64]
-
-	destRegisterValue = destRegisterValue[0:(datasize-position-16)] + immediate + destRegisterValue[(datasize-position):datasize]
-
-	utilFunc.setRegValue(destRegister, destRegisterValue, '0')
+	mem.ALUResultBuffer = mem.operand1Buffer[0:(datasize-position-16)] + immediate + mem.operand1Buffer[(datasize-position):datasize]
+	mem.regValueAvailableInALU[destRegister] = True
 
 # utility function for Move Wide with Not
 def executeMoveWideWithNot(hexcode, datasize):
+	const.FLAG_INST_EXECUTED = True	
+	if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+		const.EXECUTION_COUNTER = config.latency['IntALU']
+	
+	if(const.EXECUTION_COUNTER != 0):
+		armdebug.intALUActivityCounter += 1
+		const.EXECUTION_COUNTER -= 1
+		
+	if(const.EXECUTION_COUNTER == 0):
+		const.FLAG_EXECUTION_COMPLETED = True
+		if(armdebug.pipelineStages[3] != '--------'):
+			return
+	else:
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
-	immediate = binary[11:27]
+	immediate = hexcode[11:27]
 
-	position = binary[9:11]
-	position = int(position, 2)*16
+	position = int(hexcode[9:11], 2)*16
 
 	resultBinary = "0"*datasize
 
 	resultBinary = resultBinary[0:(datasize-position-16)] + immediate + resultBinary[(datasize-position):datasize]
 
-	resultBinary = utilFunc.negate(resultBinary)
-
-	utilFunc.setRegValue(destRegister, resultBinary, '0')
+	mem.ALUResultBuffer = utilFunc.negate(resultBinary)
+	mem.regValueAvailableInALU[destRegister] = True
 
 # utility function for Move Wide with Zero
-def executeMoveWideWithNot(hexcode, datasize):
+def executeMoveWideWithZero(hexcode, datasize):
+	const.FLAG_INST_EXECUTED = True	
+	if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+		const.EXECUTION_COUNTER = config.latency['IntALU']
+	
+	if(const.EXECUTION_COUNTER != 0):
+		armdebug.intALUActivityCounter += 1
+		const.EXECUTION_COUNTER -= 1
+		
+	if(const.EXECUTION_COUNTER == 0):
+		const.FLAG_EXECUTION_COMPLETED = True
+		if(armdebug.pipelineStages[3] != '--------'):
+			return
+	else:
+		return
+	
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
-	immediate = binary[11:27]
+	immediate = hexcode[11:27]
 
-	position = binary[9:11]
-	position = int(position, 2)*16
+	position = int(hexcode[9:11], 2)*16
 
 	resultBinary = "0"*datasize
 
-	resultBinary = resultBinary[0:(datasize-position-16)] + immediate + resultBinary[(datasize-position):datasize]
-
-	utilFunc.setRegValue(destRegister, resultBinary, '0')
+	mem.ALUResultBuffer = resultBinary[0:(datasize-position-16)] + immediate + resultBinary[(datasize-position):datasize]
+	mem.regValueAvailableInALU[destRegister] = True

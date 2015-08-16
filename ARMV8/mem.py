@@ -22,18 +22,27 @@ regFileFPSIMD = list('0'*64 for i in range(regNum))
 #floating point control register
 fpcrFile = list('0' for i in range(32))
 
-#Indicates whether register value is obsolete for use by next instructions
+#Indicates whether integer register value is obsolete for use by next instructions
 regObsolete = list(0 for i in range(regNum))
 regObsolete_last_modified_indices = []
+
+#Indicates whether float register value is obsolete for use by next instructions
+regFloatObsolete = list(0 for i in range(regNum))
+regFloatObsolete_last_modified_indices = []
 
 #Indicates whether register value is available in ALUResultBuffer for use by next instructions
 regValueAvailableInALU = list(False for i in range(regNum))
 regValueAvailableInALU_last_modified_indices = []
+regValueAvailableInFloatALU = list(False for i in range(regNum))
+regValueAvailableInFloatALU_last_modified_indices = []
 
 #indicates whether register value is available in WritebackBuffer fir use by next instructions
 regValueAvailableInWB = list(False for i in range(regNum))
 regValueAvailableinWB_last_modified_indices = []
 regValueAvailableInWB_buffer_indices = list(-1 for i in range(regNum))
+regValueAvailableInFloatWB = list(False for i in range(regNum))
+regValueAvailableinFloatWB_last_modified_indices = []
+regValueAvailableInFloatWB_buffer_indices = list(-1 for i in range(regNum))
 
 #Operand buffers
 operand1Buffer = ''
@@ -82,6 +91,29 @@ def findForwardedValues(operandRegister1, operandRegister2 = None, operandRegist
             regValue3 = ALUResultBuffer
         elif(regValueAvailableInWB[operandRegister3]):
             regValue3 = writeBackBuffer[regValueAvailableInWB_buffer_indices[operandRegister3]]
+    
+    return [regValue1, regValue2, regValue3]
+
+def findForwardedFloatValues(operandRegister1, operandRegister2 = None, operandRegister3 = None):
+    regValue1 = None
+    regValue2 = None
+    regValue3 = None
+    if(regValueAvailableInFloatALU[operandRegister1]):
+        regValue1 = ALUResultBuffer
+    elif(regValueAvailableInFloatWB[operandRegister1]):
+        regValue1 = writeBackBuffer[regValueAvailableInFloatWB_buffer_indices[operandRegister1]]
+        
+    if(operandRegister2 != None):
+        if(regValueAvailableInFloatALU[operandRegister2]):
+            regValue2 = ALUResultBuffer
+        elif(regValueAvailableInFloatWB[operandRegister2]):
+            regValue2 = writeBackBuffer[regValueAvailableInFloatWB_buffer_indices[operandRegister2]]
+            
+    if(operandRegister3 != None):
+        if(regValueAvailableInFloatALU[operandRegister3]):
+            regValue3 = ALUResultBuffer
+        elif(regValueAvailableInFloatWB[operandRegister3]):
+            regValue3 = writeBackBuffer[regValueAvailableInFloatWB_buffer_indices[operandRegister3]]
     
     return [regValue1, regValue2, regValue3]
 

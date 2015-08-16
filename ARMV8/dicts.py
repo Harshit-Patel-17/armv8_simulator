@@ -229,12 +229,12 @@ def ADD_WITH_CARRY(binary):
 def MOVE_WIDE(binary):
   key = binary[0:9]
   return {
-    "011100101" : executor_MoveWide.execMoveK_32,
-    "111100101" : executor_MoveWide.execMoveK_64,
-    "000100101" : executor_MoveWide.execMoveN_32,
-    "100100101" : executor_MoveWide.execMoveN_64,
-    "010100101" : executor_MoveWide.execMoveZ_32,
-    "110100101" : executor_MoveWide.execMoveZ_64,
+    "011100101" : executor_moveWide.execMoveK_32,
+    "111100101" : executor_moveWide.execMoveK_64,
+    "000100101" : executor_moveWide.execMoveN_32,
+    "100100101" : executor_moveWide.execMoveN_64,
+    "010100101" : executor_moveWide.execMoveZ_32,
+    "110100101" : executor_moveWide.execMoveZ_64,
   }[key](binary)
 
 def FLOATING_POINT_ADD_SUB(binary):
@@ -252,13 +252,6 @@ def FLOATING_POINT_ADD_SUB(binary):
     "01001110111-----110101" :  executor_FP_addSub.execFSUB_vector_2D,
   }[key](binary)
 
-def FLOATING_POINT_MOVE(binary):
-  key = binary[0:11] + "-"*8 + binary[19:27]
-  return {
-    "00011110001--------10000000" : executor_move.execFMove_SP,
-    "00011110011--------10000000" : executor_move.execFMove_DP,
-  }[key](binary)
-
 def VECTOR_INSTRUCTIONS(binary):
   key = binary[0:9] + "-" + binary[10:12] + "--" + binary[14:16] + "----" + binary[20:26] + "-" + binary[27]
   return {
@@ -267,3 +260,10 @@ def VECTOR_INSTRUCTIONS(binary):
     "111111111-11--00----010100-0" :  executor_Vector.execVCNT_T1_64,
     "111111111-11--00----010101-0" :  executor_Vector.execVCNT_T1_128,
   }
+
+def FLOATING_POINT_MOVE(binary):
+  key = binary[0:11] + "-"*8 + binary[19:27]
+  return {
+    "00011110001--------10000000" : executor_move.execFMove_SP,
+    "00011110011--------10000000" : executor_move.execFMove_DP,
+  }[key](binary)

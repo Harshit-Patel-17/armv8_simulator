@@ -12,6 +12,9 @@ import memaccess_ALU
 import memaccess_rotate
 import memaccess_bitwise_shift
 import memaccess_adc
+import memaccess_moveWide
+import memaccess_FP_addSub
+import memaccess_Vector
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -34,6 +37,10 @@ def INSTRUCTION_TYPE(binary, i):
             15 : ROTATE_REGISTER,
             16 : BITWISE_SHIFT_REGISTER,
             17 : ADD_WITH_CARRY,
+            18 : MOVE_WIDE,
+            19 : FLOATING_POINT_ADD_SUB,
+            20 : FLOATING_POINT_MOVE, #only for testing purpose,to be removed later
+            21 : VECTOR_INSTRUCTIONS,
         }[i](binary)
     except KeyError:
         i = i
@@ -217,3 +224,45 @@ def ADD_WITH_CARRY(binary):
       "00011010000-----000000"  : memaccess_adc.memaccessADC_32,
       "10011010000-----000000"  : memaccess_adc.memaccessADC_64,
     }[key](binary)
+
+def MOVE_WIDE(binary):
+    key = binary[0:9]
+    return {
+      "011100101" : memaccess_moveWide.memaccessMoveK_32,
+      "111100101" : memaccess_moveWide.memaccessMoveK_64,
+      "000100101" : memaccess_moveWide.memaccessMoveN_32,
+      "100100101" : memaccess_moveWide.memaccessMoveN_64,
+      "010100101" : memaccess_moveWide.memaccessMoveZ_32,
+      "110100101" : memaccess_moveWide.memaccessMoveZ_64,
+    }[key](binary)
+    
+def FLOATING_POINT_MOVE(binary):
+    key = binary[0:11] + "-"*8 + binary[19:27]
+    return {
+      "00011110001--------10000000" : memaccess_move.memaccessFMove_SP,
+      "00011110011--------10000000" : memaccess_move.memaccessFMove_DP,
+    }[key](binary)
+
+def FLOATING_POINT_ADD_SUB(binary):
+  key = binary[0:11] + "-"*5 + binary[16:22]
+  return {
+    "00011110001-----001010" :  memaccess_FP_addSub.memaccessFADD_scalar_SP,
+    "00011110011-----001010" :  memaccess_FP_addSub.memaccessFADD_scalar_DP,
+    "00001110001-----110101" :  memaccess_FP_addSub.memaccessFADD_vector_2S,
+    "01001110001-----110101" :  memaccess_FP_addSub.memaccessFADD_vector_4S,
+    "01001110011-----110101" :  memaccess_FP_addSub.memaccessFADD_vector_2D,
+    "00011110001-----001110" :  memaccess_FP_addSub.memaccessFSUB_scalar_SP,
+    "00011110011-----001110" :  memaccess_FP_addSub.memaccessFSUB_scalar_DP,
+    "00001110101-----110101" :  memaccess_FP_addSub.memaccessFSUB_vector_2S,
+    "01001110101-----110101" :  memaccess_FP_addSub.memaccessFSUB_vector_4S,
+    "01001110111-----110101" :  memaccess_FP_addSub.memaccessFSUB_vector_2D,
+  }[key](binary)
+
+def VECTOR_INSTRUCTIONS(binary):
+  key = binary[0:9] + "-" + binary[10:12] + "--" + binary[14:16] + "----" + binary[20:26] + "-" + binary[27]
+  return {
+    "111100111-11--00----010100-0" :  memaccess_Vector.memaccessVCNT_A1_64,
+    "111100111-11--00----010101-0" :  memaccess_Vector.memaccessVCNT_A1_128,
+    "111111111-11--00----010100-0" :  memaccess_Vector.memaccessVCNT_T1_64,
+    "111111111-11--00----010101-0" :  memaccess_Vector.memaccessVCNT_T1_128,
+  }

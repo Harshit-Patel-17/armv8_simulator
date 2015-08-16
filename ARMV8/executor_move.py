@@ -109,15 +109,47 @@ def execMov_bmi64(binary):
 #------------------- floating point moves----------------
 
 def execFMove_SP(binary):
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        armdebug.floatALUActivityCounter += 1
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
-    resultBinary = binary[11:19]
+    resultBinary = utilFunc.VFPExpandImm(binary[11:19], 32)
     resultBinary = resultBinary.zfill(128)
-
-    utilFunc.setRegValueSIMDFP(rdKey, resultBinary)
+    
+    mem.ALUResultBuffer = resultBinary
+    mem.regValueAvailableInALU[rdKey] = True
 
 def execFMove_DP(binary):
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        armdebug.floatALUActivityCounter += 1
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+    
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
-    resultBinary = binary[11:19]
+    resultBinary = utilFunc.VFPExpandImm(binary[11:19], 64)
     resultBinary = resultBinary.zfill(128)
 
-    utilFunc.setRegValueSIMDFP(rdKey, resultBinary)
+    mem.ALUResultBuffer = resultBinary
+    mem.regValueAvailableInALU[rdKey] = True

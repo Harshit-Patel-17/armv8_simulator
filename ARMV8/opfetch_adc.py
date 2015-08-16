@@ -61,5 +61,3 @@ def execADC(hexcode, datasize):
 		
 	mem.operand1Buffer = regValue1
 	mem.operand2Buffer = regValue2
-	
-	armdebug.intRFActivityCounter += 1

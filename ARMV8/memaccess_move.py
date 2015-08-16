@@ -72,3 +72,27 @@ def memaccessMov_bmi32(binary):
     
 def memaccessMov_bmi64(binary):
     mov_bmi(binary, 64)
+
+#------------------- floating point moves----------------
+
+def memaccessFMove_SP(binary):
+    const.FLAG_MEMACCESS_EXECUTED = True    
+    const.FLAG_MEMACCESS_COMPLETED = True
+    if(armdebug.pipelineStages[4] != '--------'):
+        return
+    
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
+
+def memaccessFMove_DP(binary):
+    const.FLAG_MEMACCESS_EXECUTED = True    
+    const.FLAG_MEMACCESS_COMPLETED = True
+    if(armdebug.pipelineStages[4] != '--------'):
+        return
+    
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0

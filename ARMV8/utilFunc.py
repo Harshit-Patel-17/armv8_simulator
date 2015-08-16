@@ -5,6 +5,7 @@ import const
 import mem
 import armdebug
 import math
+import sys
 
 def hexToBin(s, numOfBits=const.INST_SIZE):
     scale = 16  # # equals to hexadecimal 
@@ -108,10 +109,10 @@ def setRegValue(rdKey, val, isSp):
         mem.regFile.insert(rdKey, val)
 
 # val is 128 bit string to be stored in reg with rdkey
-def setRegValueSIMDFP(rdkey, val):
+def setRegValueSIMDFP(rdKey, val):
     assert rdKey >= 0 and rdKey <= 31
-    del mem.regFile[rdKey]
-    mem.regFile.insert(rdKey, val)
+    del mem.regFileFPSIMD[rdKey]
+    mem.regFileFPSIMD.insert(rdKey, val)
         
 def ifWatch(rdKey):
     if mem.isWatchSet(rdKey):
@@ -631,6 +632,17 @@ def getAHPBit():
 def getFZBit():
     return mem.fpcrFile[7]
 
+def VFPExpandImm(imm8, datasize):
+    if(datasize == 32):
+        exp = 8
+    else:
+        exp = 11
+    frac = datasize - exp - 1
+    sign = imm8[0]
+    exp = negate(imm8[1]) + imm8[1]*(exp-3) + imm8[2:4]
+    frac = imm8[4:8] + '0'*(frac-4)
+    return sign + exp + frac
+
 def FPDecodeRounding(bits):
     if(bits == "00"):
         return "TIEEVEN"
@@ -648,17 +660,17 @@ def unpackFP(fpval, datasize):
         exp16 = fpval[1:6]
         frac16 = fpval[6:16]
 
-        if(IsZero(exp16)=='1'):
-            if(IsZero(frac16)):
+        if(isZero(exp16)=='1'):
+            if(isZero(frac16)=='1'):
                 typeOfVal = "FPType_Zero"
                 value = 0.0
             else:
                 typeOfVal = "FPType_Nonzero"
                 value = 2.0**(-14) * uInt(frac16) * 2.0**(-10)
-        elif(isOnes(exp16, datasize) and getAHPBit() == '0'):
-            if(isZero(frac16)):
+        elif(isOnes(exp16, datasize)=='1' and getAHPBit() == '0'):
+            if(isZero(frac16)=='1'):
                 typeOfVal = "FPType_Infinity"
-                value = 2.0**(1000000)
+                value = sys.maxint#2.0**(1000000)
             else:
                 if(frac16[0] == '1'):
                     typeOfVal = "FPType_QNaN" 
@@ -673,18 +685,18 @@ def unpackFP(fpval, datasize):
         sign = fpval[0]
         exp32 = fpval[1:9]
         frac32 = fpval[9:32]
-
-        if(IsZero(exp32)=='1'):
-            if(IsZero(frac32) or getFZBit() == '1'):
+        
+        if(isZero(exp32)=='1'):
+            if(isZero(frac32)=='1' or getFZBit() == '1'):
                 typeOfVal = "FPType_Zero"
                 value = 0.0
             else:
                 typeOfVal = "FPType_Nonzero"
                 value = 2.0**(-126) * uInt(frac32) * 2.0**(-23)
-        elif(isOnes(exp32, datasize)):
-            if(isZero(frac32)):
+        elif(isOnes(exp32, datasize) == '1'):
+            if(isZero(frac32) == '1'):
                 typeOfVal = "FPType_Infinity"
-                value = 2.0**(1000000)
+                value = sys.maxint#2.0**(1000000)
             else:
                 if(frac32[0] == '1'):
                     typeOfVal = "FPType_QNaN" 
@@ -700,17 +712,17 @@ def unpackFP(fpval, datasize):
         exp64 = fpval[1:12]
         frac64 = fpval[12:64]
 
-        if(IsZero(exp64)=='1'):
-            if(IsZero(frac64) or getFZBit() =='1'):
+        if(isZero(exp64)=='1'):
+            if(isZero(frac64)=='1' or getFZBit() =='1'):
                 typeOfVal = "FPType_Zero"
                 value = 0.0
             else:
                 typeOfVal = "FPType_Nonzero"
                 value = 2.0**(-1022) * uInt(frac64) * 2.0**(-52)
-        elif(isOnes(exp64, datasize)):
+        elif(isOnes(exp64, datasize)=='1'):
             if(isZero(frac64)):
                 typeOfVal = "FPType_Infinity"
-                value = 2.0**(1000000)
+                value = sys.maxint#2.0**(1000000)
             else:
                 if(frac64[0] == '1'):
                     typeOfVal = "FPType_QNaN" 
@@ -765,7 +777,7 @@ def FPRound(op, rounding, datasize):
     if(biased_exp == 0):
         mantissa = mantissa / 2.0**(minimum_exp - exponent)
 
-    int_mant = math.floor(mantissa * 2.0**F)
+    int_mant = int(math.floor(mantissa * 2.0**F))
     error = mantissa * 2.0**F - int_mant
 
     if(rounding == "TIEEVEN"):
@@ -817,12 +829,12 @@ def FPRound(op, rounding, datasize):
 
 
 def addFP(op1, op2, datasize):
-    rounding = FPDecodeRounding()
+    rounding = FPDecodeRounding(getRoundingBits())
 
     (type1, sign1, value1) = unpackFP(op1, datasize)
     (type2, sign2, value2) = unpackFP(op2, datasize)
 
-    (done, result) = FPProcessNaNs(type1, type2, op1, op2)
+    (done, result) = FPProcessNaNs(type1, type2, op1, op2, datasize)
 
     if(not done):
         inf1 = (type1 == "FPType_Infinity")
@@ -853,10 +865,12 @@ def addFP(op1, op2, datasize):
 
 
 def subFP(op1, op2, datasize):
+    rounding = FPDecodeRounding(getRoundingBits())
+    
     (type1, sign1, value1) = unpackFP(op1, datasize)
     (type2, sign2, value2) = unpackFP(op2, datasize)
 
-    (done, result) = FPProcessNaNs(type1, type2, op1, op2)
+    (done, result) = FPProcessNaNs(type1, type2, op1, op2,datasize)
 
     if(not done):
         inf1 = (type1 == "FPType_Infinity")
@@ -875,8 +889,12 @@ def subFP(op1, op2, datasize):
         else:
             result_value = value1 - value2
             if(result_value == 0.0):
-                result = FPZero("0")
+                if(rounding == "NEGINF"):
+                    result_sign = "1"
+                else:
+                    result_sign = "0"
+                result = FPZero(result_sign)
             else:
-                result = FPRound(result_value)
+                result = FPRound(result_value, rounding, datasize)
 
     return result

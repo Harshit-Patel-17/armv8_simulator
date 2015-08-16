@@ -47,7 +47,6 @@ def executeCLS(hexcode, datasize):
 	resultBinary = resultBinary.zfill(64)
 	mem.ALUResultBuffer = resultBinary
 	mem.regValueAvailableInALU[destRegister] = True
-	const.FLAG_INST_EXECUTED = True 
 
 #utility function for counting the number of leading zero bits
 def executeCLZ(hexcode, datasize):
@@ -74,4 +73,3 @@ def executeCLZ(hexcode, datasize):
 	resultBinary = resultBinary.zfill(64)
 	mem.ALUResultBuffer = resultBinary
 	mem.regValueAvailableInALU[destRegister] = True
-	const.FLAG_INST_EXECUTED = True 
