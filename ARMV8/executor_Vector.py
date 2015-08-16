@@ -17,9 +17,9 @@ def executeVCNT(hexcode, datasize):
 	esize = 8
 	elements = 8
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[9] + hexcode[16:20])
-	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[9] + hexcode[28:31])
+	operandRegister1 = utilFunc.getRegKeyByStringKey(hexcode[26] + hexcode[28:32])
 
-	regValue1 = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[9] + hexcode[28:31])
+	regValue1 = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[26] + hexcode[28:32])
 	if(datasize == 64):
 		regs = 1
 	else: 

@@ -138,7 +138,7 @@ def executeFADD_vector(hexcode, Q, size):
 
 		resultBinary = resultBinary + utilFunc.addFP(element1, element2, datasize)
 
-	resultBinary.zfill(128)
+	resultBinary.zfill(64)
 	mem.ALUResultBuffer = resultBinary.zfill(128)
 	mem.regValueAvailableInFloatALU[destRegister] = True
 
@@ -177,7 +177,7 @@ def executeFSUB_vector(hexcode, Q, size):
 
 		resultBinary = resultBinary + utilFunc.subFP(element1, element2, datasize)
 
-	resultBinary.zfill(128)
+	resultBinary.zfill(64)
 	mem.ALUResultBuffer = resultBinary.zfill(128)
 	mem.regValueAvailableInFloatALU[destRegister] = True
 
