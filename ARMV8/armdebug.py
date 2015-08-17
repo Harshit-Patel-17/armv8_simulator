@@ -312,6 +312,18 @@ def parseCommand(command):
         executeCycles()
         return
     
+    if command == 'nc':
+        executeNc()
+        return
+    
+    if command == 'pipe':
+        executePipe()
+        return
+    
+    if command == 'activity':
+        executeActivity()
+        return
+    
     if command == 'stalls':
         executeStalls() 
     else:
@@ -320,10 +332,42 @@ def parseCommand(command):
 def executeCycles():
     print getCycles()    
     
+def executeNc():
+    if(not isPipelineEmpty()):
+        executeStages()
+    else:
+        try:
+            pipelineStages[0] = hexes[getCurrentInstNumber()]
+            programCounters[0] = format(getPC(), 'x').zfill(8)
+            incPC()
+            executeStages()
+        except IndexError:
+            pipelineStages[0] = '--------'
+            programCounters[0] = '--------'
+        
+def executePipe():
+    print pipelineStages
+
+def executeActivity():
+    printActivityCounters()
+
 def executeStalls():
     print getStalls()
 
 def executeS():
+    global decodeActivityCounter
+    global intRFActivityCounter
+    global floatRFActivityCounter
+    global intALUActivityCounter
+    global intMulActivityCounter
+    global intDivActivityCounter
+    global floatALUActivityCounter
+    global floatMulActivityCounter
+    global floatDivActivityCounter
+    global iCacheReadActivityCounter
+    global iCacheWriteActivityCounter
+    global l1CacheReadActivityCounter
+    global l1CacheWriteActivityCounter
     #will have to take care of inst running also
     #not caring about break point or not -->DOESN't MATTER
     print "Executing command type: "+"'s'"
@@ -355,6 +399,21 @@ def executeS():
     #Reinitialize cycles and stalls
     setCycles(0)
     setStalls(0)
+    
+    #Reset Activity Counters
+    decodeActivityCounter = 0
+    intRFActivityCounter = 0
+    floatRFActivityCounter = 0
+    intALUActivityCounter = 0
+    intMulActivityCounter= 0
+    intDivActivityCounter = 0
+    floatALUActivityCounter = 0
+    floatMulActivityCounter = 0
+    floatDivActivityCounter = 0
+    iCacheReadActivityCounter = 0
+    iCacheWriteActivityCounter = 0
+    l1CacheReadActivityCounter = 0
+    l1CacheWriteActivityCounter = 0
     
     #Execute upto the first break point
     executeC()
