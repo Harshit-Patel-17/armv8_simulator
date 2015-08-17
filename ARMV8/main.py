@@ -66,8 +66,10 @@ if __name__ == '__main__':
             sys.exit(0)
 
         #Testcases for floating point vector addition and subtraction
-        #mem.regFileFPSIMD[1] = '110000001011' + '0'*20 + '010000001001' + '0'*20
-        #mem.regFileFPSIMD[2] = '010000001011' + '0'*20 + '110000001001' + '0'*20
+        #mem.regFileFPSIMD[1] = '010000001011' + '0'*20 + '010000001001' + '0'*20 + '010000001011' + '0'*20 + '010000001001' + '0'*20
+        #mem.regFileFPSIMD[2] = '010000001011' + '0'*20 + '010000001001' + '0'*20 + '010000001011' + '0'*20 + '010000001001' + '0'*20
+        #mem.regFileFPSIMD[1] = '0100000000010110' + '0'*48 + '0100000000010110' + '0'*48
+        #mem.regFileFPSIMD[2] = '0100000000010110' + '0'*48 + '0100000000010110' + '0'*48
         
         armdebug.setHexes(hexes)
         armdebug.saveAllToMemoryModel()

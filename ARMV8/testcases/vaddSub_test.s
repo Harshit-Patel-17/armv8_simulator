@@ -1,2 +1,2 @@
 _start:
-vadd q1, q2, q3
+fadd q1.2s, q2.2s, q3.2s

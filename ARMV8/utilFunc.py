@@ -732,7 +732,6 @@ def unpackFP(fpval, datasize):
             value = 2.0**(uInt(exp32)-127) * (1.0 + uInt(frac32) * 2.0**(-23))
 
     else:
-        print fpval
         sign = fpval[0]
         exp64 = fpval[1:12]
         frac64 = fpval[12:64]
@@ -874,7 +873,7 @@ def addFP(op1, op2, datasize):
         elif((inf1 and sign1 == '1') or (inf2 and sign2 == '1')):
             result = FPInfinity(datasize, "1")
         elif(zero1 and zero2 and sign1 == sign2):
-            result = FPZero(sign1)
+            result = FPZero(datasize, sign1)
         else:
             result_value = value1 + value2
             if(result_value == 0.0):
@@ -910,7 +909,7 @@ def subFP(op1, op2, datasize):
         elif((inf1 and sign1 == '1') or (inf2 and sign2 == '0')):
             result = FPInfinity(datasize, "1")
         elif(zero1 and zero2 and sign1 == negate(sign2)):
-            result = FPZero(sign1)
+            result = FPZero(datasize, sign1)
         else:
             result_value = value1 - value2
             if(result_value == 0.0):

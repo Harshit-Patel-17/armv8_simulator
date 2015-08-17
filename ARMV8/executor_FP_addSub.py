@@ -19,7 +19,7 @@ def execFADD_vector_2S(hexcode):
 
 # executes floating point vector addition for four 32 bit FPs stored in each 128 bit registers
 def execFADD_vector_4S(hexcode):
-	executeFADD_vector(hexcode,0,1)
+	executeFADD_vector(hexcode,1,0)
 
 # executes floating point vector addition for two 64 bit FPs stored in each 128 bit registers
 def execFADD_vector_2D(hexcode):
@@ -106,7 +106,7 @@ def executeFSUB_scalar(hexcode, precision):
 # utility function for floating point vector addition
 def executeFADD_vector(hexcode, Q, size):
 	esize = 32<<size
-	if(Q == '1'):
+	if(Q == 1):
 		datasize = 128
 	else:
 		datasize = 64
@@ -132,18 +132,22 @@ def executeFADD_vector(hexcode, Q, size):
 
 	resultBinary = ""
 	
+	if(elements == 2 and datasize == 32):
+		mem.operand1Buffer = mem.operand1Buffer[64:128]
+		mem.operand2Buffer = mem.operand2Buffer[64:128]
+
 	for e in range(elements):
 		element1 = mem.operand1Buffer[(e*esize):(e*esize + esize)]
 		element2 = mem.operand2Buffer[(e*esize):(e*esize + esize)]
 		resultBinary = resultBinary + utilFunc.addFP(element1, element2, esize)
 
-	mem.ALUResultBuffer = resultBinary
+	mem.ALUResultBuffer = resultBinary.zfill(128)
 	mem.regValueAvailableInFloatALU[destRegister] = True
 
 # utility function for floating point vector subtraction
 def executeFSUB_vector(hexcode, Q, size):
 	esize = 32<<size
-	if(Q == '1'):
+	if(Q == 1):
 		datasize = 128
 	else:
 		datasize = 64
@@ -168,12 +172,16 @@ def executeFSUB_vector(hexcode, Q, size):
 	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
 
 	resultBinary = ""
+	
+	if(elements == 2 and datasize == 32):
+		mem.operand1Buffer = mem.operand1Buffer[64:128]
+		mem.operand2Buffer = mem.operand2Buffer[64:128]
 
 	for e in range(elements):
 		element1 = mem.operand1Buffer[(e*esize):(e*esize + esize)]
 		element2 = mem.operand2Buffer[(e*esize):(e*esize + esize)]
 		resultBinary = resultBinary + utilFunc.subFP(element1, element2, esize)
 
-	mem.ALUResultBuffer = resultBinary
+	mem.ALUResultBuffer = resultBinary.zfill(128)
 	mem.regValueAvailableInFloatALU[destRegister] = True
 

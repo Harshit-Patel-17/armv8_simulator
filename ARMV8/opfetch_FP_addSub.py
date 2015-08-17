@@ -176,7 +176,7 @@ def executeFADD_vector(hexcode, Q, size):
 			armdebug.floatRFActivityCounter += 1
 	else:
 		return
-
+	
 	mem.regFloatObsolete[destRegister] += 1
 	mem.regFloatObsolete_last_modified_indices.append(destRegister)
 	#reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])

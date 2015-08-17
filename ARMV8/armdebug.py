@@ -327,19 +327,45 @@ def executeS():
     #will have to take care of inst running also
     #not caring about break point or not -->DOESN't MATTER
     print "Executing command type: "+"'s'"
-    print ""
-    print "Activity in pipeline"
-    print "===================="
-    print "     IF          ID          EX          MA          WB     "
-    try:
-        pipelineStages[0] = hexes[getCurrentInstNumber()]
-    except IndexError:
-        pipelineStages[0] = '--------'
+    
+    #Increase PC to point to next instruction
     incPC()
-    completeAllInstructionsInPipeline()
-    #executeNextInst()
-    #pass
-
+    
+    #Set all break points up to the instruction to be executed next to False
+    for i in range(getCurrentInstNumber()):
+        try:
+            del bkpoint[i]
+            bkpoint.insert(i, False)
+        except:
+            return    
+    
+    #Set break point at the instruction to be executed next
+    try:
+        del bkpoint[getCurrentInstNumber()]
+        bkpoint.insert(getCurrentInstNumber(), True)
+    except:
+        pass
+    
+    #Reset program counter to point to the first instruction program
+    setPC(int(parsehelper.getStartAddress(), 16))
+    
+    #Reinitialize state of processor
+    mem.init()
+    
+    #Reinitialize cycles and stalls
+    setCycles(0)
+    setStalls(0)
+    
+    #Execute upto the first break point
+    executeC()
+    
+    #Delete break point at the next instruction to be executed
+    try:
+        del bkpoint[getCurrentInstNumber()]
+        bkpoint.insert(getCurrentInstNumber(), False)
+    except:
+        pass
+    
 def executeNextInst():
     if getCurrentInstNumber()<len(getHexes()):
         hexcode=hexes[getCurrentInstNumber()]
@@ -377,6 +403,7 @@ def executeRUN():
     printActivityCounters()
             
 def executeStages():
+    stallOccured = False
     print pipelineStages
     #Execute stage 5
     if(pipelineStages[4] != '--------'):
@@ -388,6 +415,10 @@ def executeStages():
     #Execute stage 4    
     if(pipelineStages[3] != '--------'):
         memaccess_decoder.decodeInstr(pipelineStages[3])
+        if(pipelineStages[4] != '--------' and const.FLAG_MEMACCESS_COMPLETED == True):
+            if(not stallOccured):
+                stallOccured = True
+                incStalls()
     if(pipelineStages[4] == '--------' and const.FLAG_MEMACCESS_COMPLETED == True):
         const.FLAG_WRITEBACK_COMPLETED = False
         pipelineStages[4] = pipelineStages[3]
@@ -398,6 +429,10 @@ def executeStages():
     #Execute stage 3
     if(pipelineStages[2] != '--------'):
         decoder.decodeInstr(pipelineStages[2])
+        if(pipelineStages[3] != '--------' and const.FLAG_EXECUTION_COMPLETED == True):
+            if(not stallOccured):
+                stallOccured = True
+                incStalls()
     if(pipelineStages[3] == '--------' and const.FLAG_EXECUTION_COMPLETED == True):
         const.FLAG_MEMACCESS_COMPLETED = False
         pipelineStages[3] = pipelineStages[2]
@@ -408,14 +443,16 @@ def executeStages():
     #Execute stage 2
     if(pipelineStages[1] != '--------'):
         opfetch_decoder.decodeInstr(pipelineStages[1])
-        if(pipelineStages[2] == '--------' and const.FLAG_OP_FETCHED == True):
-            const.FLAG_EXECUTION_COMPLETED = False
-            pipelineStages[2] = pipelineStages[1]
-            programCounters[2] = programCounters[1]
-            pipelineStages[1] = '--------'
-            programCounters[1] = '--------'
-        elif(pipelineStages[2] == '--------' and const.FLAG_OP_FETCHED == False and const.OPFETCH_COUNTER == 0):
-            incStalls()
+        if((const.FLAG_OP_FETCHED == False and const.OPFETCH_COUNTER == 0) or (pipelineStages[2] != '--------' and const.FLAG_OP_FETCHED == True)):
+            if(not stallOccured):
+                stallOccured = True
+                incStalls()
+    if(pipelineStages[2] == '--------' and const.FLAG_OP_FETCHED == True):
+        const.FLAG_EXECUTION_COMPLETED = False
+        pipelineStages[2] = pipelineStages[1]
+        programCounters[2] = programCounters[1]
+        pipelineStages[1] = '--------'
+        programCounters[1] = '--------'
     
     #Execute stage 1
     fetchNewInstruction(False)
@@ -458,45 +495,64 @@ def fetchNewInstruction(breakAtNextInstuction):
  
 def completeAllInstructionsInPipeline():
     while(not isPipelineEmpty()):
+        stallOccured = False
         print pipelineStages
         #Execute stage 5
         if(pipelineStages[4] != '--------'):
             writeback_decoder.decodeInstr(pipelineStages[4])
         if(const.FLAG_WRITEBACK_COMPLETED == True):
             pipelineStages[4] = '--------'
+            programCounters[4] = '--------'
         
         #Execute stage 4    
         if(pipelineStages[3] != '--------'):
             memaccess_decoder.decodeInstr(pipelineStages[3])
+            if(pipelineStages[4] != '--------' and const.FLAG_MEMACCESS_COMPLETED == True):
+                if(not stallOccured):
+                    stallOccured = True
+                    incStalls()
         if(pipelineStages[4] == '--------' and const.FLAG_MEMACCESS_COMPLETED == True):
             const.FLAG_WRITEBACK_COMPLETED = False
             pipelineStages[4] = pipelineStages[3]
+            programCounters[4] = programCounters[3]
             pipelineStages[3] = '--------'
+            programCounters[3] = '--------'
         
         #Execute stage 3
         if(pipelineStages[2] != '--------'):
             decoder.decodeInstr(pipelineStages[2])
+            if(pipelineStages[3] != '--------' and const.FLAG_EXECUTION_COMPLETED == True):
+                if(not stallOccured):
+                    stallOccured = True
+                    incStalls()
         if(pipelineStages[3] == '--------' and const.FLAG_EXECUTION_COMPLETED == True):
             const.FLAG_MEMACCESS_COMPLETED = False
             pipelineStages[3] = pipelineStages[2]
+            programCounters[3] = programCounters[2]
             pipelineStages[2] = '--------'
+            programCounters[2] = '--------'
         
         #Execute stage 2
         if(pipelineStages[1] != '--------'):
             opfetch_decoder.decodeInstr(pipelineStages[1])
-            if(pipelineStages[2] == '--------' and const.FLAG_OP_FETCHED == True):
-                const.FLAG_EXECUTION_COMPLETED = False
-                pipelineStages[2] = pipelineStages[1]
-                pipelineStages[1] = '--------'
-            elif(pipelineStages[2] == '--------' and const.FLAG_OP_FETCHED == False):
-                incStalls()
-                
+            if((const.FLAG_OP_FETCHED == False and const.OPFETCH_COUNTER == 0) or (pipelineStages[2] != '--------' and const.FLAG_OP_FETCHED == True)):
+                if(not stallOccured):
+                    stallOccured = True
+                    incStalls()
+        if(pipelineStages[2] == '--------' and const.FLAG_OP_FETCHED == True):
+            const.FLAG_EXECUTION_COMPLETED = False
+            pipelineStages[2] = pipelineStages[1]
+            programCounters[2] = programCounters[1]
+            pipelineStages[1] = '--------'
+            programCounters[1] = '--------'
+        
         #Execute stage 1
         if(pipelineStages[0] != '--------'):
             fetchNewInstruction(True)
         incCycles()
     print pipelineStages 
-   
+
+'''   
 def completeAllFetchedInstructionsInPipeline():
     while(not isAllFetchedInstructionsExecuted()):
         print pipelineStages
@@ -535,6 +591,7 @@ def completeAllFetchedInstructionsInPipeline():
             #pipelineStages[0] = '--------'
         incCycles()
     print pipelineStages
+'''  
         
 def isPipelineEmpty():
     for i in range(5):

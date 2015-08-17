@@ -17,7 +17,7 @@ for FP we view the registers as S0-S31(32 bit registers) or D0-D15(64 bit regist
 SIMD instructions use D registers(0-31) or Q registers(0-15) as we may choose to view them.
 we choose to represent the registers as 32 64-bit registers, and for FP registers 16-31 won't be used
 '''
-regFileFPSIMD = list('0'*64 for i in range(regNum))
+regFileFPSIMD = list('0'*128 for i in range(regNum))
 
 #floating point control register
 fpcrFile = list('0' for i in range(32))
@@ -196,11 +196,11 @@ def init():
     regNum=31
 
     regFile = list('0'*64 for i in range(regNum))
-    regFileFPSIMD = list('0'*64 for i in range(regNum))
+    regFileFPSIMD = list('0'*128 for i in range(regNum))
     #flags-order: n,z,c,v
     flagFile = list('0' for i in range(4))
     fpcrFile = list('0' for i in range(32))
 
     memory_model={}
 
-    watchReg = list(False for i in range(regNum))
+    #watchReg = list(False for i in range(regNum)) #Modified by Harshit
