@@ -40,9 +40,7 @@ def INSTRUCTION_TYPE(binary, i):
             17 : ADD_WITH_CARRY,
             18 : MOVE_WIDE,
             19 : FLOATING_POINT_ADD_SUB,
-            20 : FLOATING_POINT_MOVE, #only for testing purpose,to be removed later
-            21 : VECTOR_INSTRUCTIONS,
-            22 : VECTOR_ADD_MUL,
+            20 : FLOATING_POINT_MOVE,
         }[i](binary)
     except KeyError:
         i = i
@@ -254,15 +252,6 @@ def FLOATING_POINT_ADD_SUB(binary):
     "01001110111-----110101" :  executor_FP_addSub.execFSUB_vector_2D,
   }[key](binary)
 
-def VECTOR_INSTRUCTIONS(binary):
-  key = binary[0:9] + "-" + binary[10:12] + "--" + binary[14:16] + "----" + binary[20:26] + "-" + binary[27]
-  return {
-    "111100111-11--00----010100-0" :  executor_Vector.execVCNT_A1_64,
-    "111100111-11--00----010101-0" :  executor_Vector.execVCNT_A1_128,
-    "111111111-11--00----010100-0" :  executor_Vector.execVCNT_T1_64,
-    "111111111-11--00----010101-0" :  executor_Vector.execVCNT_T1_128,
-  }[key](binary)
-
 def FLOATING_POINT_MOVE(binary):
   key = binary[0:11] + "-"*8 + binary[19:27]
   return {
@@ -270,13 +259,3 @@ def FLOATING_POINT_MOVE(binary):
     "00011110011--------10000000" : executor_move.execFMove_DP,
   }[key](binary)
 
-def VECTOR_ADD_MUL(binary):
-  key = binary[0:9] + "-"*11 + binary[20:24] + "-"*3 + binary[27]
-  return {
-    "111100100-----------1000---0" :  executor_Vector_AddMul.execVADD_intA1,
-    "111011110-----------1000---0" :  executor_Vector_AddMul.execVADD_intT1,
-    "111100100-----------1101---0" :  executor_Vector_AddMul.execVADD_FPA1,
-    "111011110-----------1101---0" :  executor_Vector_AddMul.execVADD_FPT1,
-    "111100100-----------1100---1" :  executor_Vector_AddMul.execVFMA_A1,
-    "111011110-----------1100---1" :  executor_Vector_AddMul.execVFMA_T1,
-  }[key](binary)
