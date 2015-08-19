@@ -14,7 +14,7 @@ import opfetch_bitwise_shift
 import opfetch_adc
 import opfetch_moveWide
 import opfetch_FP_addSub
-import opfetch_Vector
+import opfetch_FP_maxMin
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -39,8 +39,8 @@ def INSTRUCTION_TYPE(binary, i):
             17 : ADD_WITH_CARRY,
             18 : MOVE_WIDE,
             19 : FLOATING_POINT_ADD_SUB,
-            20 : FLOATING_POINT_MOVE, #only for testing purpose,to be removed later
-            21 : VECTOR_INSTRUCTIONS,
+            20 : FLOATING_POINT_MOVE,
+            21 : FLOATING_POINT_MAX_MIN,
         }[i](binary)
     except KeyError:
         i = i
@@ -258,11 +258,17 @@ def FLOATING_POINT_ADD_SUB(binary):
     "01001110111-----110101" :  opfetch_FP_addSub.opfetchFSUB_vector_2D,
   }[key](binary)
 
-def VECTOR_INSTRUCTIONS(binary):
-  key = binary[0:9] + "-" + binary[10:12] + "--" + binary[14:16] + "----" + binary[20:26] + "-" + binary[27]
+def FLOATING_POINT_MAX_MIN(binary):
+  key = binary[0:11] + "-"*5 + binary[16:22]
   return {
-    "111100111-11--00----010100-0" :  opfetch_Vector.opfetchVCNT_A1_64,
-    "111100111-11--00----010101-0" :  opfetch_Vector.opfetchVCNT_A1_128,
-    "111111111-11--00----010100-0" :  opfetch_Vector.opfetchVCNT_T1_64,
-    "111111111-11--00----010101-0" :  opfetch_Vector.opfetchVCNT_T1_128,
-  }
+    "00011110001-----010010" :  opfetch_FP_maxMin.opfetchFMAX_scalar_SP,
+    "00011110011-----010010" :  opfetch_FP_maxMin.opfetchFMAX_scalar_DP,
+    "00001110001-----111101" :  opfetch_FP_maxMin.opfetchFMAX_vector_2S,
+    "01001110001-----111101" :  opfetch_FP_maxMin.opfetchFMAX_vector_4S,
+    "01001110011-----111101" :  opfetch_FP_maxMin.opfetchFMAX_vector_2D,
+    "00011110001-----010110" :  opfetch_FP_maxMin.opfetchFMIN_scalar_SP,
+    "00011110011-----010110" :  opfetch_FP_maxMin.opfetchFMIN_scalar_DP,
+    "00001110101-----111101" :  opfetch_FP_maxMin.opfetchFMIN_vector_2S,
+    "01001110101-----111101" :  opfetch_FP_maxMin.opfetchFMIN_vector_4S,
+    "01001110111-----111101" :  opfetch_FP_maxMin.opfetchFMIN_vector_2D,
+  }[key](binary)

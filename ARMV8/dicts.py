@@ -14,8 +14,7 @@ import executor_bitwise_shift
 import executor_adc
 import executor_moveWide
 import executor_FP_addSub
-import executor_Vector
-import executor_Vector_AddMul
+import executor_FP_maxMin
 
 def INSTRUCTION_TYPE(binary, i):
     try:
@@ -41,6 +40,7 @@ def INSTRUCTION_TYPE(binary, i):
             18 : MOVE_WIDE,
             19 : FLOATING_POINT_ADD_SUB,
             20 : FLOATING_POINT_MOVE,
+            21 : FLOATING_POINT_MAX_MIN,
         }[i](binary)
     except KeyError:
         i = i
@@ -257,5 +257,20 @@ def FLOATING_POINT_MOVE(binary):
   return {
     "00011110001--------10000000" : executor_move.execFMove_SP,
     "00011110011--------10000000" : executor_move.execFMove_DP,
+  }[key](binary)
+
+def FLOATING_POINT_MAX_MIN(binary):
+  key = binary[0:11] + "-"*5 + binary[16:22]
+  return {
+    "00011110001-----010010" :  executor_FP_maxMin.execFMAX_scalar_SP,
+    "00011110011-----010010" :  executor_FP_maxMin.execFMAX_scalar_DP,
+    "00001110001-----111101" :  executor_FP_maxMin.execFMAX_vector_2S,
+    "01001110001-----111101" :  executor_FP_maxMin.execFMAX_vector_4S,
+    "01001110011-----111101" :  executor_FP_maxMin.execFMAX_vector_2D,
+    "00011110001-----010110" :  executor_FP_maxMin.execFMIN_scalar_SP,
+    "00011110011-----010110" :  executor_FP_maxMin.execFMIN_scalar_DP,
+    "00001110101-----111101" :  executor_FP_maxMin.execFMIN_vector_2S,
+    "01001110101-----111101" :  executor_FP_maxMin.execFMIN_vector_4S,
+    "01001110111-----111101" :  executor_FP_maxMin.execFMIN_vector_2D,
   }[key](binary)
 

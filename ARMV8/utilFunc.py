@@ -931,47 +931,50 @@ def negFP(op, datasize):
 
     return sign + op[1:datasize]
 
-def mulAddFP(addend, op1, op2, datasize):
+def maxFP(op1, op2, datasize):
     rounding = FPDecodeRounding(getRoundingBits())
 
-    (typeA, signA, valueA) = unpackFP(addend, datasize)
     (type1, sign1, value1) = unpackFP(op1, datasize)
     (type2, sign2, value2) = unpackFP(op2, datasize)
 
-    inf1 = (type1 == "FPType_Infinity")
-    inf2 = (type2 == "FPType_Infinity")
-    zero1 = (type1 == "FPType_Zero")
-    zero2 = (type2 == "FPType_Zero")
-
-    (done, result) = FPProcessNaNs3(typeA, type1, type2, addend, op1, op2)
-
-    if(typeA == "FPType_QNaN" and ((inf1 and zero2) or (zero1 and inf2))):
-        result = FPDefaultNaN()
+    (done, result) = FPProcessNaNs(type1, type2, op1, op2,datasize)
 
     if(not done):
-        infA = (typeA == "FPType_Infinity")
-        zeroA = (typeA == "FPType_Zero")
-        signP = calculateXor(sign1, sign2)
-        infP = inf1 or inf2
-        zeroP = zero1 or zero2
-
-    if((inf1 and zero2) or (zero1 and inf2) or (infA and infP and signA != signP)):
-        result = FPDefaultNaN()
-    elif((infA and signA == '0') or (infP and signP == '0')):
-        result = FPInfinity('0')
-    elif((infA and signA == '1') or (infP and signP == '1')):
-        result = FPInfinity('1')
-    elif(zeroA and zeroP and signA == signP):
-        result = FPZero(signA)
-    else:
-        result_value = valueA + (value1 * value2)
-        if(result_value == 0.0):
-            if(rounding == "NEGINF"):
-                result_sign = "1"
-            else:
-                result_sign = "0"
-            result = FPZero(result_sign)
+        if(value1 > value2):
+            (typeOfVal,sign,value) = (type1,sign1,value1)
         else:
-            result = FPRound(result_value, rounding, datasize)
+            (typeOfVal,sign,value) = (type2,sign2,value2)
+
+        if(typeOfVal == "FPType_Infinity"):
+            result = FPInfinity(datasize, sign)
+        elif(typeOfVal == "FPType_Zero"):
+            sign = logical_and(sign1,sign2)
+            result = FPZero(datasize, sign)
+        else:
+            result = FPRound(value, rounding, datasize)
+
+    return result
+
+def minFP(op1, op2, datasize):
+    rounding = FPDecodeRounding(getRoundingBits())
+
+    (type1, sign1, value1) = unpackFP(op1, datasize)
+    (type2, sign2, value2) = unpackFP(op2, datasize)
+
+    (done, result) = FPProcessNaNs(type1, type2, op1, op2,datasize)
+
+    if(not done):
+        if(value1 < value2):
+            (typeOfVal,sign,value) = (type1,sign1,value1)
+        else:
+            (typeOfVal,sign,value) = (type2,sign2,value2)
+
+        if(typeOfVal == "FPType_Infinity"):
+            result = FPInfinity(datasize, sign)
+        elif(typeOfVal == "FPType_Zero"):
+            sign = logical_or(sign1,sign2)
+            result = FPZero(datasize, sign)
+        else:
+            result = FPRound(value, rounding, datasize)
 
     return result
