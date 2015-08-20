@@ -132,7 +132,7 @@ def executeFADD_vector(hexcode, Q, size):
 
 	resultBinary = ""
 	
-	if(elements == 2 and datasize == 32):
+	if(elements == 2 and datasize == 64):
 		mem.operand1Buffer = mem.operand1Buffer[64:128]
 		mem.operand2Buffer = mem.operand2Buffer[64:128]
 
@@ -173,7 +173,7 @@ def executeFSUB_vector(hexcode, Q, size):
 
 	resultBinary = ""
 	
-	if(elements == 2 and datasize == 32):
+	if(elements == 2 and datasize == 64):
 		mem.operand1Buffer = mem.operand1Buffer[64:128]
 		mem.operand2Buffer = mem.operand2Buffer[64:128]
 

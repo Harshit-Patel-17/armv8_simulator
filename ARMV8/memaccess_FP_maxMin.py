@@ -61,3 +61,29 @@ def executeFMIN_scalar(hexcode, precision):
 	mem.regValueAvailableInFloatWB[destRegister] = True
 	mem.regValueAvailableInFloatWB_buffer_indices[destRegister] = 0
 	mem.isSPWriteBackBuffer = mem.isSPBuffer
+
+def executeFMAX_vector(hexcode, Q, size):
+	const.FLAG_MEMACCESS_EXECUTED = True	
+	const.FLAG_MEMACCESS_COMPLETED = True
+	if(armdebug.pipelineStages[4] != '--------'):
+		return
+	
+	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+
+	mem.writeBackBuffer[0] = mem.ALUResultBuffer
+	mem.regValueAvailableInFloatWB[destRegister] = True
+	mem.regValueAvailableInFloatWB_buffer_indices[destRegister] = 0
+	mem.isSPWriteBackBuffer = mem.isSPBuffer
+
+def executeFMIN_vector(hexcode, Q, size):
+	const.FLAG_MEMACCESS_EXECUTED = True	
+	const.FLAG_MEMACCESS_COMPLETED = True
+	if(armdebug.pipelineStages[4] != '--------'):
+		return
+	
+	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+
+	mem.writeBackBuffer[0] = mem.ALUResultBuffer
+	mem.regValueAvailableInFloatWB[destRegister] = True
+	mem.regValueAvailableInFloatWB_buffer_indices[destRegister] = 0
+	mem.isSPWriteBackBuffer = mem.isSPBuffer

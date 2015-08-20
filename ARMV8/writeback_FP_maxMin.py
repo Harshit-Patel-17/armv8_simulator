@@ -53,4 +53,22 @@ def executeFMIN_scalar(hexcode, precision):
 	const.FLAG_WRITEBACK_COMPLETED = True
 	const.FLAG_WRITEBACK_EXECUTED = True
 	mem.regFloatObsolete[destRegister] -= 1
+
+def executeFMAX_vector(hexcode, Q, size):
+	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+	
+	utilFunc.setRegValueSIMDFP(destRegister, mem.writeBackBuffer[0])
+	armdebug.floatRFActivityCounter += 1
+	const.FLAG_WRITEBACK_COMPLETED = True
+	const.FLAG_WRITEBACK_EXECUTED = True
+	mem.regFloatObsolete[destRegister] -= 1
+
+def executeFMIN_vector(hexcode, Q, size):
+	destRegister = utilFunc.getRegKeyByStringKey(hexcode[27:32])
+	
+	utilFunc.setRegValueSIMDFP(destRegister, mem.writeBackBuffer[0])
+	armdebug.floatRFActivityCounter += 1
+	const.FLAG_WRITEBACK_COMPLETED = True
+	const.FLAG_WRITEBACK_EXECUTED = True
+	mem.regFloatObsolete[destRegister] -= 1
 	
