@@ -47,8 +47,8 @@ def executeFMAX_scalar(hexcode, precision):
 	
 	if(mem.regFloatObsolete[operandRegister1] == 0 and mem.regFloatObsolete[operandRegister2] == 0):
 		const.FLAG_OP_FETCHED = True
-		reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
-		reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
+		reg1Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[22:27])
+		reg2Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[11:16])
 		armdebug.floatRFActivityCounter += 2
 	elif(const.FLAG_DATA_FORWARDING):
 		forwardedValues = mem.findForwardedFloatValues(operandRegister1, operandRegister2)
@@ -57,8 +57,8 @@ def executeFMAX_scalar(hexcode, precision):
 		if(forwardedValues[1] == None and mem.regFloatObsolete[operandRegister2] != 0):
 			return
 		const.FLAG_OP_FETCHED = True
-		reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
-		reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
+		reg1Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[22:27])
+		reg2Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[11:16])
 		if(forwardedValues[0] != None):
 			reg1Value = forwardedValues[0]
 		if(forwardedValues[1] != None):
@@ -70,8 +70,8 @@ def executeFMAX_scalar(hexcode, precision):
 
 	mem.regFloatObsolete[destRegister] += 1
 	mem.regFloatObsolete_last_modified_indices.append(destRegister)
-	#reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
-	#reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
+	#reg1Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[22:27])
+	#reg2Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[11:16])
 
 	if(precision == 1):
 		reg1Value = reg1Value[96:128]
@@ -96,8 +96,8 @@ def executeFMIN_scalar(hexcode, precision):
 	
 	if(mem.regFloatObsolete[operandRegister1] == 0 and mem.regFloatObsolete[operandRegister2] == 0):
 		const.FLAG_OP_FETCHED = True
-		reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
-		reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
+		reg1Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[22:27])
+		reg2Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[11:16])
 		armdebug.floatRFActivityCounter += 2
 	elif(const.FLAG_DATA_FORWARDING):
 		forwardedValues = mem.findForwardedFloatValues(operandRegister1, operandRegister2)
@@ -106,8 +106,8 @@ def executeFMIN_scalar(hexcode, precision):
 		if(forwardedValues[1] == None and mem.regFloatObsolete[operandRegister2] != 0):
 			return
 		const.FLAG_OP_FETCHED = True
-		reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
-		reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
+		reg1Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[22:27])
+		reg2Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[11:16])
 		if(forwardedValues[0] != None):
 			reg1Value = forwardedValues[0]
 		if(forwardedValues[1] != None):
@@ -119,8 +119,8 @@ def executeFMIN_scalar(hexcode, precision):
 	
 	mem.regFloatObsolete[destRegister] += 1
 	mem.regFloatObsolete_last_modified_indices.append(destRegister)
-	#reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
-	#reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
+	#reg1Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[22:27])
+	#reg2Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[11:16])
 
 	if(precision == 1):
 		reg1Value = reg1Value[96:128]
@@ -145,8 +145,8 @@ def executeFMAX_vector(hexcode, Q, size):
 	
 	if(mem.regFloatObsolete[operandRegister1] == 0 and mem.regFloatObsolete[operandRegister2] == 0):
 		const.FLAG_OP_FETCHED = True
-		reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
-		reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
+		reg1Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[22:27])
+		reg2Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[11:16])
 		armdebug.floatRFActivityCounter += 2
 	elif(const.FLAG_DATA_FORWARDING):
 		forwardedValues = mem.findForwardedFloatValues(operandRegister1, operandRegister2)
@@ -155,8 +155,8 @@ def executeFMAX_vector(hexcode, Q, size):
 		if(forwardedValues[1] == None and mem.regFloatObsolete[operandRegister2] != 0):
 			return
 		const.FLAG_OP_FETCHED = True
-		reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
-		reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
+		reg1Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[22:27])
+		reg2Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[11:16])
 		if(forwardedValues[0] != None):
 			reg1Value = forwardedValues[0]
 		if(forwardedValues[1] != None):
@@ -168,8 +168,8 @@ def executeFMAX_vector(hexcode, Q, size):
 	
 	mem.regFloatObsolete[destRegister] += 1
 	mem.regFloatObsolete_last_modified_indices.append(destRegister)
-	#reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
-	#reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
+	#reg1Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[22:27])
+	#reg2Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[11:16])
 	
 	mem.operand1Buffer = reg1Value
 	mem.operand2Buffer = reg2Value
@@ -185,8 +185,8 @@ def executeFMIN_vector(hexcode, Q, size):
 	
 	if(mem.regFloatObsolete[operandRegister1] == 0 and mem.regFloatObsolete[operandRegister2] == 0):
 		const.FLAG_OP_FETCHED = True
-		reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
-		reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
+		reg1Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[22:27])
+		reg2Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[11:16])
 		armdebug.floatRFActivityCounter += 2
 	elif(const.FLAG_DATA_FORWARDING):
 		forwardedValues = mem.findForwardedFloatValues(operandRegister1, operandRegister2)
@@ -195,8 +195,8 @@ def executeFMIN_vector(hexcode, Q, size):
 		if(forwardedValues[1] == None and mem.regFloatObsolete[operandRegister2] != 0):
 			return
 		const.FLAG_OP_FETCHED = True
-		reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
-		reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
+		reg1Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[22:27])
+		reg2Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[11:16])
 		if(forwardedValues[0] != None):
 			reg1Value = forwardedValues[0]
 		if(forwardedValues[1] != None):
@@ -208,8 +208,8 @@ def executeFMIN_vector(hexcode, Q, size):
 	
 	mem.regFloatObsolete[destRegister] += 1
 	mem.regFloatObsolete_last_modified_indices.append(destRegister)
-	#reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
-	#reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
+	#reg1Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[22:27])
+	#reg2Value = utilFunc.getRegValueByStringkeyFPSIMD(hexcode[11:16])
 		
 	mem.operand1Buffer = reg1Value
 	mem.operand2Buffer = reg2Value

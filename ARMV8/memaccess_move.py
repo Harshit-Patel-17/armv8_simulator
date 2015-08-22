@@ -75,7 +75,7 @@ def memaccessMov_bmi64(binary):
 
 #------------------- floating point moves----------------
 
-def memaccessFMove_SP(binary):
+def memaccessFMove_iSP(binary):
     const.FLAG_MEMACCESS_EXECUTED = True    
     const.FLAG_MEMACCESS_COMPLETED = True
     if(armdebug.pipelineStages[4] != '--------'):
@@ -86,7 +86,29 @@ def memaccessFMove_SP(binary):
     mem.regValueAvailableInWB[rdKey] = True
     mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
 
-def memaccessFMove_DP(binary):
+def memaccessFMove_iDP(binary):
+    const.FLAG_MEMACCESS_EXECUTED = True    
+    const.FLAG_MEMACCESS_COMPLETED = True
+    if(armdebug.pipelineStages[4] != '--------'):
+        return
+    
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
+
+def memaccessFMove_regSP(binary):
+    const.FLAG_MEMACCESS_EXECUTED = True    
+    const.FLAG_MEMACCESS_COMPLETED = True
+    if(armdebug.pipelineStages[4] != '--------'):
+        return
+    
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    mem.writeBackBuffer[0] = mem.ALUResultBuffer
+    mem.regValueAvailableInWB[rdKey] = True
+    mem.regValueAvailableInWB_buffer_indices[rdKey] = 0
+
+def memaccessFMove_regDP(binary):
     const.FLAG_MEMACCESS_EXECUTED = True    
     const.FLAG_MEMACCESS_COMPLETED = True
     if(armdebug.pipelineStages[4] != '--------'):

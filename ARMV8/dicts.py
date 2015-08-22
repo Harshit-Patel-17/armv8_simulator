@@ -39,8 +39,9 @@ def INSTRUCTION_TYPE(binary, i):
             17 : ADD_WITH_CARRY,
             18 : MOVE_WIDE,
             19 : FLOATING_POINT_ADD_SUB,
-            20 : FLOATING_POINT_MOVE,
+            20 : FLOATING_POINT_MOVE_IMMEDIATE,
             21 : FLOATING_POINT_MAX_MIN,
+            22 : FLOATING_POINT_MOVE_REGISTER,
         }[i](binary)
     except KeyError:
         i = i
@@ -252,11 +253,11 @@ def FLOATING_POINT_ADD_SUB(binary):
     "01001110111-----110101" :  executor_FP_addSub.execFSUB_vector_2D,
   }[key](binary)
 
-def FLOATING_POINT_MOVE(binary):
+def FLOATING_POINT_MOVE_IMMEDIATE(binary):
   key = binary[0:11] + "-"*8 + binary[19:27]
   return {
-    "00011110001--------10000000" : executor_move.execFMove_SP,
-    "00011110011--------10000000" : executor_move.execFMove_DP,
+    "00011110001--------10000000" : executor_move.execFMove_iSP,
+    "00011110011--------10000000" : executor_move.execFMove_iDP,
   }[key](binary)
 
 def FLOATING_POINT_MAX_MIN(binary):
@@ -272,5 +273,18 @@ def FLOATING_POINT_MAX_MIN(binary):
     "00001110101-----111101" :  executor_FP_maxMin.execFMIN_vector_2S,
     "01001110101-----111101" :  executor_FP_maxMin.execFMIN_vector_4S,
     "01001110111-----111101" :  executor_FP_maxMin.execFMIN_vector_2D,
+  }[key](binary)
+
+def FLOATING_POINT_MOVE_REGISTER(binary):
+  key = binary[0:22]
+  return {
+    "0001111000100000010000" :  executor_move.execFMove_regSP,
+    "0001111001100000010000" :  executor_move.execFMove_regDP,
+    "0001111000100111000000" :  executor_move.execFMove_32toSP,
+    "0001111000100110000000" :  executor_move.execFMove_SPto32,
+    "1001111001100111000000" :  executor_move.execFMove_64toDP,
+    "1001111010101111000000" :  executor_move.execFMove_64to128,
+    "1001111001100110000000" :  executor_move.execFMove_DPto64,
+    "1001111010101110000000" :  executor_move.execFMove_128to64,
   }[key](binary)
 

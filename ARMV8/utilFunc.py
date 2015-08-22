@@ -36,10 +36,10 @@ def getRegValueByStringkey(key, isSp):
     else:
         return '0' * 64
 
-# gives 64 bit, truncate when using
+# gives 128 bit, truncate when using
 # key should be 0 to 31 in binary string
 # used for FP & SIMD instructions
-def getRegValueByStringkeyFDSIMD(key):
+def getRegValueByStringkeyFPSIMD(key):
     key = int(key, 2)
     assert key >= 0 and key <= 31
     return mem.regFileFPSIMD[key]

@@ -106,7 +106,7 @@ def opfetchMov_bmi64(binary):
 
 #------------------- floating point moves----------------
 
-def opfetchFMove_SP(binary):
+def opfetchFMove_iSP(binary):
     const.FLAG_OPFETCH_EXECUTED = True
     if(armdebug.pipelineStages[2] != '--------'):
         return
@@ -119,7 +119,32 @@ def opfetchFMove_SP(binary):
     mem.regObsolete_last_modified_indices.append(rdKey)
 
 
-def opfetchFMove_DP(binary):
+def opfetchFMove_iDP(binary):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    
+    const.FLAG_OP_FETCHED = True
+    
+    mem.regObsolete[rdKey] += 1
+    mem.regObsolete_last_modified_indices.append(rdKey)
+
+def opfetchFMove_regSP(binary):
+    const.FLAG_OPFETCH_EXECUTED = True
+    if(armdebug.pipelineStages[2] != '--------'):
+        return
+    
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    
+    const.FLAG_OP_FETCHED = True
+    
+    mem.regObsolete[rdKey] += 1
+    mem.regObsolete_last_modified_indices.append(rdKey)
+
+
+def opfetchFMove_regDP(binary):
     const.FLAG_OPFETCH_EXECUTED = True
     if(armdebug.pipelineStages[2] != '--------'):
         return
