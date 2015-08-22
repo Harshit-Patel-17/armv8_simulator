@@ -59,7 +59,7 @@ def writebackMov_bmi64(binary):
 
 #------------------- floating point moves----------------
 
-def writebackFMove_SP(binary):
+def writebackFMove_iSP(binary):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     utilFunc.setRegValueSIMDFP(rdKey, mem.writeBackBuffer[0])
     armdebug.floatRFActivityCounter += 1
@@ -67,7 +67,23 @@ def writebackFMove_SP(binary):
     const.FLAG_WRITEBACK_EXECUTED = True
     mem.regObsolete[rdKey] -= 1
 
-def writebackFMove_DP(binary):
+def writebackFMove_iDP(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    utilFunc.setRegValueSIMDFP(rdKey, mem.writeBackBuffer[0])
+    armdebug.floatRFActivityCounter += 1
+    const.FLAG_WRITEBACK_COMPLETED = True
+    const.FLAG_WRITEBACK_EXECUTED = True
+    mem.regObsolete[rdKey] -= 1
+
+def writebackFMove_regSP(binary):
+    rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
+    utilFunc.setRegValueSIMDFP(rdKey, mem.writeBackBuffer[0])
+    armdebug.floatRFActivityCounter += 1
+    const.FLAG_WRITEBACK_COMPLETED = True
+    const.FLAG_WRITEBACK_EXECUTED = True
+    mem.regObsolete[rdKey] -= 1
+
+def writebackFMove_regDP(binary):
     rdKey = utilFunc.getRegKeyByStringKey(binary[27:32])
     utilFunc.setRegValueSIMDFP(rdKey, mem.writeBackBuffer[0])
     armdebug.floatRFActivityCounter += 1

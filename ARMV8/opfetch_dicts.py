@@ -39,8 +39,9 @@ def INSTRUCTION_TYPE(binary, i):
             17 : ADD_WITH_CARRY,
             18 : MOVE_WIDE,
             19 : FLOATING_POINT_ADD_SUB,
-            20 : FLOATING_POINT_MOVE,
+            20 : FLOATING_POINT_MOVE_IMMEDIATE,
             21 : FLOATING_POINT_MAX_MIN,
+            22 : FLOATING_POINT_MOVE_REGISTER,
         }[i](binary)
     except KeyError:
         i = i
@@ -236,11 +237,11 @@ def MOVE_WIDE(binary):
       "110100101" : opfetch_moveWide.opfetchMoveZ_64,
     }[key](binary)
     
-def FLOATING_POINT_MOVE(binary):
+def FLOATING_POINT_MOVE_IMMEDIATE(binary):
     key = binary[0:11] + "-"*8 + binary[19:27]
     return {
-      "00011110001--------10000000" : opfetch_move.opfetchFMove_SP,
-      "00011110011--------10000000" : opfetch_move.opfetchFMove_DP,
+      "00011110001--------10000000" : opfetch_move.opfetchFMove_iSP,
+      "00011110011--------10000000" : opfetch_move.opfetchFMove_iDP,
     }[key](binary)
 
 def FLOATING_POINT_ADD_SUB(binary):
@@ -271,4 +272,17 @@ def FLOATING_POINT_MAX_MIN(binary):
     "00001110101-----111101" :  opfetch_FP_maxMin.opfetchFMIN_vector_2S,
     "01001110101-----111101" :  opfetch_FP_maxMin.opfetchFMIN_vector_4S,
     "01001110111-----111101" :  opfetch_FP_maxMin.opfetchFMIN_vector_2D,
+  }[key](binary)
+
+def FLOATING_POINT_MOVE_REGISTER(binary):
+  key = binary[0:22]
+  return {
+    "0001111000100000010000" :  opfetch_move.opfetchFMove_regSP,
+    "0001111001100000010000" :  opfetch_move.opfetchFMove_regDP,
+    "0001111000100111000000" :  opfetch_move.opfetchFMove_32toSP,
+    "0001111000100110000000" :  opfetch_move.opfetchFMove_SPto32,
+    "1001111001100111000000" :  opfetch_move.opfetchFMove_64toDP,
+    "1001111010101111000000" :  opfetch_move.opfetchFMove_64to128,
+    "1001111001100110000000" :  opfetch_move.opfetchFMove_DPto64,
+    "1001111010101110000000" :  opfetch_move.opfetchFMove_128to64,
   }[key](binary)
