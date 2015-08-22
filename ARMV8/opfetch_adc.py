@@ -27,7 +27,7 @@ def execADC(hexcode, datasize):
 		const.FLAG_OP_FETCHED = True
 		regValue1 = utilFunc.getRegValueByStringkey(hexcode[22:27],'0')
 		regValue2 = utilFunc.getRegValueByStringkey(hexcode[11:16],'0')
-		armdebug.intRFActivityCounter += 1
+		armdebug.intRFActivityCounter += 2
 	elif(const.FLAG_DATA_FORWARDING):
 		forwardedValues = mem.findForwardedValues(operandRegister1, operandRegister2)
 		if(forwardedValues[0] == None and mem.regObsolete[operandRegister1] != 0):

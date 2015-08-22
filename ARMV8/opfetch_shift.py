@@ -28,7 +28,7 @@ def opfetchAsr_r32(binary):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = rmVal
-        armdebug.intRFActivityCounter += 1
+        armdebug.intRFActivityCounter += 2
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rnKey, rmKey)
         if(forwardedValues[0] == None and mem.regObsolete[rnKey] != 0):
@@ -60,7 +60,7 @@ def opfetchLsl_r32(binary):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = rmVal
-        armdebug.intRFActivityCounter += 1
+        armdebug.intRFActivityCounter += 2
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rnKey, rmKey)
         if(forwardedValues[0] == None and mem.regObsolete[rnKey] != 0):
@@ -92,7 +92,7 @@ def opfetchLsr_r32(binary):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = rmVal
-        armdebug.intRFActivityCounter += 1
+        armdebug.intRFActivityCounter += 2
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rnKey, rmKey)
         if(forwardedValues[0] == None and mem.regObsolete[rnKey] != 0):
@@ -124,7 +124,7 @@ def opfetchAsr_r64(binary):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = rmVal
-        armdebug.intRFActivityCounter += 1
+        armdebug.intRFActivityCounter += 2
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rnKey, rmKey)
         if(forwardedValues[0] == None and mem.regObsolete[rnKey] != 0):
@@ -156,7 +156,7 @@ def opfetchLsl_r64(binary):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = rmVal
-        armdebug.intRFActivityCounter += 1
+        armdebug.intRFActivityCounter += 2
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rnKey, rmKey)
         if(forwardedValues[0] == None and mem.regObsolete[rnKey] != 0):
@@ -188,7 +188,7 @@ def opfetchLsr_r64(binary):
         const.FLAG_OP_FETCHED = True
         mem.operand1Buffer = rnVal
         mem.operand2Buffer = rmVal
-        armdebug.intRFActivityCounter += 1
+        armdebug.intRFActivityCounter += 2
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rnKey, rmKey)
         if(forwardedValues[0] == None and mem.regObsolete[rnKey] != 0):

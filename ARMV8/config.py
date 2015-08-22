@@ -6,8 +6,15 @@ configTreeRoot = ET.parse('config.xml').getroot()
 latency = {}
 leakageEnergy = {}
 dynamicEnergy = {}
+leakageCurrent = {}
+capacitance = {}
 
 try:
+    CoreVoltage = float(configTreeRoot.find('System').find('Core').find('CoreVoltage').text)
+    CoreFrequency = float(configTreeRoot.find('System').find('Core').find('CoreFrequency').text)
+    K = CoreVoltage / CoreFrequency
+    
+    GlobalClock = configTreeRoot.find('System').find('GlobalClock')
     Decode = configTreeRoot.find('System').find('Core').find('Decode')
     IntRF = configTreeRoot.find('System').find('Core').find('RegisterFile').find('Integer')
     FloatRF = configTreeRoot.find('System').find('Core').find('RegisterFile').find('Float')
@@ -30,7 +37,7 @@ try:
     latency['ICache'] = int(ICache.find('Latency').text)
     latency['L1Cache'] = int(L1Cache.find('Latency').text)
     
-    
+    leakageEnergy['GlobalClock'] = float(GlobalClock.find('LeakageEnergy').text)
     leakageEnergy['Decode'] = float(Decode.find('LeakageEnergy').text)
     leakageEnergy['IntRF'] = float(IntRF.find('LeakageEnergy').text)
     leakageEnergy['FloatRF'] = float(FloatRF.find('LeakageEnergy').text)
@@ -38,11 +45,12 @@ try:
     leakageEnergy['IntMul'] = float(IntMul.find('LeakageEnergy').text)
     leakageEnergy['IntDiv'] = float(IntDiv.find('LeakageEnergy').text)
     leakageEnergy['FloatALU'] = float(FloatALU.find('LeakageEnergy').text)
-    leakageEnergy['FLoatMul'] = float(FloatMul.find('LeakageEnergy').text)
+    leakageEnergy['FloatMul'] = float(FloatMul.find('LeakageEnergy').text)
     leakageEnergy['FloatDiv'] = float(FloatDiv.find('LeakageEnergy').text)
     leakageEnergy['ICache'] = float(ICache.find('LeakageEnergy').text)
     leakageEnergy['L1Cache'] = float(L1Cache.find('LeakageEnergy').text)
     
+    dynamicEnergy['GlobalClock'] = float(GlobalClock.find('DynamicEnergy').text)
     dynamicEnergy['Decode'] = float(Decode.find('DynamicEnergy').text)
     dynamicEnergy['IntRF'] = float(IntRF.find('DynamicEnergy').text)
     dynamicEnergy['FloatRF'] = float(FloatRF.find('DynamicEnergy').text)
@@ -50,12 +58,18 @@ try:
     dynamicEnergy['IntMul'] = float(IntMul.find('DynamicEnergy').text)
     dynamicEnergy['IntDiv'] = float(IntDiv.find('DynamicEnergy').text)
     dynamicEnergy['FloatALU'] = float(FloatALU.find('DynamicEnergy').text)
-    dynamicEnergy['FLoatMul'] = float(FloatMul.find('DynamicEnergy').text)
+    dynamicEnergy['FloatMul'] = float(FloatMul.find('DynamicEnergy').text)
     dynamicEnergy['FloatDiv'] = float(FloatDiv.find('DynamicEnergy').text)
     dynamicEnergy['ICacheRead'] = float(ICache.find('ReadDynamicEnergy').text)
     dynamicEnergy['ICacheWrite'] = float(ICache.find('WriteDynamicEnergy').text)
     dynamicEnergy['L1CacheRead'] = float(L1Cache.find('ReadDynamicEnergy').text)
     dynamicEnergy['L1CacheWrite'] = float(L1Cache.find('WriteDynamicEnergy').text)
+    
+    for (key, value) in leakageEnergy.items():
+        leakageCurrent[key] = leakageEnergy[key] * CoreFrequency / CoreVoltage
+        
+    for (key, value) in dynamicEnergy.items():
+        capacitance[key] = dynamicEnergy[key] / CoreVoltage / CoreVoltage
 except AttributeError:
     print "Config.py: One or more attributes for functional units are not available in config.xml file"
     sys.exit(1)

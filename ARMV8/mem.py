@@ -4,6 +4,7 @@ Created on Aug 8, 2014
 @author: harinder
 '''
 import parsehelper, const
+import armdebug
 
 regNum=32
 #31st register is used for SP
@@ -163,7 +164,7 @@ def fetchByteFromHelperMemory(address):
     try:
         return helper_memory_model[address]
     except KeyError:
-        return const.TRAP
+        return '00'#const.TRAP #Modified by Harshit
     
 #give an int equivalent of address
 #will fetch only a word
@@ -172,7 +173,7 @@ def fetchWordFromMemory(address):
     try:
         return memory_model[address]
     except KeyError:
-        return const.TRAP
+        return '00000000'#const.TRAP #Modified by Harshit
     
 def printMemoryState():
     global memory_model
@@ -185,7 +186,7 @@ def printHelperMemoryState():
     
 def init():
     global regFile, flagFile, memory_model, regNum, watchReg, regFileFPSIMD, fpcrFile
-    regNum=31
+    regNum=32
 
     regFile = list('0'*64 for i in range(regNum))
     regFileFPSIMD = list('0'*128 for i in range(regNum))
@@ -194,5 +195,19 @@ def init():
     fpcrFile = list('0' for i in range(32))
 
     memory_model={}
+    
+    armdebug.decodeActivityCounter = 0
+    armdebug.intRFActivityCounter = 0
+    armdebug.floatRFActivityCounter = 0
+    armdebug.intALUActivityCounter = 0
+    armdebug.intMulActivityCounter= 0
+    armdebug.intDivActivityCounter = 0
+    armdebug.floatALUActivityCounter = 0
+    armdebug.floatMulActivityCounter = 0
+    armdebug.floatDivActivityCounter = 0
+    armdebug.iCacheReadActivityCounter = 0
+    armdebug.iCacheWriteActivityCounter = 0
+    armdebug.l1CacheReadActivityCounter = 0
+    armdebug.l1CacheWriteActivityCounter = 0
 
     #watchReg = list(False for i in range(regNum)) #Modified by Harshit

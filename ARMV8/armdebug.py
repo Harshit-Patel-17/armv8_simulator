@@ -15,6 +15,8 @@ import mem
 import traceback
 import const
 import config
+from tabulate import tabulate
+import matplotlib.pyplot as pyplot
 
 pipelineStages = ['--------', '--------', '--------', '--------', '--------']
 programCounters = ['--------', '--------', '--------', '--------', '--------']
@@ -40,7 +42,96 @@ iCacheWriteActivityCounter = 0
 l1CacheReadActivityCounter = 0
 l1CacheWriteActivityCounter = 0
 
-
+def printEnergy():
+    global decodeActivityCounter
+    global intRFActivityCounter
+    global floatRFActivityCounter
+    global intALUActivityCounter
+    global intMulActivityCounter
+    global intDivActivityCounter
+    global floatALUActivityCounter
+    global floatMulActivityCounter
+    global floatDivActivityCounter
+    global iCacheReadActivityCounter
+    global iCacheWriteActivityCounter
+    global l1CacheReadActivityCounter
+    global l1CacheWriteActivityCounter
+    
+    frequencies = [1000, 1500, 1600, 1800, 2100, 2200] #in MHz
+    K = config.K
+    
+    totalCycles = getCycles()
+    
+    activityCounter = {}
+    activityCounter['GlobalClock'] = totalCycles
+    activityCounter['Decode'] = decodeActivityCounter
+    activityCounter['IntRF'] = intRFActivityCounter
+    activityCounter['FloatRF'] = floatRFActivityCounter
+    activityCounter['IntALU'] = intALUActivityCounter
+    activityCounter['IntMul'] = intMulActivityCounter
+    activityCounter['IntDiv'] = intDivActivityCounter
+    activityCounter['FloatALU'] = floatALUActivityCounter
+    activityCounter['FloatMul'] = floatMulActivityCounter
+    activityCounter['FloatDiv'] = floatDivActivityCounter
+    activityCounter['ICacheRead'] = iCacheReadActivityCounter
+    activityCounter['ICacheWrite'] = iCacheWriteActivityCounter
+    activityCounter['L1CacheRead'] = l1CacheReadActivityCounter
+    activityCounter['L1CacheWrite'] = l1CacheWriteActivityCounter
+    
+    fuEnergy = {}
+    processorEnergy = []
+    voltages = []
+    
+    for (functionalUnit, leakageEnergy) in config.leakageEnergy.items():
+        fuEnergy[functionalUnit] = []
+    
+    for f in frequencies:
+        v = K * f
+        voltages.append(v)
+        
+        totalLeakageEnergy = 0
+        totalDynamicEnergy = 0
+        fuLeakageEnergy = {}
+        fuDynamicEnergy = {}
+        leakageEnergyTable = []
+        dynamicEnergyTable = []
+        
+        #Calculate leakage energy for each functional unit
+        for (functionalUnit, leakageEnergy) in config.leakageEnergy.items():
+            fuLeakageEnergy[functionalUnit] = totalCycles * v * config.leakageCurrent[functionalUnit] / f
+            totalLeakageEnergy += fuLeakageEnergy[functionalUnit]
+            leakageEnergyTable.append([functionalUnit, fuLeakageEnergy[functionalUnit]])
+        
+        #Calculate dynamic energy for each functional unit
+        for (functionalUnit, dynamicEnergy) in config.dynamicEnergy.items():
+            fuDynamicEnergy[functionalUnit] = activityCounter[functionalUnit] * config.capacitance[functionalUnit] * v * v
+            totalDynamicEnergy += fuDynamicEnergy[functionalUnit]
+            dynamicEnergyTable.append([functionalUnit, fuDynamicEnergy[functionalUnit]])
+         
+        #Calculate total energy for each functional unit   
+        for (functionalUnit, leakageEnergy) in config.leakageEnergy.items():
+            try:
+                fuEnergy[functionalUnit].append(fuLeakageEnergy[functionalUnit] + fuDynamicEnergy[functionalUnit])
+            except KeyError:
+                pass 
+        fuEnergy['ICache'].append(fuLeakageEnergy['ICache'] + fuDynamicEnergy['ICacheRead'] + fuDynamicEnergy['ICacheWrite'])
+        fuEnergy['L1Cache'].append(fuLeakageEnergy['L1Cache'] + fuDynamicEnergy['L1CacheRead'] + fuDynamicEnergy['L1CacheWrite'])
+        
+        processorEnergy.append(totalLeakageEnergy + totalDynamicEnergy)
+    
+    for (functionalUnit, leakageEnergy) in config.leakageEnergy.items():
+        pyplot.title(functionalUnit)
+        pyplot.xlabel("Voltage (volt)")
+        pyplot.ylabel("EDP (joule)")
+        pyplot.plot(voltages, fuEnergy[functionalUnit])
+        pyplot.show()
+        
+    pyplot.title("Processor")
+    pyplot.xlabel("Voltage (volt)")
+    pyplot.ylabel("EDP (joule)")
+    pyplot.plot(voltages, processorEnergy)
+    pyplot.show()
+    
 def printActivityCounters():
     global decodeActivityCounter
     global intRFActivityCounter
@@ -55,21 +146,28 @@ def printActivityCounters():
     global iCacheWriteActivityCounter
     global l1CacheReadActivityCounter
     global l1CacheWriteActivityCounter
+    
+    table = [['Global Clock', getCycles()],
+             ['Decoder', decodeActivityCounter],
+             ['Integer RF', intRFActivityCounter],
+             ['Float RF', floatRFActivityCounter],
+             ['Integer ALU', intALUActivityCounter],
+             ['Integer Multiplier', intMulActivityCounter],
+             ['Integer Divisor', intDivActivityCounter],
+             ['Float ALU', floatALUActivityCounter],
+             ['Float Multiplier', floatMulActivityCounter],
+             ['Float Divisor', floatDivActivityCounter],
+             ['Instruction Cache Read', iCacheReadActivityCounter],
+             ['Instruction Cache Write', iCacheWriteActivityCounter],
+             ['Data Cache Read', l1CacheReadActivityCounter],
+             ['Data Cache Write', l1CacheWriteActivityCounter]
+             ]
+    header = ['Functional Unit', 'Activity Counter']
+    
+    print ""
     print "Activity Counters"
-    print "================="
-    print "decodeActivityCounter......: ", decodeActivityCounter
-    print "intRFActivityCounter.......: ", intRFActivityCounter
-    print "floatRFActivityCounter.....: ", floatRFActivityCounter
-    print "intALUActivityCounter......: ", intALUActivityCounter
-    print "intMulActivityCounter......: ", intMulActivityCounter
-    print "intDivActivityCounter......: ", intDivActivityCounter
-    print "floatALUActivityCounter....: ", floatALUActivityCounter
-    print "floatMulActivityCounter....: ", floatMulActivityCounter
-    print "floatDivActivityCounter....: ", floatDivActivityCounter
-    print "iCacheReadActivityCounter..: ", iCacheReadActivityCounter
-    print "iCacheWriteActivityCounter.: ", iCacheWriteActivityCounter
-    print "l1CacheReadActivityCounter.: ", l1CacheReadActivityCounter
-    print "l1CacheWriteActivityCounter: ", l1CacheWriteActivityCounter
+    print "=================="
+    print tabulate(table, header, tablefmt="psql")
 
 def isWatchPause():
     return  watchPause
@@ -355,19 +453,6 @@ def executeStalls():
     print getStalls()
 
 def executeS():
-    global decodeActivityCounter
-    global intRFActivityCounter
-    global floatRFActivityCounter
-    global intALUActivityCounter
-    global intMulActivityCounter
-    global intDivActivityCounter
-    global floatALUActivityCounter
-    global floatMulActivityCounter
-    global floatDivActivityCounter
-    global iCacheReadActivityCounter
-    global iCacheWriteActivityCounter
-    global l1CacheReadActivityCounter
-    global l1CacheWriteActivityCounter
     #will have to take care of inst running also
     #not caring about break point or not -->DOESN't MATTER
     print "Executing command type: "+"'s'"
@@ -399,21 +484,6 @@ def executeS():
     #Reinitialize cycles and stalls
     setCycles(0)
     setStalls(0)
-    
-    #Reset Activity Counters
-    decodeActivityCounter = 0
-    intRFActivityCounter = 0
-    floatRFActivityCounter = 0
-    intALUActivityCounter = 0
-    intMulActivityCounter= 0
-    intDivActivityCounter = 0
-    floatALUActivityCounter = 0
-    floatMulActivityCounter = 0
-    floatDivActivityCounter = 0
-    iCacheReadActivityCounter = 0
-    iCacheWriteActivityCounter = 0
-    l1CacheReadActivityCounter = 0
-    l1CacheWriteActivityCounter = 0
     
     #Execute upto the first break point
     executeC()
@@ -460,6 +530,7 @@ def executeRUN():
     print "Total stalls = " + str(getStalls())
     print ""
     printActivityCounters()
+    printEnergy()
             
 def executeStages():
     stallOccured = False

@@ -107,7 +107,7 @@ def opfetch_sr(binary, N, instr, sub_op, setFlags):
         const.FLAG_OP_FETCHED = True
         rnVal = utilFunc.getRegValueByStringkey(binary[22:27],'0')
         rmVal = utilFunc.getRegValueByStringkey(binary[11:16],'0')
-        armdebug.intRFActivityCounter += 1
+        armdebug.intRFActivityCounter += 2
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rnKey, rmkey)
         if(forwardedValues[0] == None and mem.regObsolete[rnKey] != 0):
@@ -185,7 +185,7 @@ def opfetch_er(binary, N, instr, sub_op, setFlags):
         const.FLAG_OP_FETCHED = True
         rnVal = utilFunc.getRegValueByStringkey(binary[22:27],'0')
         rmVal = utilFunc.getRegValueByStringkey(binary[11:16],'0')
-        armdebug.intRFActivityCounter += 1
+        armdebug.intRFActivityCounter += 2
     elif(const.FLAG_DATA_FORWARDING):
         forwardedValues = mem.findForwardedValues(rnKey, rmkey)
         if(forwardedValues[0] == None and mem.regObsolete[rnKey] != 0):

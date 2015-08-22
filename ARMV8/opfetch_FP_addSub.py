@@ -58,7 +58,7 @@ def executeFADD_scalar(hexcode, precision):
 		const.FLAG_OP_FETCHED = True
 		reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
 		reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
-		armdebug.floatRFActivityCounter += 1
+		armdebug.floatRFActivityCounter += 2
 	elif(const.FLAG_DATA_FORWARDING):
 		forwardedValues = mem.findForwardedFloatValues(operandRegister1, operandRegister2)
 		if(forwardedValues[0] == None and mem.regFloatObsolete[operandRegister1] != 0):
@@ -108,7 +108,7 @@ def executeFSUB_scalar(hexcode, precision):
 		const.FLAG_OP_FETCHED = True
 		reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
 		reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
-		armdebug.floatRFActivityCounter += 1
+		armdebug.floatRFActivityCounter += 2
 	elif(const.FLAG_DATA_FORWARDING):
 		forwardedValues = mem.findForwardedFloatValues(operandRegister1, operandRegister2)
 		if(forwardedValues[0] == None and mem.regFloatObsolete[operandRegister1] != 0):
@@ -158,7 +158,7 @@ def executeFADD_vector(hexcode, Q, size):
 		const.FLAG_OP_FETCHED = True
 		reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
 		reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
-		armdebug.floatRFActivityCounter += 1
+		armdebug.floatRFActivityCounter += 2
 	elif(const.FLAG_DATA_FORWARDING):
 		forwardedValues = mem.findForwardedFloatValues(operandRegister1, operandRegister2)
 		if(forwardedValues[0] == None and mem.regFloatObsolete[operandRegister1] != 0):
@@ -199,7 +199,7 @@ def executeFSUB_vector(hexcode, Q, size):
 		const.FLAG_OP_FETCHED = True
 		reg1Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[22:27])
 		reg2Value = utilFunc.getRegValueByStringkeyFDSIMD(hexcode[11:16])
-		armdebug.floatRFActivityCounter += 1
+		armdebug.floatRFActivityCounter += 2
 	elif(const.FLAG_DATA_FORWARDING):
 		forwardedValues = mem.findForwardedFloatValues(operandRegister1, operandRegister2)
 		if(forwardedValues[0] == None and mem.regFloatObsolete[operandRegister1] != 0):

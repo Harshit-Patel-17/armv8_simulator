@@ -228,7 +228,7 @@ def execLslLsr_i32(binary):
         mem.regValueAvailableInALU[rdKey] = True
     elif(immrVal == immsVal+1):
         #LSL
-        shiftVal = 63-immsVal
+        shiftVal = 31-immsVal
         mem.ALUResultBuffer = '0' * 32 + utilFunc.lsl(mem.operand1Buffer[32:64], shiftVal)
         mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(const.REG_SIZE)
         mem.regValueAvailableInALU[rdKey] = True

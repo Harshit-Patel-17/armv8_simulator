@@ -110,6 +110,7 @@ def helper_rp(wback, postIndex, binary, instr):
             mem.IF_ID_dataBuffer.append(utilFunc.getRegValueByStringkey(binary[27:32], '0'))
             mem.IF_ID_dataBuffer.append(utilFunc.getRegValueByStringkey(binary[17:22], '0'))
             address = utilFunc.getRegValueByStringkey(binary[22:27],'1')
+            armdebug.intRFActivityCounter += 1
         elif(const.FLAG_DATA_FORWARDING):
             forwardedValues = mem.findForwardedValues(rtKey, rt2Key, rnKey)
             if(forwardedValues[0] == None and mem.regObsolete[rtKey] != 0):
@@ -131,8 +132,7 @@ def helper_rp(wback, postIndex, binary, instr):
                 data2 = forwardedValues[1]
             if(forwardedValues[2] != None):
                 address = forwardedValues[2]
-            if(None in forwardedValues):
-                armdebug.intRFActivityCounter += 1
+            armdebug.intRFActivityCounter += forwardedValues.count(None)
             mem.IF_ID_dataBuffer = []
             mem.IF_ID_dataBuffer.append(data1)
             mem.IF_ID_dataBuffer.append(data2)
@@ -433,7 +433,7 @@ def helper_all(binary, opc, size, wback, postIndex, offset, rtKey, rnKey, scale,
             const.FLAG_OP_FETCHED = True
             data = utilFunc.getRegValueByStringkey(binary[27:32], '0')
             address = utilFunc.getRegValueByStringkey(binary[22:27],'1')
-            armdebug.intRFActivityCounter += 1
+            armdebug.intRFActivityCounter += 2
             mem.IF_ID_dataBuffer = []
             mem.IF_ID_dataBuffer.append(data)
         elif(const.FLAG_DATA_FORWARDING):
