@@ -25,7 +25,7 @@ udiv x11,x10,x2
 cset w10, eq
 csneg x1,x2,x3,ne
 ldrh  W3, [x30, #15]!
-ldp w1, w2, [x3], #16
 stp w2, w3, [x4, #16]!
+ldp w1, w2, [x4], #16
 cinv x30,x25,eq
 fmin s31,s1,s31

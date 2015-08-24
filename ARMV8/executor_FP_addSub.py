@@ -39,7 +39,7 @@ def execFSUB_vector_2S(hexcode):
 
 # executes floating point vector subtraction for four 32 bit FPs stored in each 128 bit registers
 def execFSUB_vector_4S(hexcode):
-	executeFSUB_vector(hexcode,0,1)
+	executeFSUB_vector(hexcode,1,0)
 
 # executes floating point vector subtraction for two 64 bit FPs stored in each 128 bit registers
 def execFSUB_vector_2D(hexcode):

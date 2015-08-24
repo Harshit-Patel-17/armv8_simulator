@@ -4,6 +4,7 @@ Created on 11-Aug-2014
 @author: abhiagar90@gmail.com
 '''
 
+import math
 import re
 import parsehelper
 import utilFunc
@@ -42,7 +43,7 @@ iCacheWriteActivityCounter = 0
 l1CacheReadActivityCounter = 0
 l1CacheWriteActivityCounter = 0
 
-def printEnergy():
+def printEnergy(displayGraph = False):
     global decodeActivityCounter
     global intRFActivityCounter
     global floatRFActivityCounter
@@ -80,6 +81,7 @@ def printEnergy():
     
     fuEnergy = {}
     processorEnergy = []
+    processorEnergyTable = []
     voltages = []
     
     for (functionalUnit, leakageEnergy) in config.leakageEnergy.items():
@@ -93,20 +95,20 @@ def printEnergy():
         totalDynamicEnergy = 0
         fuLeakageEnergy = {}
         fuDynamicEnergy = {}
-        leakageEnergyTable = []
-        dynamicEnergyTable = []
+        #leakageEnergyTable = []
+        #dynamicEnergyTable = []
         
         #Calculate leakage energy for each functional unit
         for (functionalUnit, leakageEnergy) in config.leakageEnergy.items():
             fuLeakageEnergy[functionalUnit] = totalCycles * v * config.leakageCurrent[functionalUnit] / f
             totalLeakageEnergy += fuLeakageEnergy[functionalUnit]
-            leakageEnergyTable.append([functionalUnit, fuLeakageEnergy[functionalUnit]])
+            #leakageEnergyTable.append([functionalUnit, fuLeakageEnergy[functionalUnit]])
         
         #Calculate dynamic energy for each functional unit
         for (functionalUnit, dynamicEnergy) in config.dynamicEnergy.items():
             fuDynamicEnergy[functionalUnit] = activityCounter[functionalUnit] * config.capacitance[functionalUnit] * v * v
             totalDynamicEnergy += fuDynamicEnergy[functionalUnit]
-            dynamicEnergyTable.append([functionalUnit, fuDynamicEnergy[functionalUnit]])
+            #dynamicEnergyTable.append([functionalUnit, fuDynamicEnergy[functionalUnit]])
          
         #Calculate total energy for each functional unit   
         for (functionalUnit, leakageEnergy) in config.leakageEnergy.items():
@@ -118,18 +120,29 @@ def printEnergy():
         fuEnergy['L1Cache'].append(fuLeakageEnergy['L1Cache'] + fuDynamicEnergy['L1CacheRead'] + fuDynamicEnergy['L1CacheWrite'])
         
         processorEnergy.append(totalLeakageEnergy + totalDynamicEnergy)
+        processorEnergyTable.append([f, v, totalLeakageEnergy, totalDynamicEnergy, totalLeakageEnergy + totalDynamicEnergy])
     
-    for (functionalUnit, leakageEnergy) in config.leakageEnergy.items():
-        pyplot.title(functionalUnit)
-        pyplot.xlabel("Voltage (volt)")
-        pyplot.ylabel("EDP (joule)")
-        pyplot.plot(voltages, fuEnergy[functionalUnit])
-        pyplot.show()
+    print tabulate(processorEnergyTable, ["Frequency (MHz)", "Voltage (V)", "Total Leakage Energy", "Total Dynamic Energy", "Total Energy"], tablefmt="psql")
+    
+    totalGraphs = len(config.leakageEnergy.items())+1
+    cols = 5.0
+    rows = int(math.ceil(totalGraphs/cols))
+    print rows, cols
+    graph = 1
+    if(displayGraph == True):
+        for (functionalUnit, leakageEnergy) in config.leakageEnergy.items():
+            pyplot.subplot(rows, cols, graph)
+            graph += 1
+            pyplot.title(functionalUnit)
+            #pyplot.xlabel("Voltage (volt)")
+            #pyplot.ylabel("EDP (joule)")
+            pyplot.plot(voltages, fuEnergy[functionalUnit])
+        pyplot.subplot(rows, cols, graph) 
+        pyplot.title("Processor")
+        #pyplot.xlabel("Voltage (volt)")
+        #pyplot.ylabel("EDP (joule)")
+        pyplot.plot(voltages, processorEnergy)
         
-    pyplot.title("Processor")
-    pyplot.xlabel("Voltage (volt)")
-    pyplot.ylabel("EDP (joule)")
-    pyplot.plot(voltages, processorEnergy)
     pyplot.show()
     
 def printActivityCounters():
@@ -394,7 +407,12 @@ def parseCommand(command):
         return
     
     if command == 'regs':
+        print "Interget Register File"
+        print "======================"
         executeRegs()
+        print ""
+        print "Float Register File"
+        print "==================="
         executeFPSIMDRegs()
         return
     
@@ -420,6 +438,10 @@ def parseCommand(command):
     
     if command == 'activity':
         executeActivity()
+        return
+    
+    if command == 'energy':
+        executeEnergy()
         return
     
     if command == 'stalls':
@@ -448,6 +470,9 @@ def executePipe():
 
 def executeActivity():
     printActivityCounters()
+    
+def executeEnergy():
+    printEnergy(False)
 
 def executeStalls():
     print getStalls()
@@ -530,7 +555,7 @@ def executeRUN():
     print "Total stalls = " + str(getStalls())
     print ""
     printActivityCounters()
-    printEnergy()
+    printEnergy(True)
             
 def executeStages():
     stallOccured = False
@@ -805,9 +830,9 @@ def executeC():
 def executePrint(command):
     print "Executing command type: "+"'print'"
     command=command.split()
-    if(len(command)==3):
+    if(command[1].lower()=="reg"):
         executePrintReg(command)
-    elif(len(command)==4):
+    elif(command[1].lower()=="mem"):
         executePrintMem(command)#giving the splitted string
         pass
     else:
@@ -816,52 +841,86 @@ def executePrint(command):
 #there might be a problem of what is treated as what
 def executePrintReg(command): #list of strings in command
     
-    regbase=command[1].lower()
+    regbase=command[2].lower()
     
     if regbase!='x' and regbase!='d':
         print 'Invalid print reg command'
         return
-    reginfo=command[2].lower()
     
-    if len(reginfo)!=2:
+    reginfo=command[3].lower()
+    if len(reginfo)!=2 and len(reginfo)!=3:
         print 'Invalid print reg command'
         return
+    
     regtype=reginfo[0]
-    
-    if regtype!='w' and regtype!='x':
+    if regtype!='w' and regtype!='x' and regtype!='s' and regtype!='d' and regtype!='h':
         print 'Invalid print reg command'
         return
-    regnum=int(reginfo[1])
+    
+    if len(reginfo)==2:
+        regnum=int(reginfo[1])
+    else:
+        regnum = int(reginfo[1:3])
     
     if regnum<0 or regnum>31:
         print 'Invalid print reg command'
         return
     
-    if regtype == 'x':
-        binary=mem.regFile[regnum]
-        if regbase == 'd':            
-            if binary[0]=='0':
-                print 'Register value: ' + str(int(binary,2))
+    RFtype = command[4].lower()
+    if RFtype != 'int' and RFtype != 'float':
+        print 'Invalid print reg command'
+        return
+    
+    if(RFtype == 'int'):
+        if regtype == 'x':
+            binary=mem.regFile[regnum]
+            if regbase == 'd':            
+                if binary[0]=='0':
+                    print 'Register value: ' + str(int(binary,2))
+                else:
+                    neg_binary=utilFunc.twosComplement(binary, 64)
+                    print 'Register value: -' + str(int(neg_binary,2))
             else:
-                neg_binary=utilFunc.twosComplement(binary, 64)
-                print 'Register value: -' + str(int(neg_binary,2))
+                print 'Register value: ' + utilFunc.binaryToHexStr(binary)
+        elif regtype == 'w':
+            binary=mem.regFile[regnum][32:64]
+            if regbase == 'd':            
+                if binary[0]=='0':
+                    print 'Register value: ' + str(int(binary,2))
+                else:
+                    neg_binary=utilFunc.twosComplement(binary, 32)
+                    print 'Register value: -' + str(int(neg_binary,2))
+            else:
+                print 'Register value: ' + utilFunc.binaryToHexStr(binary)
+        else:
+            print 'Invalid print reg command. (expecting s/d as register type)'
+            return
+    else:
+        binary = mem.regFileFPSIMD[regnum]
+        if regtype == 'h':
+            datasize = 16
+            binary = binary[112:128]
+        elif regtype == 's':
+            datasize = 32
+            binary = binary[96:128]
+        elif regtype == 'd':
+            datasize = 64
+            binary = binary[64:128]
+        else:
+            print 'Invalid print reg command. (expecting h/s/d as register type)'
+            return
+        
+        if regbase == 'd':
+            print utilFunc.unpackFP(binary, datasize)[2], utilFunc.unpackFP(binary, datasize)[0]
         else:
             print 'Register value: ' + utilFunc.binaryToHexStr(binary)
-    elif regtype == 'w':
-        binary=mem.regFile[regnum][32:64]
-        if regbase == 'd':            
-            if binary[0]=='0':
-                print 'Register value: ' + str(int(binary,2))
-            else:
-                neg_binary=utilFunc.twosComplement(binary, 32)
-                print 'Register value: -' + str(int(neg_binary,2))
-        else:
-            print 'Register value: ' + utilFunc.binaryToHexStr(binary)
+                
+        
             
 def executePrintMem(command):
-    base=command[2]
-    address=command[3]
-    freq=command[1]
+    base=command[3]
+    address=command[4]
+    freq=command[2]
     if base!='d' and base!='x':
         print 'Invalid print-from-memory command'
         return
@@ -976,8 +1035,8 @@ def executeDebuggerHelp():
     print '6.  del <ADDRESS> : Deletes the breakpoint at the hexadecimal <ADDRESS>'
     print '7.  flags: Print the state of all flags'
     print '8.  regs: Print the state of all registers in hex(64 binary digits)'
-    print '9.  print <d/x> <w/x>num: prints the decimal/hexadecimal equivalent of register(32bit/64bit) number num'
-    print '10. print num<b/d/w> <d/x> 0x<hex-address> : prints the num(count) bytes, words, or doublewords starting from hexaddress in decimal/hexadecimal'
+    print '9.  print reg <d/x> <w/x>num <int/float>: prints the decimal/hexadecimal equivalent of register number num from int/float register file'
+    print '10. print mem num<b/d/w> <d/x> 0x<hex-address> : prints the num(count) bytes, words, or doublewords starting from hexaddress in decimal/hexadecimal'
     print "11. watch num: stops executing as soon as register num's value is changed"
     print '12. exit: Exits the program(with the debugger)'
     print "13. cycles: Prints cycles spent in execution"

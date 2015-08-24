@@ -127,58 +127,63 @@ def execFMove_128to64(binary):
     execFMOVE_general(binary,'1','10','01','110')
 
 def execFMOVE_general(binary,sf,typeBits,rmode,opcode):
+    const.FLAG_INST_EXECUTED = True    
+    if(const.FLAG_EXECUTION_COMPLETED == False and const.EXECUTION_COUNTER == 0):
+        const.EXECUTION_COUNTER = config.latency['IntALU']
+    
+    if(const.EXECUTION_COUNTER != 0):
+        armdebug.floatALUActivityCounter += 1
+        const.EXECUTION_COUNTER -= 1
+        
+    if(const.EXECUTION_COUNTER == 0):
+        const.FLAG_EXECUTION_COMPLETED = True
+        if(armdebug.pipelineStages[3] != '--------'):
+            return
+    else:
+        return
+    
     destRegister = utilFunc.getRegKeyByStringKey(binary[27:32])
-    operandRegister = utilFunc.getRegKeyByStringKey(binary[22:27])
 
     if(sf == '1'):
         intsize = 64
     else:
         intsize = 32
-
-    if(typeBits == '00'):
-        fltsize = 32
-    elif(typeBits == '01'):
-        fltsize = 64
-    elif(typeBits == '10'):
-        fltsize = 128
-
+        
     if((opcode[0:2]+rmode) == '1100'):
-        if(opcode[2] == '1'):
-            operation = "IntToFlt"
-            value = utilFunc.getRegValueByStringkey(binary[27:32])
-        else:
-            operation = "FltToInt"
-            value = utilFunc.getRegValueByStringkeyFPSIMD(binary[27:32])
         part = 0
     elif((opcode[0:2]+rmode == '1101')):
-        if(opcode[2] == '1'):
-            operation = "IntToFlt"
-            value = utilFunc.getRegValueByStringkey(binary[27:32])
-        else:
-            operation = "FltToInt"
-            value = utilFunc.getRegValueByStringkeyFPSIMD(binary[27:32])
         part = 1
+
+    if(opcode[2] == '1'):
+        operation = "IntToFlt"
+    else:
+        operation = "FltToInt"
 
     if(operation == "FltToInt"):
         if(part == 0):
             if(intsize == 32):
-                resultBinary = value[96:128]
+                resultBinary = mem.operand1Buffer[96:128]
             else:
-                resultBinary = value[64:128]
+                resultBinary = mem.operand1Buffer[64:128]
         else:
-            resultBinary = value[0:64]
+            resultBinary = mem.operand1Buffer[0:64]
         resultBinary = resultBinary.zfill(64)
-
-    if(operation == "IntToFlt"):
+    elif(operation == "IntToFlt"):
         if(part == 0):
             if(intsize == 32):
-                resultBinary = value[32:64]
+                resultBinary = mem.operand1Buffer[32:64]
             else:
-                resultBinary = value[0:64]
+                resultBinary = mem.operand1Buffer[0:64]
             resultBinary = resultBinary.zfill(128)
         else:
-            resultBinary = value[0:64]
+            resultBinary = mem.operand1Buffer[0:64]
             resultBinary = resultBinary + "0"*64
+            
+    mem.ALUResultBuffer = resultBinary
+    if(operation == 'FltToInt'):
+        mem.regValueAvailableInALU[destRegister] = True
+    elif(operation == "IntToFlt"):
+        mem.regValueAvailableInFloatALU[destRegister] = True
 
 
 def execFMove_iSP(binary):
