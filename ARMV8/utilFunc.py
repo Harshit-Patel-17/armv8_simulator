@@ -136,7 +136,7 @@ def addSub(rdKey, op1, op2, sub_op, N, setFlags, addWithCarry):
     c_in = '0'
     if(sub_op == '1'):
         op2 = negate(op2)
-    if(sub_op == '1' or addWithCarry):
+    if(sub_op == '1' or addWithCarry == '1'):
         c_in = '1'
     unsigned_sum = uInt(op1) + uInt(op2) + uInt(c_in)
     signed_sum = sInt(op1, N) + sInt(op2, N) + uInt(c_in)

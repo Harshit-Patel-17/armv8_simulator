@@ -122,13 +122,18 @@ def printEnergy(displayGraph = False):
         processorEnergy.append(totalLeakageEnergy + totalDynamicEnergy)
         processorEnergyTable.append([f, v, totalLeakageEnergy, totalDynamicEnergy, totalLeakageEnergy + totalDynamicEnergy])
     
+    print  ""
+    print "Energy Consumption"
+    print "=================="
     print tabulate(processorEnergyTable, ["Frequency (MHz)", "Voltage (V)", "Total Leakage Energy", "Total Dynamic Energy", "Total Energy"], tablefmt="psql")
     
     totalGraphs = len(config.leakageEnergy.items())+1
     cols = 5.0
     rows = int(math.ceil(totalGraphs/cols))
-    print rows, cols
     graph = 1
+    marker = r'$\star$'
+    color = "g"
+    pyplot.suptitle("EDP vs. Voltage graphs", fontsize = 16)
     if(displayGraph == True):
         for (functionalUnit, leakageEnergy) in config.leakageEnergy.items():
             pyplot.subplot(rows, cols, graph)
@@ -136,12 +141,12 @@ def printEnergy(displayGraph = False):
             pyplot.title(functionalUnit)
             #pyplot.xlabel("Voltage (volt)")
             #pyplot.ylabel("EDP (joule)")
-            pyplot.plot(voltages, fuEnergy[functionalUnit])
+            pyplot.plot(voltages, fuEnergy[functionalUnit], marker = marker, color = color)
         pyplot.subplot(rows, cols, graph) 
         pyplot.title("Processor")
         #pyplot.xlabel("Voltage (volt)")
         #pyplot.ylabel("EDP (joule)")
-        pyplot.plot(voltages, processorEnergy)
+        pyplot.plot(voltages, processorEnergy, marker = marker, color = color)
         
     pyplot.show()
     
