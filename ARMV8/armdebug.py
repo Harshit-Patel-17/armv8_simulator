@@ -81,15 +81,20 @@ def printEnergy(displayGraph = False):
     activityCounter['L1CacheWrite'] = l1CacheWriteActivityCounter
     
     fuEnergy = {}
+    fuEDP = {}
     processorEnergy = []
+    processorEDP = []
     processorEnergyTable = []
     voltages = []
     
     for (functionalUnit, leakageEnergy) in config.leakageEnergy.items():
         fuEnergy[functionalUnit] = []
+        fuEDP[functionalUnit] = []
     
     for f in frequencies:
         v = K * f
+        time_per_cycle = 1.0 / f
+        execution_time = totalCycles * time_per_cycle #in microseconds
         voltages.append(v)
         
         totalLeakageEnergy = 0
@@ -115,12 +120,17 @@ def printEnergy(displayGraph = False):
         for (functionalUnit, leakageEnergy) in config.leakageEnergy.items():
             try:
                 fuEnergy[functionalUnit].append(fuLeakageEnergy[functionalUnit] + fuDynamicEnergy[functionalUnit])
+                fuEDP[functionalUnit].append(fuLeakageEnergy[functionalUnit] * execution_time + fuDynamicEnergy[functionalUnit] * activityCounter[functionalUnit] * time_per_cycle)
             except KeyError:
                 pass 
+            
         fuEnergy['ICache'].append(fuLeakageEnergy['ICache'] + fuDynamicEnergy['ICacheRead'] + fuDynamicEnergy['ICacheWrite'])
         fuEnergy['L1Cache'].append(fuLeakageEnergy['L1Cache'] + fuDynamicEnergy['L1CacheRead'] + fuDynamicEnergy['L1CacheWrite'])
+        fuEDP['ICache'].append(fuLeakageEnergy['ICache'] * execution_time + fuDynamicEnergy['ICacheRead'] * activityCounter['ICacheRead'] * time_per_cycle + fuDynamicEnergy['ICacheWrite'] * activityCounter['ICacheWrite'] * time_per_cycle)
+        fuEDP['L1Cache'].append(fuLeakageEnergy['L1Cache'] * execution_time + fuDynamicEnergy['L1CacheRead'] * activityCounter['L1CacheRead'] * time_per_cycle + fuDynamicEnergy['L1CacheWrite'] * activityCounter['L1CacheWrite'] * time_per_cycle)
         
         processorEnergy.append(totalLeakageEnergy + totalDynamicEnergy)
+        processorEDP.append(processorEnergy[-1] * execution_time)
         processorEnergyTable.append([f, v, totalLeakageEnergy, totalDynamicEnergy, totalLeakageEnergy + totalDynamicEnergy])
     
     print  ""
@@ -131,23 +141,31 @@ def printEnergy(displayGraph = False):
     totalGraphs = len(config.leakageEnergy.items())+1
     cols = 5.0
     rows = int(math.ceil(totalGraphs/cols))
-    graph = 1
     marker = r'$\star$'
-    color = "g"
-    pyplot.suptitle("EDP vs. Voltage graphs", fontsize = 16)
     if(displayGraph == True):
+        pyplot.figure(1)
+        graph = 1
+        pyplot.suptitle("Energy vs. Voltage graphs", fontsize = 16)
         for (functionalUnit, leakageEnergy) in config.leakageEnergy.items():
             pyplot.subplot(rows, cols, graph)
             graph += 1
             pyplot.title(functionalUnit)
-            #pyplot.xlabel("Voltage (volt)")
-            #pyplot.ylabel("EDP (joule)")
-            pyplot.plot(voltages, fuEnergy[functionalUnit], marker = marker, color = color)
+            pyplot.plot(voltages, fuEnergy[functionalUnit], marker = marker, color = 'g')
         pyplot.subplot(rows, cols, graph) 
         pyplot.title("Processor")
-        #pyplot.xlabel("Voltage (volt)")
-        #pyplot.ylabel("EDP (joule)")
-        pyplot.plot(voltages, processorEnergy, marker = marker, color = color)
+        pyplot.plot(voltages, processorEnergy, marker = marker, color = 'r')
+        
+        pyplot.figure(2)
+        graph = 1
+        pyplot.suptitle("EDP vs. Voltage graphs", fontsize = 16)
+        for (functionalUnit, leakageEnergy) in config.leakageEnergy.items():
+            pyplot.subplot(rows, cols, graph)
+            graph += 1
+            pyplot.title(functionalUnit)
+            pyplot.plot(voltages, fuEDP[functionalUnit], marker = marker, color = 'g')
+        pyplot.subplot(rows, cols, graph) 
+        pyplot.title("Processor")
+        pyplot.plot(voltages, processorEDP, marker = marker, color = 'r')
         
     pyplot.show()
     
@@ -580,7 +598,7 @@ def executeRUN():
     print "Total stalls = " + str(getStalls())
     print ""
     printActivityCounters()
-    #printEnergy(True)
+    printEnergy(True)
             
 def executeStages():
     stallOccured = False

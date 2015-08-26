@@ -12,3 +12,4 @@ cd ..
 rm -rf setuptools-18.2
 rm setuptools-18.2.zip
 sudo -E pip install matplotlib
+sudo sh make.sh
