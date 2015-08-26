@@ -1,4 +1,6 @@
 #Script for installing matplotlib for python
+sudo apt-get install python-dev
+sudo apt-get install curl
 sudo apt-get install python-pip
 sudo apt-get install python-pip libfreetype6-dev libpng-dev libxft-dev python-numpy
 sudo -E pip install tabulate
