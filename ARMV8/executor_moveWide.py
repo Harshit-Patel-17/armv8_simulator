@@ -54,6 +54,7 @@ def executeMoveWideWithKeep(hexcode, datasize):
 
 
 	mem.ALUResultBuffer = mem.operand1Buffer[0:(datasize-position-16)] + immediate + mem.operand1Buffer[(datasize-position):datasize]
+	mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(64)
 	mem.regValueAvailableInALU[destRegister] = True
 
 # utility function for Move Wide with Not
@@ -83,6 +84,7 @@ def executeMoveWideWithNot(hexcode, datasize):
 	resultBinary = resultBinary[0:(datasize-position-16)] + immediate + resultBinary[(datasize-position):datasize]
 
 	mem.ALUResultBuffer = utilFunc.negate(resultBinary)
+	mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(64)
 	mem.regValueAvailableInALU[destRegister] = True
 
 # utility function for Move Wide with Zero
@@ -110,4 +112,5 @@ def executeMoveWideWithZero(hexcode, datasize):
 	resultBinary = "0"*datasize
 
 	mem.ALUResultBuffer = resultBinary[0:(datasize-position-16)] + immediate + resultBinary[(datasize-position):datasize]
+	mem.ALUResultBuffer = mem.ALUResultBuffer.zfill(64)
 	mem.regValueAvailableInALU[destRegister] = True

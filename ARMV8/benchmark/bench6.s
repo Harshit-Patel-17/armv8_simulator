@@ -17,7 +17,7 @@ ccmn w0, w7, #11, CC
 lsr w4,w3,#10
 cls w0, w7
 clz w0, w7
-CMN w7, #5, LSL #2
+CMN w7, #5, LSL #12
 sdiv w3,w2,w7
 umull x3,w2,w7
 udiv x1,x2,x3
@@ -25,7 +25,6 @@ cset w0, EQ
 LDRH  W4, [X1], #30
 bic w0, w7, w2, lsl #2
 bics w0, w7, w2, lsl #2
-cCCg w0, w7, CC
 sdiv w3,w2,w7
 LDP w7, W2, [X3], #16
 csinc w0, w7, w2, EQ

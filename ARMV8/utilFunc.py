@@ -111,6 +111,7 @@ def setRegValue(rdKey, val, isSp):
 # val is 128 bit string to be stored in reg with rdkey
 def setRegValueSIMDFP(rdKey, val):
     assert rdKey >= 0 and rdKey <= 31
+    ifWatchFloat(rdKey)
     del mem.regFileFPSIMD[rdKey]
     mem.regFileFPSIMD.insert(rdKey, val)
         
@@ -120,6 +121,14 @@ def ifWatch(rdKey):
         #set somtehing global here which pauses everything on the planet!
         #after this inst everything should pause!!
         armdebug.setWatchPause()
+        #dont forget to reset the watch pause!!
+        
+def ifWatchFloat(rdKey):
+    if mem.isWatchFloatSet(rdKey):
+        mem.resetWatchFloatForReg(rdKey)
+        #set somtehing global here which pauses everything on the planet!
+        #after this inst everything should pause!!
+        armdebug.setWatchFloatPause()
         #dont forget to reset the watch pause!!
         
 # utility function that takes num int convert it into binary of size N
@@ -691,7 +700,7 @@ def unpackFP(fpval, datasize):
             else:
                 typeOfVal = "FPType_Nonzero"
                 value = 2.0**(-14) * uInt(frac16) * 2.0**(-10)
-        elif(isOnes(exp16, datasize)=='1' and getAHPBit() == '0'):
+        elif(isOnes(exp16, 5)=='1' and getAHPBit() == '0'):
             if(isZero(frac16)=='1'):
                 typeOfVal = "FPType_Infinity"
                 value = sys.maxint#2.0**(1000000)
@@ -709,7 +718,7 @@ def unpackFP(fpval, datasize):
         sign = fpval[0]
         exp32 = fpval[1:9]
         frac32 = fpval[9:32]
-        
+
         if(isZero(exp32)=='1'):
             if(isZero(frac32)=='1' or getFZBit() == '1'):
                 typeOfVal = "FPType_Zero"
@@ -717,7 +726,7 @@ def unpackFP(fpval, datasize):
             else:
                 typeOfVal = "FPType_Nonzero"
                 value = 2.0**(-126) * uInt(frac32) * 2.0**(-23)
-        elif(isOnes(exp32, datasize) == '1'):
+        elif(isOnes(exp32, 8) == '1'):
             if(isZero(frac32) == '1'):
                 typeOfVal = "FPType_Infinity"
                 value = sys.maxint#2.0**(1000000)
@@ -743,7 +752,7 @@ def unpackFP(fpval, datasize):
             else:
                 typeOfVal = "FPType_Nonzero"
                 value = 2.0**(-1022) * uInt(frac64) * 2.0**(-52)
-        elif(isOnes(exp64, datasize)=='1'):
+        elif(isOnes(exp64, 11)=='1'):
             if(isZero(frac64)):
                 typeOfVal = "FPType_Infinity"
                 value = sys.maxint#2.0**(1000000)
@@ -763,7 +772,7 @@ def unpackFP(fpval, datasize):
 
     return (typeOfVal, sign, value)
 
-#applies proper rounding technique and returns the binary represenattion of op
+#applies proper rounding technique and returns the binary representation of op
 def FPRound(op, rounding, datasize):
     if(datasize == 16):
         minimum_exp = -14
@@ -839,7 +848,7 @@ def FPRound(op, rounding, datasize):
             binary_mant = binary_mant[-F:]
             result = sign + biased_exp_binary + binary_mant
     else:
-        if(biased_exp >= 2^E):
+        if(biased_exp >= 2**E):
             result = sign + "1"*(datasize - 1)
             error = 0.0
         else:

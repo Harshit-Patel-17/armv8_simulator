@@ -1,9 +1,7 @@
 _start:
-mov w1, #10
-fmov s1, #5.5
-fmov s2 ,w1
-fmov w2, s1
-fmov d3, x1
-fmov x18, d3
-fmov v4.d[1], x1
-fmov x17, d3
+mov w1, 0xff09ffff
+mov w2, 0x7f09ffff
+fmov s1, w1
+fmov s2, w2
+fmin s3, s1, s2
+fmax s4, s1, s2

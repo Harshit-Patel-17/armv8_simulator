@@ -27,7 +27,8 @@ cycles = 0
 stalls = 0
 bkpoint=[]
 hexes=[]
-watchPause=False 
+watchPause=False
+watchFloatPause = False 
 
 decodeActivityCounter = 0
 intRFActivityCounter = 0
@@ -197,6 +198,17 @@ def setWatchPause():
 def resetWatchPause():
     global watchPause
     watchPause=False    
+    
+def isWatchFloatPause():
+    return  watchFloatPause
+    
+def setWatchFloatPause():
+    global watchFloatPause
+    watchFloatPause=True
+
+def resetWatchFloatPause():
+    global watchFloatPause
+    watchFloatPause=False  
 
 def getHexes():
     global hexes
@@ -373,7 +385,9 @@ def parseCommand(command):
             executeS()
         except Exception as e:
             if str(e)=='watch':
-                print 'Watched register value changed. Halting.'
+                print 'Watched integer register value changed. Halting.'
+            elif str(e)=='watchFloat':
+                print 'Watched float register value changed. Halting.'
             else:  print traceback.format_exc()
         return
     
@@ -382,7 +396,9 @@ def parseCommand(command):
             executeRUN()
         except Exception as e:
             if str(e)=='watch':
-                print 'Watched register value changed. Halting.'
+                print 'Watched integer register value changed. Halting.'
+            elif str(e)=='watchFloat':
+                print 'Watched float register value changed. Halting.'
             else:  print traceback.format_exc()
         return 
     
@@ -391,7 +407,9 @@ def parseCommand(command):
             executeC()
         except Exception as e:
             if str(e)=='watch':
-                print 'Watched register value changed. Halting.'
+                print 'Watched integer register value changed. Halting.'
+            elif str(e)=='watchFloat':
+                print 'Watched float register value changed. Halting.'
             else:  print traceback.format_exc()
         return
     
@@ -545,22 +563,24 @@ def executeRUN():
     print "===================="
     print "     IF          ID          EX          MA          WB     "
     #executeStages()
-    try:
-        pipelineStages[0] = hexes[getCurrentInstNumber()]
-        programCounters[0] = format(getPC(), 'x').zfill(8)
-    except IndexError:
-        pipelineStages[0] = '--------'
-        programCounters[0] = '--------'
-    incPC()
+    if(pipelineStages[0] == '--------'):
+        try:
+            pipelineStages[0] = hexes[getCurrentInstNumber()]
+            programCounters[0] = format(getPC(), 'x').zfill(8)
+        except IndexError:
+            pipelineStages[0] = '--------'
+            programCounters[0] = '--------'
+        incPC()
     while(not isPipelineEmpty()):
         executeStages()
+            
     print pipelineStages
     print ""
     print "Total cycles = " + str(getCycles())
     print "Total stalls = " + str(getStalls())
     print ""
     printActivityCounters()
-    printEnergy(True)
+    #printEnergy(True)
             
 def executeStages():
     stallOccured = False
@@ -617,6 +637,12 @@ def executeStages():
     #Execute stage 1
     fetchNewInstruction(False)
     incCycles()
+    if isWatchPause():
+            resetWatchPause()
+            raise Exception("watch")
+    if isWatchFloatPause():
+            resetWatchFloatPause()
+            raise Exception("watchFloat")
     
 def fetchNewInstruction(breakAtNextInstuction):
     global iCacheReadActivityCounter
@@ -710,48 +736,13 @@ def completeAllInstructionsInPipeline():
         if(pipelineStages[0] != '--------'):
             fetchNewInstruction(True)
         incCycles()
+        if isWatchPause():
+            resetWatchPause()
+            raise Exception("watch")
+        if isWatchFloatPause():
+                resetWatchFloatPause()
+                raise Exception("watchFloat")
     print pipelineStages 
-
-'''   
-def completeAllFetchedInstructionsInPipeline():
-    while(not isAllFetchedInstructionsExecuted()):
-        print pipelineStages
-        #Execute stage 5
-        if(pipelineStages[4] != '--------'):
-            writeback_decoder.decodeInstr(pipelineStages[4])
-        pipelineStages[4] = '--------'
-        
-        #Execute stage 4    
-        if(pipelineStages[3] != '--------'):
-            memaccess_decoder.decodeInstr(pipelineStages[3])
-        pipelineStages[4] = pipelineStages[3]
-        pipelineStages[3] = '--------'
-        
-        #Execute stage 3
-        if(pipelineStages[2] != '--------'):
-            utilFunc.resetInstrFlag()
-            decoder.decodeInstr(pipelineStages[2])
-        pipelineStages[3] = pipelineStages[2]
-        pipelineStages[2] = '--------'
-        
-        #Execute stage 2
-        if(pipelineStages[1] != '--------'):
-            opfetch_decoder.decodeInstr(pipelineStages[1])
-            if(const.FLAG_OP_FETCHED):
-                pipelineStages[2] = pipelineStages[1]
-                pipelineStages[1] = '--------'
-                #pipelineStages[1] = pipelineStages[0]
-                #pipelineStages[0] = '--------'
-            else:
-                incStalls()
-        else:
-            pipelineStages[2] = pipelineStages[1]
-            pipelineStages[1] = '--------'
-            #pipelineStages[1] = pipelineStages[0]
-            #pipelineStages[0] = '--------'
-        incCycles()
-    print pipelineStages
-'''  
         
 def isPipelineEmpty():
     for i in range(5):
@@ -819,11 +810,12 @@ def executeC():
     print "===================="
     print "     IF          ID          EX          MA          WB     "
     #executeStages()
-    try:
-        pipelineStages[0] = hexes[getCurrentInstNumber()]
-    except IndexError:
-        pipelineStages[0] = '--------'
-    incPC()
+    if(pipelineStages[0] == '--------'):
+        try:
+            pipelineStages[0] = hexes[getCurrentInstNumber()]
+        except IndexError:
+            pipelineStages[0] = '--------'
+        incPC()
     while(not isPipelineEmpty()):
         if(isBkPoint(getCurrentInstNumber())):
             completeAllInstructionsInPipeline()
@@ -871,54 +863,53 @@ def executePrintReg(command): #list of strings in command
         print 'Invalid print reg command'
         return
     
-    RFtype = command[4].lower()
-    if RFtype != 'int' and RFtype != 'float':
-        print 'Invalid print reg command'
-        return
-    
-    if(RFtype == 'int'):
-        if regtype == 'x':
-            binary=mem.regFile[regnum]
-            if regbase == 'd':            
-                if binary[0]=='0':
-                    print 'Register value: ' + str(int(binary,2))
-                else:
-                    neg_binary=utilFunc.twosComplement(binary, 64)
-                    print 'Register value: -' + str(int(neg_binary,2))
+    if regtype == 'x':
+        binary=mem.regFile[regnum]
+        if regbase == 'd':            
+            if binary[0]=='0':
+                print 'Register value: ' + str(int(binary,2))
             else:
-                print 'Register value: ' + utilFunc.binaryToHexStr(binary)
-        elif regtype == 'w':
-            binary=mem.regFile[regnum][32:64]
-            if regbase == 'd':            
-                if binary[0]=='0':
-                    print 'Register value: ' + str(int(binary,2))
-                else:
-                    neg_binary=utilFunc.twosComplement(binary, 32)
-                    print 'Register value: -' + str(int(neg_binary,2))
-            else:
-                print 'Register value: ' + utilFunc.binaryToHexStr(binary)
-        else:
-            print 'Invalid print reg command. (expecting s/d as register type)'
-            return
-    else:
-        binary = mem.regFileFPSIMD[regnum]
-        if regtype == 'h':
-            datasize = 16
-            binary = binary[112:128]
-        elif regtype == 's':
-            datasize = 32
-            binary = binary[96:128]
-        elif regtype == 'd':
-            datasize = 64
-            binary = binary[64:128]
-        else:
-            print 'Invalid print reg command. (expecting h/s/d as register type)'
-            return
-        
-        if regbase == 'd':
-            print utilFunc.unpackFP(binary, datasize)[2], utilFunc.unpackFP(binary, datasize)[0]
+                neg_binary=utilFunc.twosComplement(binary, 64)
+                print 'Register value: -' + str(int(neg_binary,2))
         else:
             print 'Register value: ' + utilFunc.binaryToHexStr(binary)
+    elif regtype == 'w':
+        binary=mem.regFile[regnum][32:64]
+        if regbase == 'd':            
+            if binary[0]=='0':
+                print 'Register value: ' + str(int(binary,2))
+            else:
+                neg_binary=utilFunc.twosComplement(binary, 32)
+                print 'Register value: -' + str(int(neg_binary,2))
+        else:
+            print 'Register value: ' + utilFunc.binaryToHexStr(binary)
+    elif regtype == 'h':
+        binary = mem.regFileFPSIMD[regnum]
+        datasize = 16
+        binary = binary[112:128]
+        if regbase == 'd':
+            print 'Register value:', utilFunc.unpackFP(binary, datasize)[2], utilFunc.unpackFP(binary, datasize)[0]
+        else:
+            print 'Register value: ' + utilFunc.binaryToHexStr(binary)
+    elif regtype == 's':
+        binary = mem.regFileFPSIMD[regnum]
+        datasize = 32
+        binary = binary[96:128]
+        if regbase == 'd':
+            print 'Register value:', utilFunc.unpackFP(binary, datasize)[2], utilFunc.unpackFP(binary, datasize)[0]
+        else:
+            print 'Register value: ' + utilFunc.binaryToHexStr(binary)
+    elif regtype == 'd':
+        binary = mem.regFileFPSIMD[regnum]
+        datasize = 64
+        binary = binary[64:128]
+        if regbase == 'd':
+            print 'Register value:', utilFunc.unpackFP(binary, datasize)[2], utilFunc.unpackFP(binary, datasize)[0]
+        else:
+            print 'Register value: ' + utilFunc.binaryToHexStr(binary)
+    else:
+        print 'Invalid print reg command. (expecting x/w/h/s/d as register type)'
+        return
                 
         
             
@@ -1040,9 +1031,9 @@ def executeDebuggerHelp():
     print '6.  del <ADDRESS> : Deletes the breakpoint at the hexadecimal <ADDRESS>'
     print '7.  flags: Print the state of all flags'
     print '8.  regs: Print the state of all registers in hex(64 binary digits)'
-    print '9.  print reg <d/x> <w/x>num <int/float>: prints the decimal/hexadecimal equivalent of register number num from int/float register file'
+    print '9.  print reg <d/x> <w/x/h/s/d>num: prints the decimal/hexadecimal equivalent of register number num from appropriate register file'
     print '10. print mem num<b/d/w> <d/x> 0x<hex-address> : prints the num(count) bytes, words, or doublewords starting from hexaddress in decimal/hexadecimal'
-    print "11. watch num: stops executing as soon as register num's value is changed"
+    print "11. watch num <int/float>: stops executing as soon as register num's value is changed"
     print '12. exit: Exits the program(with the debugger)'
     print "13. cycles: Prints cycles spent in execution"
     print "14. stalls: Prints total stall cycles in execution"
@@ -1052,8 +1043,15 @@ def executeWatch(command):
     try:
         command=command.split()
         index=int(command[1])
-        mem.setWatchForReg(index)
-        mem.printWatchStateAll()
+        RFtype = command[2].lower()
+        if(RFtype == "int"):
+            mem.setWatchForReg(index)
+            mem.printWatchStateAll()
+        elif(RFtype == "float"):
+            mem.setWatchFloatForReg(index)
+            mem.printWatchFloatStateAll()
+        else:
+            print "Invalid RFtype. (Rftype int/float expected as second argument)"
     except:
         print 'Invalid watch command'
     return
