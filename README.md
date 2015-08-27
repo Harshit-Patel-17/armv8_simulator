@@ -4,7 +4,7 @@
 
 1) Clone the project to your local repository.
 
-2) Run `setup.sh` file using following command on linux terminal.
+2) Run `setup.sh` file using following command on linux terminal. It will setup `pyelftools` and `matplotlib` in your machine.
 ```
 #!Linux Shell Command
 
