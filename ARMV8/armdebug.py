@@ -598,7 +598,6 @@ def executeRUN():
     print "Total stalls = " + str(getStalls())
     print ""
     printActivityCounters()
-    printEnergy(True)
             
 def executeStages():
     stallOccured = False

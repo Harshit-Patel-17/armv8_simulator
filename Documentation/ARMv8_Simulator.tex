@@ -94,5 +94,79 @@ There are several other source files as follows:
 \item{\textbf{config.py}: Parses config.xml to read hardware specifications of processor into simulator. }
 \end{itemize}
 
+\section*{Limitations of Assignment}
+\begin{enumerate}
+\item{SIMD instructions are unimplemented.}
+\item{Actual number of pipeline stages in ARM processor are more than five.}
+\item{Instructions reordering and similar techniques are not used to reduce number of stalls.}
+\end{enumerate}
+
+\clearpage
+\section*{Testcases}
+\begin{figure}[!htb]
+\caption{Testcase-1 with output}
+\centering
+\includegraphics[width=0.30\textwidth]{bench1.png}
+\includegraphics[width=0.30\textwidth]{bench1_intRF.png}
+\includegraphics[width=0.30\textwidth]{bench1_floatRF.png}
+\end{figure}
+
+\begin{figure}[!htb]
+\caption{Testcase-2 with output}
+\centering
+\includegraphics[width=0.30\textwidth]{bench2.png}
+\includegraphics[width=0.30\textwidth]{bench2_intRF.png}
+\includegraphics[width=0.30\textwidth]{bench2_floatRF.png}
+\end{figure}
+
+\clearpage
+\subsection*{Energy vs Voltage Graphs for Testcase-1}
+\begin{figure}[!htb]
+\begin{sideways}
+
+\caption{Testcase-1 Energy vs Voltage graphs}
+\centering
+\includegraphics[width=0.9\textheight]{bench1_figure_1.png}
+
+\end{sideways}
+\end{figure}
+
+\clearpage
+\subsection*{EDP vs Voltage Graphs for Testcase-1}
+\begin{figure}[!htb]
+\begin{sideways}
+
+\caption{Testcase-1 EDP vs Voltage graphs}
+\centering
+\includegraphics[width=0.9\textheight]{bench1_figure_2.png}
+
+\end{sideways}
+\end{figure}
+
+\clearpage
+\subsection*{Energy vs Voltage Graphs for Testcase-2}
+\begin{figure}[!htb]
+\begin{sideways}
+
+\caption{Testcase-2 Energy vs Voltage graphs}
+\centering
+\includegraphics[width=0.9\textheight]{bench2_figure_1.png}
+
+\end{sideways}
+\end{figure}
+
+\clearpage
+\subsection*{EDP vs Voltage Graphs for Testcase-2}
+\begin{figure}[!htb]
+\begin{sideways}
+
+\caption{Testcase-2 EDP vs Voltage graphs}
+\centering
+\includegraphics[width=0.9\textheight]{bench2_figure_2.png}
+
+\end{sideways}
+\end{figure}
+
+
 
 \end{document}

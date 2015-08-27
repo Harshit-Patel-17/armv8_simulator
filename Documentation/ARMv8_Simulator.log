@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.8.19)  26 AUG 2015 22:26
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.8.19)  27 AUG 2015 01:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -338,23 +338,104 @@ Overfull \hbox (31.1574pt too wide) in paragraph at lines 91--92
 loat-ing point ad-di-tion/subtraction
  []
 
-[2] (./ARMv8_Simulator.aux) ) 
+[2] [3] <./images/bench1.png, id=18, 335.2525pt x 688.5725pt>
+File: ./images/bench1.png Graphic file (type png)
+
+<use ./images/bench1.png>
+Package pdftex.def Info: ./images/bench1.png used on input line 109.
+(pdftex.def)             Requested size: 125.05113pt x 256.83766pt.
+
+<./images/bench1_intRF.png, id=20, 335.2525pt x 688.5725pt>
+File: ./images/bench1_intRF.png Graphic file (type png)
+
+<use ./images/bench1_intRF.png>
+Package pdftex.def Info: ./images/bench1_intRF.png used on input line 110.
+(pdftex.def)             Requested size: 125.05113pt x 256.83766pt.
+
+<./images/bench1_floatRF.png, id=21, 335.2525pt x 688.5725pt>
+File: ./images/bench1_floatRF.png Graphic file (type png)
+
+<use ./images/bench1_floatRF.png>
+Package pdftex.def Info: ./images/bench1_floatRF.png used on input line 111.
+(pdftex.def)             Requested size: 125.05113pt x 256.83766pt.
+
+<./images/bench2.png, id=22, 329.23pt x 734.745pt>
+File: ./images/bench2.png Graphic file (type png)
+ <use ./images/bench2.png>
+Package pdftex.def Info: ./images/bench2.png used on input line 117.
+(pdftex.def)             Requested size: 125.05113pt x 279.07146pt.
+
+<./images/bench2_intRF.png, id=23, 329.23pt x 734.745pt>
+File: ./images/bench2_intRF.png Graphic file (type png)
+
+<use ./images/bench2_intRF.png>
+Package pdftex.def Info: ./images/bench2_intRF.png used on input line 118.
+(pdftex.def)             Requested size: 125.05113pt x 279.07146pt.
+
+<./images/bench2_floatRF.png, id=24, 329.23pt x 734.745pt>
+File: ./images/bench2_floatRF.png Graphic file (type png)
+
+<use ./images/bench2_floatRF.png>
+Package pdftex.def Info: ./images/bench2_floatRF.png used on input line 119.
+(pdftex.def)             Requested size: 125.05113pt x 279.07146pt.
+ [4
+
+ <./images/bench1.png> <./images/bench1_intRF.png> <./images/bench1_floatRF.png
+> <./images/bench2.png> <./images/bench2_intRF.png> <./images/bench2_floatRF.pn
+g>]
+<./images/bench1_figure_1.png, id=34, 1675.2186pt x 897.5934pt>
+File: ./images/bench1_figure_1.png Graphic file (type png)
+
+<use ./images/bench1_figure_1.png>
+Package pdftex.def Info: ./images/bench1_figure_1.png used on input line 129.
+(pdftex.def)             Requested size: 630.45189pt x 337.80196pt.
+ [5
+
+ <./images/bench1_figure_1.png>]
+<./images/bench1_figure_2.png, id=39, 1675.2186pt x 897.5934pt>
+File: ./images/bench1_figure_2.png Graphic file (type png)
+
+<use ./images/bench1_figure_2.png>
+Package pdftex.def Info: ./images/bench1_figure_2.png used on input line 141.
+(pdftex.def)             Requested size: 630.45189pt x 337.80196pt.
+ [6
+
+ <./images/bench1_figure_2.png>]
+<./images/bench2_figure_1.png, id=45, 1675.2186pt x 897.5934pt>
+File: ./images/bench2_figure_1.png Graphic file (type png)
+
+<use ./images/bench2_figure_1.png>
+Package pdftex.def Info: ./images/bench2_figure_1.png used on input line 153.
+(pdftex.def)             Requested size: 630.45189pt x 337.80196pt.
+ [7
+
+ <./images/bench2_figure_1.png>]
+<./images/bench2_figure_2.png, id=50, 1675.2186pt x 897.5934pt>
+File: ./images/bench2_figure_2.png Graphic file (type png)
+
+<use ./images/bench2_figure_2.png>
+Package pdftex.def Info: ./images/bench2_figure_2.png used on input line 165.
+(pdftex.def)             Requested size: 630.45189pt x 337.80196pt.
+ [8
+
+ <./images/bench2_figure_2.png>]
+(./ARMv8_Simulator.aux) ) 
 Here is how much of TeX's memory you used:
- 2416 strings out of 493304
- 34498 string characters out of 6139871
- 102684 words of memory out of 5000000
- 5835 multiletter control sequences out of 15000+600000
- 20839 words of font info for 45 fonts, out of 8000000 for 9000
+ 2470 strings out of 493304
+ 35893 string characters out of 6139871
+ 103684 words of memory out of 5000000
+ 5876 multiletter control sequences out of 15000+600000
+ 21946 words of font info for 46 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  38i,11n,43p,255b,289s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texlive/texmf-dist/fonts/enc/dvips/bas
-e/8r.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.p
-fb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/
-texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
-Output written on ARMv8_Simulator.pdf (3 pages, 42549 bytes).
+{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r
+.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><
+/usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
+Output written on ARMv8_Simulator.pdf (9 pages, 1381423 bytes).
 PDF statistics:
- 27 PDF objects out of 1000 (max. 8388607)
- 18 compressed objects within 1 object stream
+ 68 PDF objects out of 1000 (max. 8388607)
+ 33 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 51 words of extra memory for PDF output out of 10000 (max. 10000000)
 

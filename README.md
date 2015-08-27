@@ -4,11 +4,11 @@
 
 1) Clone the project to your local repository.
 
-2) Run `make.sh` file using following command on linux terminal.
+2) Run `setup.sh` file using following command on linux terminal.
 ```
 #!Linux Shell Command
 
-$sudo ./make.sh
+$sudo sh setup.sh
 ```
 3) Go to folder <project_path>/ARMV8 from linux terminal.
 
@@ -25,9 +25,9 @@ $python main.py --help
 
 2) Support for data-forwarding mode. (See section data-forwarding for more details)
 
-3) Support for new instructions CSET, CSINC, CSNEG, ADC, ANDS, BIC, BICS, CCMN, CINV, CLS, CLZ, CMN, CNEG, LDRB, LDRH, LDRSB, LDP, STP, ASR, LSL, LSR, ROR, SDIV,UMULL, UDIV.
+3) Support for new instructions CSET, CSINC, CSNEG, ADC, ANDS, BIC, BICS, CCMN, CINV, CLS, CLZ, CMN, CNEG, LDRB, LDRH, LDRSB, LDP, STP, ASR, LSL, LSR, ROR, SDIV,UMULL, UDIV, MOVK, MOVN, MOVZ, FMOV, FADD, FSUB, FMAX, FMIN.
 
-4) New debugger commands `cycles` and `stalls`.
+4) New debugger commands `cycles`, `stalls`, `pipe`, `energy`, `activity` and `nc`.
 
 ## Data forwarding ##
 
